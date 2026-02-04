@@ -1,6 +1,5 @@
 package cz.bvv.errorhanlingdemo.builder.common;
 
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 
 public abstract class BaseRouteBuilder extends RouteBuilder {
