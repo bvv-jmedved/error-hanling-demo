@@ -1,10 +1,10 @@
 package cz.bvv.errorhanlingdemo.builder.sender;
 
-import cz.bvv.errorhanlingdemo.builder.common.BaseRouteBuilder;
+import cz.bvv.errorhanlingdemo.builder.common.BaseSenderRouteBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoSenderRouteBuilder extends BaseRouteBuilder {
+public class DemoSenderRouteBuilder extends BaseSenderRouteBuilder {
 
     @Override
     public void config() {

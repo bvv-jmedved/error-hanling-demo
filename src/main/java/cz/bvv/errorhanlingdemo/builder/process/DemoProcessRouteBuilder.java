@@ -1,12 +1,13 @@
 package cz.bvv.errorhanlingdemo.builder.process;
 
+import cz.bvv.errorhanlingdemo.builder.common.BaseProcessRouteBuilder;
 import cz.bvv.errorhanlingdemo.builder.common.BaseRouteBuilder;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoProcessRouteBuilder extends BaseRouteBuilder {
+public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
     @Override
     protected void config() {
 

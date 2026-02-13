@@ -1,10 +1,10 @@
 package cz.bvv.errorhanlingdemo.builder.technicalsender;
 
-import cz.bvv.errorhanlingdemo.builder.common.BaseRouteBuilder;
+import cz.bvv.errorhanlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoTechnicalSender extends BaseRouteBuilder {
+public class DemoTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     @Override
     protected void config() {
         rest()

@@ -1,12 +1,13 @@
 package cz.bvv.errorhanlingdemo.builder.receiver;
 
+import cz.bvv.errorhanlingdemo.builder.common.BaseReceiverRouteBuilder;
 import cz.bvv.errorhanlingdemo.builder.common.BaseRouteBuilder;
 import java.io.IOException;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoReceiverRouteBuilder extends BaseRouteBuilder {
+public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
     @Override
     protected void config() {
         onException(HttpOperationFailedException.class)
