@@ -1,8 +1,6 @@
 package cz.bvv.errorhanlingdemo.builder.receiver;
 
 import cz.bvv.errorhanlingdemo.builder.common.BaseReceiverRouteBuilder;
-import cz.bvv.errorhanlingdemo.builder.common.BaseRouteBuilder;
-import java.io.IOException;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +10,8 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
     protected void config() {
         onException(HttpOperationFailedException.class)
           .maximumRedeliveries(2).redeliveryDelay(0)
-          .onRedelivery( exchange -> {
-              System.out.println("Receiver. Getting new token");
-          })
+          .onRedelivery( exchange -> System.out.println("Receiver. Getting new token"))
           .handled(false);
-        ;
 
         from("seda:demo-receiver")
           .routeId("demo-receiver")
