@@ -12,15 +12,17 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
 
         from("direct:technicalreceiver")
           .routeId("technicalreceiver")
-          .log("Technical receiver called with message: ${body}")
+          .log("Technical receiver. Calling target system with message: ${body}")
           .throwException(new HttpOperationFailedException(
             "http://fake-receiver",
-            400,
-            "Internal server error",
+            500,
+            "Something wrong occurred in external system",
             null,
             null,
             "{\"Status\":\"Server Failed\"}"
-          ));
+          ))
+          .log("Technical receiver. Cleaning headers")
+        ;
 
     }
 }

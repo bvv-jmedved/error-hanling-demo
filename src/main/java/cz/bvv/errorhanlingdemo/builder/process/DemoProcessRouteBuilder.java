@@ -13,16 +13,11 @@ public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
 
         from("seda:demo-process")
           .routeId("demo-process")
-          .log("Processing message: ${body}")
-          .to("seda:demo-receiver?exchangePattern=InOut");
+          .log("Processor. Processing request: ${body}")
+          .to("seda:demo-receiver?exchangePattern=InOut")
+          .log("Processor. Processing response: ${body}");
 
     }
 
-//    @Override
-//    protected Processor getFailureProcessor() {
-//        return exchange -> {
-//            Message message = exchange.getIn();
-//            message.setBody(simple("[Process completition]: ${body}"));
-//        };
-//    }
-}
+  }
+

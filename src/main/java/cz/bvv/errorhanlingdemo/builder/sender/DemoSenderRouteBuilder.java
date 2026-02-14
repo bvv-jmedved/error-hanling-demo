@@ -11,9 +11,10 @@ public class DemoSenderRouteBuilder extends BaseSenderRouteBuilder {
 
         from("seda:demo-sender")
           .routeId("demo-sender")
-          .log("Sending message: ${body}")
+          .log("Sender. Validating authorizationSending message: ${body}")
+          .log("Sender. Unmarshalling request: ${body}")
           .to("seda:demo-process?exchangePattern=InOut")
-          .log("Sender received response message: ${body}");
+          .log("Sender. Marshalling response: ${body}");
     }
 
 }
