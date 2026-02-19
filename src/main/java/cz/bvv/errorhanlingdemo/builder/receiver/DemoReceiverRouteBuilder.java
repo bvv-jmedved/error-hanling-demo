@@ -11,9 +11,10 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
         onException(HttpOperationFailedException.class)
           .maximumRedeliveries(2).redeliveryDelay(0)
           .onRedelivery( exchange -> System.out.println("Receiver. Getting new token"))
-          .handled(false);
+          .log("Redelivery failied")
+          .handled(true);
 
-        from("seda:demo-receiver")
+        from("direct:demo-receiver")
           .routeId("demo-receiver")
           .log("Receiver. Preparing call with request: ${body}")
           .to("direct:technicalreceiver")

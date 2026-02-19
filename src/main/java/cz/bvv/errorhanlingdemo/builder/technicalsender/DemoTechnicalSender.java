@@ -9,6 +9,6 @@ public class DemoTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     protected void config() {
         rest()
           .post("/demo")
-          .to("seda:demo-sender");
+          .to("direct:demo-sender");
     }
 }

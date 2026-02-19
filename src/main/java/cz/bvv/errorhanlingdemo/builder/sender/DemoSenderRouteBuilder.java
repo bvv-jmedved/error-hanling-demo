@@ -9,11 +9,11 @@ public class DemoSenderRouteBuilder extends BaseSenderRouteBuilder {
     @Override
     public void config() {
 
-        from("seda:demo-sender")
+        from("direct:demo-sender")
           .routeId("demo-sender")
           .log("Sender. Validating authorizationSending message: ${body}")
           .log("Sender. Unmarshalling request: ${body}")
-          .to("seda:demo-process?exchangePattern=InOut")
+          .to("direct:demo-process?exchangePattern=InOut")
           .log("Sender. Marshalling response: ${body}");
     }
 

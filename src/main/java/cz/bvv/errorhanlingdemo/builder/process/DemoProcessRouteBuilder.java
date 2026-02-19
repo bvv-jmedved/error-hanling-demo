@@ -8,10 +8,10 @@ public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
     @Override
     protected void config() {
 
-        from("seda:demo-process")
+        from("direct:demo-process")
           .routeId("demo-process")
           .log("Processor. Processing request: ${body}")
-          .to("seda:demo-receiver?exchangePattern=InOut")
+          .to("direct:demo-receiver?exchangePattern=InOut")
           .log("Processor. Processing response: ${body}");
 
     }

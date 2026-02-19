@@ -2,31 +2,32 @@ package cz.bvv.errorhanlingdemo.exception;
 
 import java.util.List;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public class IntegrationException extends RuntimeException {
-    private final int statusCode;
+    private final HttpStatus status;
     private final List<IntegrationError> errors;
 
     public IntegrationException(
-      int statusCode,
+      HttpStatus status,
       String errorCode,
       String message,
       Exception cause) {
         super(message, cause);
         List<IntegrationError> integrationErrors = List.of(
           new IntegrationError(errorCode, message));
-        this.statusCode = statusCode;
+        this.status = status;
         this.errors = integrationErrors;
     }
 
     public IntegrationException(
-      int statusCode,
+      HttpStatus status,
       List<IntegrationError> errors,
       String message,
       Exception cause) {
         super(message, cause);
-        this.statusCode = statusCode;
+        this.status = status;
         this.errors = List.copyOf(errors);
     }
 }
