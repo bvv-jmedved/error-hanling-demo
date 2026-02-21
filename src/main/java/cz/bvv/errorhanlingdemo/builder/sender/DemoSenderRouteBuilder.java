@@ -1,7 +1,6 @@
 package cz.bvv.errorhanlingdemo.builder.sender;
 
 import cz.bvv.errorhanlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
-import cz.bvv.errorhanlingdemo.builder.common.FailureContractRoutePolicy;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 

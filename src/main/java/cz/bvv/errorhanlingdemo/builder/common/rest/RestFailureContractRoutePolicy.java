@@ -6,7 +6,6 @@ import cz.bvv.errorhanlingdemo.builder.common.FailureContractRoutePolicy;
 import cz.bvv.errorhanlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,7 +17,7 @@ public abstract class RestFailureContractRoutePolicy<T> extends FailureContractR
     private ObjectMapper objectMapper;
 
     @Override
-    protected void mapContract(IntegrationException exception, Route route, Exchange exchange) {
+    protected void mapContract(IntegrationException exception,  Exchange exchange) {
         Message message = exchange.getMessage();
         message.setHeader(Exchange.HTTP_RESPONSE_CODE, exception.getStatus().value());
         message.setHeader(Exchange.HTTP_RESPONSE_TEXT, exception.getMessage());

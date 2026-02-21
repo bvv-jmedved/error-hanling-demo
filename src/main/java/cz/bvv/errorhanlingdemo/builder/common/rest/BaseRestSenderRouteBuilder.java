@@ -2,7 +2,6 @@ package cz.bvv.errorhanlingdemo.builder.common.rest;
 
 import cz.bvv.errorhanlingdemo.builder.common.BaseSenderRouteBuilder;
 import cz.bvv.errorhanlingdemo.builder.common.FailureContractRoutePolicy;
-import cz.bvv.errorhanlingdemo.builder.sender.DemoFailureContractRoutePolicy;
 import org.springframework.beans.factory.ObjectProvider;
 
 public abstract class BaseRestSenderRouteBuilder extends BaseSenderRouteBuilder {
@@ -18,8 +17,6 @@ public abstract class BaseRestSenderRouteBuilder extends BaseSenderRouteBuilder 
     public void configure() {
         super.configure();
 
-        getRouteCollection().getRoutes().forEach(route -> {
-            route.routePolicy(failureContractRoutePolicyObjectProvider.getObject());
-   });
+        getRouteCollection().getRoutes().forEach(route -> route.routePolicy(failureContractRoutePolicyObjectProvider.getObject()));
     }
 }

@@ -10,8 +10,8 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
     protected void config() {
         errorHandler(noErrorHandler());
 
-        from("direct:technicalreceiver")
-          .routeId("technicalreceiver")
+        from("direct:technical-receiver")
+          .routeId("technical-receiver")
           .log("Technical receiver. Calling target system with message: ${body}")
           .throwException(new HttpOperationFailedException(
             "http://fake-receiver",

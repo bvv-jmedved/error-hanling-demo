@@ -9,32 +9,26 @@ import org.springframework.stereotype.Component;
 public class DefaultIntegrationExceptionMapperImpl implements IntegrationExceptionMapper {
     @Override
     public IntegrationException map(Exception exception) {
-        if (exception == null) {
-            return new IntegrationException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "Unknown error",
-                null
+        return switch (exception) {
+            case null -> new IntegrationException(
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              HttpStatus.INTERNAL_SERVER_ERROR.name(),
+              "Unknown error",
+              null
             );
-        }
-
-        if (exception instanceof IntegrationException integrationException) {
-            return integrationException;
-        }
-
-        if (exception instanceof HttpOperationFailedException operationException) {
-            return new IntegrationException(
+            case IntegrationException integrationException -> integrationException;
+            case HttpOperationFailedException operationException -> new IntegrationException(
               HttpStatus.BAD_GATEWAY,
               HttpStatus.BAD_GATEWAY.name(),
               operationException.getStatusText(),
               operationException);
-        }
+            default -> new IntegrationException(
+              HttpStatus.INTERNAL_SERVER_ERROR,
+              HttpStatus.INTERNAL_SERVER_ERROR.name(),
+              exception.getMessage(),
+              exception
+            );
+        };
 
-        return new IntegrationException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          HttpStatus.INTERNAL_SERVER_ERROR.name(),
-          exception.getMessage(),
-          exception
-        );
     }
 }

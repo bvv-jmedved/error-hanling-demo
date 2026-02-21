@@ -11,7 +11,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
         onException(HttpOperationFailedException.class)
           .maximumRedeliveries(2).redeliveryDelay(0)
           .onRedelivery( exchange -> System.out.println("Receiver. Getting new token"))
-          .log("Redelivery failied")
+          .log("Redelivery failed")
           .process( exchange ->
             System.out.println("Receiver. Processing exception: " + exchange.getException()))
           .handled(false);
@@ -19,7 +19,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
         from("direct:demo-receiver")
           .routeId("demo-receiver")
           .log("Receiver. Preparing call with request: ${body}")
-          .to("direct:technicalreceiver")
+          .to("direct:technical-receiver")
           .log("Receiver. Handling response: ${body}");
     }
 }

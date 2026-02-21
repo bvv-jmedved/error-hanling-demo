@@ -51,7 +51,7 @@ public abstract class FailureContractRoutePolicy implements RoutePolicy {
         IntegrationException integrationException = integrationExceptionMapper
           .map(getExceptionCaught(exchange));
         if (exchange.isFailed()) {
-            mapContract(integrationException,route, exchange);
+            mapContract(integrationException, exchange);
             exchange.setException(null);
         }
     }
@@ -60,7 +60,7 @@ public abstract class FailureContractRoutePolicy implements RoutePolicy {
            return exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
     }
 
-    protected abstract void mapContract(IntegrationException exception, Route route, Exchange exchange);
+    protected abstract void mapContract(IntegrationException exception, Exchange exchange);
 
 
 }
