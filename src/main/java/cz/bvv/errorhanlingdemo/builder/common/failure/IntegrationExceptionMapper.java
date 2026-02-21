@@ -1,4 +1,4 @@
-package cz.bvv.errorhanlingdemo.builder.common;
+package cz.bvv.errorhanlingdemo.builder.common.failure;
 
 import cz.bvv.errorhanlingdemo.exception.IntegrationException;
 

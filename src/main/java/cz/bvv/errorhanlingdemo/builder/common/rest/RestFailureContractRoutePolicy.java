@@ -2,7 +2,7 @@ package cz.bvv.errorhanlingdemo.builder.common.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhanlingdemo.builder.common.FailureContractRoutePolicy;
+import cz.bvv.errorhanlingdemo.builder.common.failure.FailureContractRoutePolicy;
 import cz.bvv.errorhanlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
