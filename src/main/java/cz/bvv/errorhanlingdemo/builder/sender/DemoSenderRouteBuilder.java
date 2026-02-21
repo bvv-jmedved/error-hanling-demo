@@ -1,10 +1,17 @@
 package cz.bvv.errorhanlingdemo.builder.sender;
 
-import cz.bvv.errorhanlingdemo.builder.common.BaseSenderRouteBuilder;
+import cz.bvv.errorhanlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
+import cz.bvv.errorhanlingdemo.builder.common.FailureContractRoutePolicy;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoSenderRouteBuilder extends BaseSenderRouteBuilder {
+public class DemoSenderRouteBuilder extends BaseRestSenderRouteBuilder {
+
+    protected DemoSenderRouteBuilder(
+      ObjectProvider<DemoFailureContractRoutePolicy> failureContractRoutePolicyObjectProvider) {
+        super(failureContractRoutePolicyObjectProvider);
+    }
 
     @Override
     public void config() {
@@ -16,5 +23,4 @@ public class DemoSenderRouteBuilder extends BaseSenderRouteBuilder {
           .to("direct:demo-process?exchangePattern=InOut")
           .log("Sender. Marshalling response: ${body}");
     }
-
 }

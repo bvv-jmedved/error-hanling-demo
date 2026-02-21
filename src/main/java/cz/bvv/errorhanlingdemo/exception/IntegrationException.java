@@ -1,10 +1,14 @@
 package cz.bvv.errorhanlingdemo.exception;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
+@AllArgsConstructor
+@Builder
 public class IntegrationException extends RuntimeException {
     private final HttpStatus status;
     private final List<IntegrationError> errors;

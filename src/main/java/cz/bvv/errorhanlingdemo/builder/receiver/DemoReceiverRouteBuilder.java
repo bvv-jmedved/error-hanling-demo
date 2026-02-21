@@ -12,13 +12,14 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
           .maximumRedeliveries(2).redeliveryDelay(0)
           .onRedelivery( exchange -> System.out.println("Receiver. Getting new token"))
           .log("Redelivery failied")
-          .handled(true);
+          .process( exchange ->
+            System.out.println("Receiver. Processing exception: " + exchange.getException()))
+          .handled(false);
 
         from("direct:demo-receiver")
           .routeId("demo-receiver")
           .log("Receiver. Preparing call with request: ${body}")
           .to("direct:technicalreceiver")
-          .log("Receiver. Handling response: ${body}")
-        ;
+          .log("Receiver. Handling response: ${body}");
     }
 }
