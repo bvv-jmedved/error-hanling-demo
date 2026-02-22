@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
 
+    private static final String FAILURE_CONTRACT_APPLIED = "failure.contract.applied";
+
     @Autowired
     private IntegrationExceptionMapper integrationExceptionMapper;
 
     @Override
     public final void onExchangeDone(Route route, Exchange exchange) {
         if (!exchange.isFailed()) {
+            return;
+        }
+        if (Boolean.TRUE.equals(exchange.getProperty(FAILURE_CONTRACT_APPLIED, Boolean.class))) {
             return;
         }
 
@@ -26,10 +31,9 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
         mapContract(
           integrationException == null ? IntegrationException.unknownError() : integrationException,
           exchange);
+        exchange.setProperty(FAILURE_CONTRACT_APPLIED, true);
         exchange.setException(null);
     }
 
     protected abstract void mapContract(IntegrationException exception, Exchange exchange);
-
-
 }
