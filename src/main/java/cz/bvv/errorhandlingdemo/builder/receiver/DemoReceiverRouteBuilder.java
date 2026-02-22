@@ -10,12 +10,14 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
     private final FakeTokenManager fakeTokenManager = new FakeTokenManager();
     private final TokenRefreshOnUnauthorizedProcessor tokenRefreshOnUnauthorizedProcessor =
       new TokenRefreshOnUnauthorizedProcessor(fakeTokenManager);
+    private final TokenRefreshRetryDecider tokenRefreshRetryDecider = new TokenRefreshRetryDecider();
 
     @Override
     protected void config() {
         onException(HttpOperationFailedException.class)
           .maximumRedeliveries(2).redeliveryDelay(0)
           .onRedelivery(tokenRefreshOnUnauthorizedProcessor)
+          .retryWhile(method(tokenRefreshRetryDecider, "shouldRetry"))
           .handled(false);
 
         from("direct:demo-receiver")

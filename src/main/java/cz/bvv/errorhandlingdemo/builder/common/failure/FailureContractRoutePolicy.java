@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
 
     private static final String FAILURE_CONTRACT_APPLIED = "failure.contract.applied";
+    private static final String INTEGRATION_EXCEPTION_OVERRIDE = "integration.exception.override";
 
     @Autowired
     private IntegrationExceptionMapper integrationExceptionMapper;
@@ -22,11 +23,13 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
             return;
         }
 
-        Exception exceptionCaught =
-          exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
-
         IntegrationException integrationException =
-          integrationExceptionMapper.map(exceptionCaught);
+          exchange.getProperty(INTEGRATION_EXCEPTION_OVERRIDE, IntegrationException.class);
+        if (integrationException == null) {
+            Exception exceptionCaught =
+              exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+            integrationException = integrationExceptionMapper.map(exceptionCaught);
+        }
 
         mapContract(
           integrationException == null ? IntegrationException.unknownError() : integrationException,
