@@ -53,6 +53,7 @@ class TokenRefreshFailureIntegrationTest {
         headers.set("X_THROW_IN", "technical-call");
         headers.set("X_THROW_TYPE", "http");
         headers.set("X_THROW_STATUS", "401");
+        headers.set("X_TOKEN_REFRESH_FAIL", "true");
 
         ResponseEntity<String> response = restTemplate.exchange(
           "http://localhost:" + port + "/demo",

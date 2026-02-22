@@ -28,7 +28,7 @@ public class TokenRefreshOnUnauthorizedProcessor implements Processor {
         }
 
         try {
-            tokenManager.refreshToken();
+            tokenManager.refreshToken(exchange);
         } catch (IntegrationException ie) {
             Integer redeliveryCounter = exchange.getProperty(Exchange.REDELIVERY_COUNTER, Integer.class);
             exchange.setProperty(ExchangePropertyKey.UNIT_OF_WORK_EXHAUSTED, true);

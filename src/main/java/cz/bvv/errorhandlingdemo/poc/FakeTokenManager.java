@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.poc;
 
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
+import org.apache.camel.Exchange;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -8,7 +9,12 @@ import org.springframework.http.HttpStatus;
  */
 public class FakeTokenManager {
 
-    public void refreshToken() {
+    public void refreshToken(Exchange exchange) {
+        String refreshShouldFail = exchange.getIn().getHeader("X_TOKEN_REFRESH_FAIL", String.class);
+        if (!"true".equalsIgnoreCase(refreshShouldFail)) {
+            return;
+        }
+
         throw new IntegrationException(
           HttpStatus.BAD_GATEWAY,
           "TOKEN_REFRESH_FAILED",
