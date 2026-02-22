@@ -16,9 +16,6 @@ public class DemoSenderRouteBuilder extends BaseRestSenderRouteBuilder {
         from("direct:demo-sender")
           .routeId("demo-sender")
           .process(pocStep(FailureStep.SENDER_VALIDATE))
-          .log("Sender. Validating authorizationSending message: ${body}")
-          .log("Sender. Unmarshalling request: ${body}")
-          .to("direct:demo-process?exchangePattern=InOut")
-          .log("Sender. Marshalling response: ${body}");
+          .to("direct:demo-process?exchangePattern=InOut");
     }
 }

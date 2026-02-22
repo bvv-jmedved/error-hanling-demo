@@ -14,7 +14,6 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
         from("direct:technical-receiver")
           .routeId("technical-receiver")
           .process(pocStep(FailureStep.TECHNICAL_CALL))
-          .log("Technical receiver. Calling target system with message: ${body}")
           .throwException(new HttpOperationFailedException(
             "http://fake-receiver",
             500,
@@ -22,9 +21,7 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
             null,
             null,
             "{\"Status\":\"Server Failed\"}"
-          ))
-          .log("Technical receiver. Cleaning headers")
-        ;
+          ));
 
     }
 }

@@ -12,10 +12,8 @@ public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
         from("direct:demo-process")
           .routeId("demo-process")
           .process(pocStep(FailureStep.PROCESS_TRANSFORM_REQUEST))
-          .log("Processor. Processing request: ${body}")
           .to("direct:demo-receiver?exchangePattern=InOut")
-          .process(pocStep(FailureStep.PROCESS_TRANSFORM_RESPONSE))
-          .log("Processor. Processing response: ${body}");
+          .process(pocStep(FailureStep.PROCESS_TRANSFORM_RESPONSE));
 
     }
 
