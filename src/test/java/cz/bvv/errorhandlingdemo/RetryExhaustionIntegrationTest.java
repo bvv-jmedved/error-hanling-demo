@@ -25,8 +25,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("poc")
 @Import(RetryExhaustionIntegrationTest.CamelProbeConfig.class)
 class RetryExhaustionIntegrationTest {
 
@@ -48,6 +50,9 @@ class RetryExhaustionIntegrationTest {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X_THROW_IN", "technical-call");
+        headers.set("X_THROW_TYPE", "http");
+        headers.set("X_THROW_STATUS", "500");
 
         ResponseEntity<String> response = restTemplate.exchange(
           "http://localhost:" + port + "/demo",
