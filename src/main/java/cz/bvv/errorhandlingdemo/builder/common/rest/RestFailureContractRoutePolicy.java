@@ -1,6 +1,5 @@
 package cz.bvv.errorhandlingdemo.builder.common.rest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -13,22 +12,36 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public abstract class RestFailureContractRoutePolicy<T> extends FailureContractRoutePolicy {
+    private static final String FALLBACK_ERROR_BODY = """
+      {
+        "errors": [
+          {
+            "code": "INTERNAL_ERROR",
+            "message": "Cannot serialize error response"
+          }
+        ]
+      }
+      """.trim();
+
     @Autowired
     private ObjectMapper objectMapper;
 
     @Override
     protected void mapContract(IntegrationException exception,  Exchange exchange) {
         Message message = exchange.getMessage();
-        message.setHeader(Exchange.HTTP_RESPONSE_CODE, exception.getStatus().value());
-        message.setHeader(Exchange.HTTP_RESPONSE_TEXT, exception.getMessage());
-        message.setHeader(Exchange.CONTENT_TYPE, "application/json");
-
         try {
-            message.setBody(objectMapper
-              .writeValueAsString(createRestError(exception)));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Cannot marshal DefaultRestError to JSON response body",
-              e);
+            T errorDto = createRestError(exception);
+            String body = objectMapper.writeValueAsString(errorDto);
+
+            message.setHeader(Exchange.HTTP_RESPONSE_CODE, exception.getStatus().value());
+            message.setHeader(Exchange.HTTP_RESPONSE_TEXT, exception.getMessage());
+            message.setHeader(Exchange.CONTENT_TYPE, "application/json");
+            message.setBody(body);
+        } catch (Exception e) {
+            message.setHeader(Exchange.HTTP_RESPONSE_CODE, 500);
+            message.setHeader(Exchange.HTTP_RESPONSE_TEXT, "Cannot serialize error response");
+            message.setHeader(Exchange.CONTENT_TYPE, "application/json");
+            message.setBody(FALLBACK_ERROR_BODY);
         }
     }
 

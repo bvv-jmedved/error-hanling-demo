@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,7 @@ class DefaultRestFailureContractRoutePolicyTest {
           String.class
         );
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
         assertThat(response.getHeaders().getContentType()).isNotNull();
         assertThat(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON)).isTrue();
         assertThat(response.getBody()).isNotBlank();
@@ -47,5 +49,6 @@ class DefaultRestFailureContractRoutePolicyTest {
         assertThat(jsonBody.isObject()).isTrue();
         assertThat(jsonBody.path("errors").isArray()).isTrue();
         assertThat(jsonBody.path("errors")).isNotEmpty();
+        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("BAD_GATEWAY");
     }
 }
