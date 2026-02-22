@@ -79,6 +79,17 @@ class FailureInjectorPipelineIntegrationTest {
         assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
     }
 
+    @Test
+    void shouldMapFailureWhenInjectedInProcessTransformResponse() throws Exception {
+        senderCompletionProbe.reset();
+
+        ResponseEntity<String> response = callDemoWithHeaders(headersFor("process-transform-response"));
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertErrorCode(response, "INTERNAL_SERVER_ERROR");
+        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+    }
+
     private ResponseEntity<String> callDemoWithHeaders(HttpHeaders headers) {
         return restTemplate.exchange(
           "http://localhost:" + port + "/demo",
