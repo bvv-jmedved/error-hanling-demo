@@ -10,12 +10,7 @@ public class DefaultIntegrationExceptionMapperImpl implements IntegrationExcepti
     @Override
     public IntegrationException map(Exception exception) {
         return switch (exception) {
-            case null -> new IntegrationException(
-              HttpStatus.INTERNAL_SERVER_ERROR,
-              HttpStatus.INTERNAL_SERVER_ERROR.name(),
-              "Unknown error",
-              null
-            );
+            case null -> IntegrationException.unknownError();
             case IntegrationException integrationException -> integrationException;
             case HttpOperationFailedException operationException -> new IntegrationException(
               HttpStatus.BAD_GATEWAY,

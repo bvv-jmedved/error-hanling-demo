@@ -34,4 +34,13 @@ public class IntegrationException extends RuntimeException {
         this.status = status;
         this.errors = List.copyOf(errors);
     }
+
+    public static IntegrationException unknownError() {
+        return new IntegrationException(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          HttpStatus.INTERNAL_SERVER_ERROR.name(),
+          "Unknown error",
+          null
+        );
+    }
 }
