@@ -12,18 +12,18 @@ class FailureInjectorTest {
 
     @Test
     void shouldThrowWhenHeaderMatchesStepId() {
-        FailureInjector failureInjector = new FailureInjector("demo-step");
+        FailureInjector failureInjector = new FailureInjector(FailureStep.SENDER_VALIDATE);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_IN", "sender-validate");
 
         assertThatThrownBy(() -> failureInjector.process(exchange))
           .isInstanceOf(RuntimeException.class)
-          .hasMessage("Injected failure at demo-step");
+          .hasMessage("Injected failure at sender-validate");
     }
 
     @Test
     void shouldDoNothingWhenHeaderDoesNotMatchStepId() {
-        FailureInjector failureInjector = new FailureInjector("demo-step");
+        FailureInjector failureInjector = new FailureInjector(FailureStep.SENDER_VALIDATE);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         exchange.getIn().setHeader("X_THROW_IN", "other-step");
 

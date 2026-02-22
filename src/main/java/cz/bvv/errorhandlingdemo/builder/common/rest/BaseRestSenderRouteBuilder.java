@@ -2,21 +2,19 @@ package cz.bvv.errorhandlingdemo.builder.common.rest;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
-import org.springframework.beans.factory.ObjectProvider;
 
 public abstract class BaseRestSenderRouteBuilder extends BaseSenderRouteBuilder {
-    private final ObjectProvider<? extends FailureContractRoutePolicy>
-      failureContractRoutePolicyObjectProvider;
+    private final FailureContractRoutePolicy failureContractRoutePolicy;
 
     protected BaseRestSenderRouteBuilder(
-      ObjectProvider<? extends FailureContractRoutePolicy> failureContractRoutePolicyObjectProvider) {
-        this.failureContractRoutePolicyObjectProvider = failureContractRoutePolicyObjectProvider;
+      FailureContractRoutePolicy failureContractRoutePolicy) {
+        this.failureContractRoutePolicy = failureContractRoutePolicy;
     }
 
     @Override
     public void configure() {
         super.configure();
 
-        getRouteCollection().getRoutes().forEach(route -> route.routePolicy(failureContractRoutePolicyObjectProvider.getObject()));
+        getRouteCollection().getRoutes().forEach(route -> route.routePolicy(failureContractRoutePolicy));
     }
 }

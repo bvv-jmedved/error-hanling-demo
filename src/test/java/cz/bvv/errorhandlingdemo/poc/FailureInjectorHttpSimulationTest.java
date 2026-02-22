@@ -12,9 +12,9 @@ class FailureInjectorHttpSimulationTest {
 
     @Test
     void shouldThrowHttpOperationFailedExceptionWhenTypeIsHttp() {
-        FailureInjector failureInjector = new FailureInjector("demo-step");
+        FailureInjector failureInjector = new FailureInjector(FailureStep.SENDER_VALIDATE);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_IN", "sender-validate");
         exchange.getIn().setHeader("X_THROW_TYPE", "http");
         exchange.getIn().setHeader("X_THROW_STATUS", "404");
         exchange.getIn().setHeader("X_THROW_STATUS_TEXT", "Not Found");
@@ -30,9 +30,9 @@ class FailureInjectorHttpSimulationTest {
 
     @Test
     void shouldDefaultTo500WhenStatusMissing() {
-        FailureInjector failureInjector = new FailureInjector("demo-step");
+        FailureInjector failureInjector = new FailureInjector(FailureStep.SENDER_VALIDATE);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_IN", "sender-validate");
         exchange.getIn().setHeader("X_THROW_TYPE", "http");
 
         assertThatThrownBy(() -> failureInjector.process(exchange))
@@ -44,12 +44,12 @@ class FailureInjectorHttpSimulationTest {
 
     @Test
     void shouldFallbackToRuntimeExceptionWhenTypeMissing() {
-        FailureInjector failureInjector = new FailureInjector("demo-step");
+        FailureInjector failureInjector = new FailureInjector(FailureStep.SENDER_VALIDATE);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_IN", "sender-validate");
 
         assertThatThrownBy(() -> failureInjector.process(exchange))
           .isInstanceOf(RuntimeException.class)
-          .hasMessage("Injected failure at demo-step");
+          .hasMessage("Injected failure at sender-validate");
     }
 }

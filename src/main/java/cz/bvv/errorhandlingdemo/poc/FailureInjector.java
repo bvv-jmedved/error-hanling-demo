@@ -26,21 +26,21 @@ public class FailureInjector implements Processor {
     private static final String X_THROW_BODY = "X_THROW_BODY";
     private static final int DEFAULT_HTTP_STATUS = 500;
     private static final String DEFAULT_HTTP_STATUS_TEXT = "Simulated HTTP failure";
-    private final String stepId;
+    private final FailureStep step;
 
-    public FailureInjector(String stepId) {
-        this.stepId = stepId;
+    public FailureInjector(FailureStep step) {
+        this.step = step;
     }
 
     @Override
-    public void process(Exchange exchange) {
+    public void process(Exchange exchange) throws Exception {
         String throwIn = exchange.getIn().getHeader(X_THROW_IN, String.class);
 
         if (throwIn == null) {
             return;
         }
 
-        if (!stepId.equals(throwIn)) {
+        if (!step.headerValue().equals(throwIn)) {
             return;
         }
 
@@ -51,17 +51,16 @@ public class FailureInjector implements Processor {
             String statusText = exchange.getIn().getHeader(X_THROW_STATUS_TEXT, String.class);
             String responseBody = exchange.getIn().getHeader(X_THROW_BODY, String.class);
 
-            sneakyThrow(new HttpOperationFailedException(
+            throw new HttpOperationFailedException(
               "http://poc-downstream",
               statusCode,
               statusText == null ? DEFAULT_HTTP_STATUS_TEXT : statusText,
               null,
               null,
               responseBody
-            ));
-            return;
+            );
         }
-        throw new RuntimeException("Injected failure at " + stepId);
+        throw new RuntimeException("Injected failure at " + step.headerValue());
 
     }
 
@@ -76,8 +75,4 @@ public class FailureInjector implements Processor {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <E extends Throwable> void sneakyThrow(Throwable throwable) throws E {
-        throw (E) throwable;
-    }
 }
