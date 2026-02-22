@@ -4,7 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 /**
  * PoC-only failure injection component.
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
  * <p>
  * Activated only under Spring profile "poc".
  */
-@Component
 @Profile("poc")
 public class FailureInjector implements Processor {
 
@@ -35,7 +33,7 @@ public class FailureInjector implements Processor {
     }
 
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) {
         String throwIn = exchange.getIn().getHeader(X_THROW_IN, String.class);
 
         if (throwIn == null) {
@@ -53,14 +51,15 @@ public class FailureInjector implements Processor {
             String statusText = exchange.getIn().getHeader(X_THROW_STATUS_TEXT, String.class);
             String responseBody = exchange.getIn().getHeader(X_THROW_BODY, String.class);
 
-            throw new HttpOperationFailedException(
+            sneakyThrow(new HttpOperationFailedException(
               "http://poc-downstream",
               statusCode,
               statusText == null ? DEFAULT_HTTP_STATUS_TEXT : statusText,
               null,
               null,
               responseBody
-            );
+            ));
+            return;
         }
         throw new RuntimeException("Injected failure at " + stepId);
 
@@ -75,5 +74,10 @@ public class FailureInjector implements Processor {
         } catch (NumberFormatException ex) {
             return DEFAULT_HTTP_STATUS;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <E extends Throwable> void sneakyThrow(Throwable throwable) throws E {
+        throw (E) throwable;
     }
 }
