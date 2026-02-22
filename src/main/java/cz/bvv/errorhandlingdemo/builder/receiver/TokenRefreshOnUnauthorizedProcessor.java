@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.receiver;
 
+import cz.bvv.errorhandlingdemo.builder.common.ExchangePropertyKeys;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import cz.bvv.errorhandlingdemo.poc.FakeTokenManager;
 import org.apache.camel.Exchange;
@@ -33,8 +34,7 @@ public class TokenRefreshOnUnauthorizedProcessor implements Processor {
             exchange.setProperty(ExchangePropertyKey.UNIT_OF_WORK_EXHAUSTED, true);
             exchange.setProperty(Exchange.REDELIVERY_MAX_COUNTER, redeliveryCounter == null ? 1 : redeliveryCounter);
             exchange.setProperty(TOKEN_REFRESH_FAILED, true);
-            exchange.setProperty("integration.exception.override", ie);
-            exchange.setProperty(Exchange.EXCEPTION_CAUGHT, ie);
+            exchange.setProperty(ExchangePropertyKeys.INTEGRATION_EXCEPTION_OVERRIDE, ie);
         }
     }
 }
