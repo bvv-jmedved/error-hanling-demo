@@ -49,6 +49,6 @@ class DefaultRestFailureContractRoutePolicyTest {
         assertThat(jsonBody.isObject()).isTrue();
         assertThat(jsonBody.path("errors").isArray()).isTrue();
         assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("BAD_GATEWAY");
+        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("DOWNSTREAM_HTTP_500");
     }
 }
