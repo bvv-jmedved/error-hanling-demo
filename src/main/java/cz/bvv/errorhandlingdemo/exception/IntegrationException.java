@@ -1,14 +1,10 @@
 package cz.bvv.errorhandlingdemo.exception;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@AllArgsConstructor
-@Builder
 public class IntegrationException extends RuntimeException {
     private final HttpStatus status;
     private final List<IntegrationError> errors;
@@ -19,9 +15,9 @@ public class IntegrationException extends RuntimeException {
       String message,
       Exception cause) {
         super(message, cause);
+        this.status = requireStatus(status);
         List<IntegrationError> integrationErrors = List.of(
           new IntegrationError(errorCode, message));
-        this.status = status;
         this.errors = integrationErrors;
     }
 
@@ -31,8 +27,8 @@ public class IntegrationException extends RuntimeException {
       String message,
       Exception cause) {
         super(message, cause);
-        this.status = status;
-        this.errors = List.copyOf(errors);
+        this.status = requireStatus(status);
+        this.errors = requireErrors(errors);
     }
 
     public static IntegrationException unknownError() {
@@ -42,5 +38,19 @@ public class IntegrationException extends RuntimeException {
           "Unknown error",
           null
         );
+    }
+
+    private static HttpStatus requireStatus(HttpStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException("status must not be null");
+        }
+        return status;
+    }
+
+    private static List<IntegrationError> requireErrors(List<IntegrationError> errors) {
+        if (errors == null || errors.isEmpty()) {
+            throw new IllegalArgumentException("errors must not be null or empty");
+        }
+        return List.copyOf(errors);
     }
 }
