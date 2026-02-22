@@ -5,6 +5,8 @@ import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolic
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -12,16 +14,18 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public abstract class RestFailureContractRoutePolicy<T> extends FailureContractRoutePolicy {
+    private static final Logger LOG = LoggerFactory.getLogger(RestFailureContractRoutePolicy.class);
     private static final String FALLBACK_ERROR_BODY = """
       {
         "errors": [
           {
             "code": "INTERNAL_ERROR",
-            "message": "Cannot serialize error response"
+            "message": "Internal error while preparing error response"
           }
         ]
       }
       """.trim();
+    private static final String FALLBACK_RESPONSE_TEXT = "Internal error while preparing error response";
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -38,8 +42,9 @@ public abstract class RestFailureContractRoutePolicy<T> extends FailureContractR
             message.setHeader(Exchange.CONTENT_TYPE, "application/json");
             message.setBody(body);
         } catch (Exception e) {
+            LOG.error("Failed to prepare REST error contract response", e);
             message.setHeader(Exchange.HTTP_RESPONSE_CODE, 500);
-            message.setHeader(Exchange.HTTP_RESPONSE_TEXT, "Cannot serialize error response");
+            message.setHeader(Exchange.HTTP_RESPONSE_TEXT, FALLBACK_RESPONSE_TEXT);
             message.setHeader(Exchange.CONTENT_TYPE, "application/json");
             message.setBody(FALLBACK_ERROR_BODY);
         }
