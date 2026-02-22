@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>cz.bvv</groupId>
-    <artifactId>error-hanling-demo</artifactId>
+    <artifactId>error-handling-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>error-hanling-demo</name>
     <description>error-hanling-demo</description>
