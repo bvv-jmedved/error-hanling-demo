@@ -1,0 +1,55 @@
+package cz.bvv.errorhandlingdemo.poc;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.support.DefaultExchange;
+import org.junit.jupiter.api.Test;
+
+class FailureInjectorHttpSimulationTest {
+
+    @Test
+    void shouldThrowHttpOperationFailedExceptionWhenTypeIsHttp() {
+        FailureInjector failureInjector = new FailureInjector("demo-step");
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_TYPE", "http");
+        exchange.getIn().setHeader("X_THROW_STATUS", "404");
+        exchange.getIn().setHeader("X_THROW_STATUS_TEXT", "Not Found");
+        exchange.getIn().setHeader("X_THROW_BODY", "{\"error\":\"missing\"}");
+
+        assertThatThrownBy(() -> failureInjector.process(exchange))
+          .isInstanceOfSatisfying(HttpOperationFailedException.class, exception -> {
+              org.assertj.core.api.Assertions.assertThat(exception.getStatusCode()).isEqualTo(404);
+              org.assertj.core.api.Assertions.assertThat(exception.getStatusText()).isEqualTo("Not Found");
+              org.assertj.core.api.Assertions.assertThat(exception.getResponseBody()).isEqualTo("{\"error\":\"missing\"}");
+          });
+    }
+
+    @Test
+    void shouldDefaultTo500WhenStatusMissing() {
+        FailureInjector failureInjector = new FailureInjector("demo-step");
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+        exchange.getIn().setHeader("X_THROW_TYPE", "http");
+
+        assertThatThrownBy(() -> failureInjector.process(exchange))
+          .isInstanceOfSatisfying(HttpOperationFailedException.class, exception -> {
+              org.assertj.core.api.Assertions.assertThat(exception.getStatusCode()).isEqualTo(500);
+              org.assertj.core.api.Assertions.assertThat(exception.getStatusText()).isEqualTo("Simulated HTTP failure");
+          });
+    }
+
+    @Test
+    void shouldFallbackToRuntimeExceptionWhenTypeMissing() {
+        FailureInjector failureInjector = new FailureInjector("demo-step");
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        exchange.getIn().setHeader("X_THROW_IN", "demo-step");
+
+        assertThatThrownBy(() -> failureInjector.process(exchange))
+          .isInstanceOf(RuntimeException.class)
+          .hasMessage("Injected failure at demo-step");
+    }
+}
