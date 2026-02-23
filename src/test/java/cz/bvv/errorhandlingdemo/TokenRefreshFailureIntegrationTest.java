@@ -62,7 +62,7 @@ class TokenRefreshFailureIntegrationTest {
           String.class
         );
 
-        assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(2);
+        assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(1);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
         assertThat(response.getBody()).isNotBlank();
 
