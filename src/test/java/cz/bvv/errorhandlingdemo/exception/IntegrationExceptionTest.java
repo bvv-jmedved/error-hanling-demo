@@ -92,7 +92,7 @@ class IntegrationExceptionTest {
 
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(exception.getErrors()).hasSize(1);
-        assertThat(exception.getErrors().get(0).code()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.name());
-        assertThat(exception.getErrors().get(0).message()).isEqualTo("Unknown error");
+        assertThat(exception.getErrors().getFirst().code()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.name());
+        assertThat(exception.getErrors().getFirst().message()).isEqualTo("Unknown error");
     }
 }

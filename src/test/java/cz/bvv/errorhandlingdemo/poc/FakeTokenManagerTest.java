@@ -28,7 +28,7 @@ class FakeTokenManagerTest {
         assertThatThrownBy(() -> fakeTokenManager.refreshToken(exchange))
           .isInstanceOfSatisfying(IntegrationException.class, exception -> {
               org.assertj.core.api.Assertions.assertThat(exception.getErrors()).hasSize(1);
-              org.assertj.core.api.Assertions.assertThat(exception.getErrors().get(0).code())
+              org.assertj.core.api.Assertions.assertThat(exception.getErrors().getFirst().code())
                 .isEqualTo("TOKEN_REFRESH_FAILED");
           });
     }

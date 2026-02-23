@@ -2,7 +2,6 @@ package cz.bvv.errorhandlingdemo.builder.common;
 
 import cz.bvv.errorhandlingdemo.poc.FailureInjector;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
-import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;

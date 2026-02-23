@@ -104,11 +104,6 @@ class TokenRefreshFailureIntegrationTest {
             }
         }
 
-        @Override
-        public boolean isEnabled(CamelEvent event) {
-            return true;
-        }
-
         int getTechnicalReceiverAttemptCount() {
             return technicalReceiverAttemptCount.get();
         }

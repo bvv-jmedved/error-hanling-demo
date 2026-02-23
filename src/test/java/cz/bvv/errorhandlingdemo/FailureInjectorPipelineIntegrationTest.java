@@ -137,11 +137,6 @@ class FailureInjectorPipelineIntegrationTest {
             }
         }
 
-        @Override
-        public boolean isEnabled(CamelEvent event) {
-            return true;
-        }
-
         boolean getSenderExchangeFailed() {
             return senderExchangeFailed.get();
         }

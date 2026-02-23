@@ -16,9 +16,8 @@ public class IntegrationException extends RuntimeException {
       Exception cause) {
         super(message, cause);
         this.status = requireStatus(status);
-        List<IntegrationError> integrationErrors = List.of(
+        this.errors = List.of(
           new IntegrationError(errorCode, message));
-        this.errors = integrationErrors;
     }
 
     public IntegrationException(

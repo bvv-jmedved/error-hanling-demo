@@ -4,7 +4,6 @@ import cz.bvv.errorhandlingdemo.builder.common.BaseReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.ExchangePropertyKeys;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
-import cz.bvv.errorhandlingdemo.poc.FakeTokenManager;
 import org.apache.camel.Exchange;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
@@ -34,6 +33,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
           .to("direct:technical-receiver");
     }
 
+    @SuppressWarnings("unused")
     public boolean refreshAndCheckRetry(Exchange exchange) {
 
         Integer counter = exchange.getMessage()

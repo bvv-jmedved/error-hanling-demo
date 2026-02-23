@@ -106,11 +106,6 @@ class RetryExhaustionIntegrationTest {
             }
         }
 
-        @Override
-        public boolean isEnabled(CamelEvent event) {
-            return true;
-        }
-
         int getTechnicalReceiverAttemptCount() {
             return technicalReceiverAttemptCount.get();
         }
