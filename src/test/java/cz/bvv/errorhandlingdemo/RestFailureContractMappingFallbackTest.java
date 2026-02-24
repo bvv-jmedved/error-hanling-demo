@@ -2,8 +2,8 @@ package cz.bvv.errorhandlingdemo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cz.bvv.errorhandlingdemo.builder.common.rest.model.DefaultRestError;
 import cz.bvv.errorhandlingdemo.builder.sender.DemoFailureContractRoutePolicy;
-import cz.bvv.errorhandlingdemo.builder.sender.model.DemoError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +72,7 @@ class RestFailureContractMappingFallbackTest {
         DemoFailureContractRoutePolicy failingFailureContractRoutePolicy() {
             return new DemoFailureContractRoutePolicy() {
                 @Override
-                protected DemoError createRestError(IntegrationException exception) {
+                protected DefaultRestError createRestError(IntegrationException exception) {
                     throw new RuntimeException("forced mapping failure");
                 }
             };
