@@ -33,6 +33,7 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
           integrationException == null ? IntegrationException.unknownError() : integrationException,
           exchange);
         exchange.setProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, true);
+        exchange.setProperty(IntegrationExchangeProperties.FAILURE_HANDLED, true);
         exchange.setException(null);
     }
 

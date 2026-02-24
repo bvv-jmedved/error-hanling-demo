@@ -41,6 +41,8 @@ class FailureContractRoutePolicyTest {
 
         assertThat(policy.mappingCalls).isEqualTo(1);
         assertThat(exchange.getMessage().getBody(String.class)).isEqualTo("first-failure");
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, Boolean.class)).isTrue();
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_HANDLED, Boolean.class)).isTrue();
     }
 
     @Test
@@ -62,6 +64,22 @@ class FailureContractRoutePolicyTest {
         assertThat(policy.mappingCalls).isEqualTo(1);
         assertThat(exchange.getMessage().getBody(String.class)).isEqualTo("Token refresh failed");
         assertThat(exchange.isFailed()).isFalse();
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, Boolean.class)).isTrue();
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_HANDLED, Boolean.class)).isTrue();
+    }
+
+    @Test
+    void shouldNotSetFailureHandledFlagWhenExchangeIsNotFailed() throws Exception {
+        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy();
+        setIntegrationExceptionMapper(policy, exception -> IntegrationException.unknownError());
+
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+
+        policy.onExchangeDone(null, exchange);
+
+        assertThat(policy.mappingCalls).isEqualTo(0);
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED)).isNull();
+        assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_HANDLED)).isNull();
     }
 
     private static void setIntegrationExceptionMapper(
