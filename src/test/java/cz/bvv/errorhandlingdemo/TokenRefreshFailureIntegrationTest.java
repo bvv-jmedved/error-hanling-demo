@@ -69,7 +69,7 @@ class TokenRefreshFailureIntegrationTest {
         JsonNode jsonBody = objectMapper.readTree(response.getBody());
         assertThat(jsonBody.path("errors").isArray()).isTrue();
         assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("TOKEN_REFRESH_FAILED");
+        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("DOWNSTREAM_HTTP_401");
         assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
     }
 

@@ -5,9 +5,13 @@ import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Route;
 import org.apache.camel.support.RoutePolicySupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FailureContractRoutePolicy.class);
     
     @Autowired
     private IntegrationExceptionMapper integrationExceptionMapper;
@@ -21,16 +25,18 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
             return;
         }
 
-        IntegrationException integrationException =
-          exchange.getProperty(IntegrationExchangeProperties.EXCEPTION_OVERRIDE, IntegrationException.class);
-        if (integrationException == null) {
-            Exception exceptionCaught =
-              exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
-            integrationException = integrationExceptionMapper.map(exceptionCaught);
+        Exception exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+        if (exception == null) {
+            exception = exchange.getException();
+        }
+        if (exception == null) {
+            LOG.warn(
+              "Violation: exchange marked failed but no failure source present (EXCEPTION_CAUGHT and getException are null). routeId={}",
+              route != null ? route.getId() : "unknown");
         }
 
         mapContract(
-          integrationException == null ? IntegrationException.unknownError() : integrationException,
+          exception == null ? IntegrationException.unknownError() : integrationExceptionMapper.map(exception),
           exchange);
         exchange.setProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, true);
         exchange.setProperty(IntegrationExchangeProperties.FAILURE_HANDLED, true);

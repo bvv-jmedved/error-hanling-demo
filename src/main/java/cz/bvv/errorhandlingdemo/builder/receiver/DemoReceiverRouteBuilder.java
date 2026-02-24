@@ -1,8 +1,10 @@
 package cz.bvv.errorhandlingdemo.builder.receiver;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseReceiverRouteBuilder;
+import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import cz.bvv.errorhandlingdemo.builder.receiver.processor.DownstreamBusinessErrorProcessor;
 import cz.bvv.errorhandlingdemo.builder.receiver.retry.TokenRefreshRetryDecider;
+import org.apache.camel.Exchange;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,15 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
 
     @Override
     protected void config() {
+        onException(IntegrationException.class)
+          .process(exchange -> {
+              Exception exception = exchange.getException();
+              if (exception instanceof IntegrationException integrationException) {
+                  exchange.setProperty(Exchange.EXCEPTION_CAUGHT, integrationException);
+              }
+          })
+          .handled(false);
+
         onException(HttpOperationFailedException.class)
           .onWhen(simple("${exception.statusCode} == 401"))
           .retryWhile(method(tokenRefreshRetryDecider, "shouldRetry"))

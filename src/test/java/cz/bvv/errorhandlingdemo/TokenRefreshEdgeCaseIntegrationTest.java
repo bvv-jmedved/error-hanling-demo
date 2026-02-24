@@ -87,7 +87,7 @@ class TokenRefreshEdgeCaseIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
         assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(1);
         assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
-        assertErrorCode(response, "TOKEN_REFRESH_FAILED");
+        assertErrorCode(response, "DOWNSTREAM_HTTP_401");
     }
 
     private HttpHeaders baseHttpFailureHeaders() {

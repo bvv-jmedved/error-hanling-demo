@@ -1,6 +1,5 @@
 package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
@@ -8,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TokenRefreshRetryDecider {
-
     private final TokenManager tokenManager;
 
     public TokenRefreshRetryDecider(TokenManager tokenManager) {
@@ -28,8 +26,7 @@ public class TokenRefreshRetryDecider {
             tokenManager.refreshToken(exchange);
             return true;
         } catch (IntegrationException ie) {
-            exchange.setProperty(IntegrationExchangeProperties.EXCEPTION_OVERRIDE, ie);
-            return false;
+            throw ie;
         }
     }
 }
