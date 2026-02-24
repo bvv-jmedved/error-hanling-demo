@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.technicalreciever;
+package cz.bvv.errorhandlingdemo.builder.technicalreceiver;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
