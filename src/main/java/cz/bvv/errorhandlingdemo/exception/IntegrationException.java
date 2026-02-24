@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class IntegrationException extends RuntimeException {
+    private static final String DEFAULT_MESSAGE = "Integration error";
+
     private final HttpStatus status;
     private final List<IntegrationError> errors;
 
@@ -14,10 +16,10 @@ public class IntegrationException extends RuntimeException {
       String errorCode,
       String message,
       Exception cause) {
-        super(message, cause);
+        super(normalizeMessage(message), cause);
         this.status = requireStatus(status);
         this.errors = List.of(
-          new IntegrationError(errorCode, message));
+          new IntegrationError(errorCode, normalizeMessage(message)));
     }
 
     public IntegrationException(
@@ -25,7 +27,7 @@ public class IntegrationException extends RuntimeException {
       List<IntegrationError> errors,
       String message,
       Exception cause) {
-        super(message, cause);
+        super(normalizeMessage(message), cause);
         this.status = requireStatus(status);
         this.errors = requireErrors(errors);
     }
@@ -51,5 +53,12 @@ public class IntegrationException extends RuntimeException {
             throw new IllegalArgumentException("errors must not be null or empty");
         }
         return List.copyOf(errors);
+    }
+
+    private static String normalizeMessage(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return DEFAULT_MESSAGE;
+        }
+        return message;
     }
 }

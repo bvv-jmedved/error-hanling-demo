@@ -95,4 +95,40 @@ class IntegrationExceptionTest {
         assertThat(exception.getErrors().getFirst().code()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.name());
         assertThat(exception.getErrors().getFirst().message()).isEqualTo("Unknown error");
     }
+
+    @Test
+    void shouldUseDefaultMessageWhenNullMessageProvided() {
+        IntegrationException exception = new IntegrationException(
+          HttpStatus.BAD_REQUEST,
+          "ERR_CODE",
+          null,
+          null
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Integration error");
+    }
+
+    @Test
+    void shouldUseDefaultMessageWhenBlankMessageProvided() {
+        IntegrationException exception = new IntegrationException(
+          HttpStatus.BAD_REQUEST,
+          "ERR_CODE",
+          "   ",
+          null
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Integration error");
+    }
+
+    @Test
+    void shouldKeepSpecificMessageWhenProvided() {
+        IntegrationException exception = new IntegrationException(
+          HttpStatus.BAD_REQUEST,
+          "ERR_CODE",
+          "Specific failure",
+          null
+        );
+
+        assertThat(exception.getMessage()).isEqualTo("Specific failure");
+    }
 }
