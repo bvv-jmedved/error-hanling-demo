@@ -3,7 +3,7 @@ package cz.bvv.errorhandlingdemo.builder.receiver;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.common.BaseReceiverRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.ExchangePropertyKeys;
+import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -55,7 +55,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
             tokenManager.refreshToken(exchange);
             return true;
         } catch (IntegrationException ie) {
-            exchange.setProperty(ExchangePropertyKeys.INTEGRATION_EXCEPTION_OVERRIDE, ie);
+            exchange.setProperty(IntegrationExchangeProperties.EXCEPTION_OVERRIDE, ie);
             return false;
         }
     }

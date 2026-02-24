@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.common.failure;
 
-import cz.bvv.errorhandlingdemo.builder.common.ExchangePropertyKeys;
+import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Route;
@@ -8,8 +8,6 @@ import org.apache.camel.support.RoutePolicySupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
-
-    private static final String FAILURE_CONTRACT_APPLIED = "failure.contract.applied";
     
     @Autowired
     private IntegrationExceptionMapper integrationExceptionMapper;
@@ -19,12 +17,12 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
         if (!exchange.isFailed()) {
             return;
         }
-        if (Boolean.TRUE.equals(exchange.getProperty(FAILURE_CONTRACT_APPLIED, Boolean.class))) {
+        if (Boolean.TRUE.equals(exchange.getProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, Boolean.class))) {
             return;
         }
 
         IntegrationException integrationException =
-          exchange.getProperty(ExchangePropertyKeys.INTEGRATION_EXCEPTION_OVERRIDE, IntegrationException.class);
+          exchange.getProperty(IntegrationExchangeProperties.EXCEPTION_OVERRIDE, IntegrationException.class);
         if (integrationException == null) {
             Exception exceptionCaught =
               exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
@@ -34,7 +32,7 @@ public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
         mapContract(
           integrationException == null ? IntegrationException.unknownError() : integrationException,
           exchange);
-        exchange.setProperty(FAILURE_CONTRACT_APPLIED, true);
+        exchange.setProperty(IntegrationExchangeProperties.FAILURE_CONTRACT_APPLIED, true);
         exchange.setException(null);
     }
 

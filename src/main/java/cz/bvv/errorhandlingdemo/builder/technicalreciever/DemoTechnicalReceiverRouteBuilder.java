@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.technicalreciever;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalReceiverRouteBuilder;
-import cz.bvv.errorhandlingdemo.poc.FailureInjector;
+import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +15,7 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
           .routeId("technical-receiver")
           .process(pocStep(FailureStep.TECHNICAL_CALL))
           .choice()
-          .when(exchangeProperty(FailureInjector.POC_HTTP_RESPONSE_BODY_SET).isNotEqualTo(true))
+          .when(exchangeProperty(IntegrationExchangeProperties.POC_HTTP_RESPONSE_BODY_SET).isNotEqualTo(true))
           .setBody(constant("{\"status\":\"ok\"}"))
           .end();
 

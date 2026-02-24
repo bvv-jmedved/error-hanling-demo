@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.poc;
 
+import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +30,6 @@ public class FailureInjector implements Processor {
     private static final String X_THROW_STATUS_SEQUENCE = "X_THROW_STATUS_SEQUENCE";
     private static final String X_THROW_STATUS_TEXT = "X_THROW_STATUS_TEXT";
     private static final String X_THROW_BODY = "X_THROW_BODY";
-    public static final String POC_HTTP_RESPONSE_BODY_SET = "poc.http.response.body.set";
     private static final String THROW_TYPE_BUSINESS_VALIDATION = "business-validation";
     private static final String THROW_TYPE_BUSINESS_UNAUTHORIZED = "business-unauthorized";
     private static final String THROW_TYPE_HTTP = "http";
@@ -62,9 +62,9 @@ public class FailureInjector implements Processor {
             if (statusCode >= 200 && statusCode < 300) {
                 if (responseBody != null) {
                     exchange.getMessage().setBody(responseBody);
-                    exchange.setProperty(POC_HTTP_RESPONSE_BODY_SET, true);
+                    exchange.setProperty(IntegrationExchangeProperties.POC_HTTP_RESPONSE_BODY_SET, true);
                 } else {
-                    exchange.setProperty(POC_HTTP_RESPONSE_BODY_SET, false);
+                    exchange.setProperty(IntegrationExchangeProperties.POC_HTTP_RESPONSE_BODY_SET, false);
                 }
                 return;
             }

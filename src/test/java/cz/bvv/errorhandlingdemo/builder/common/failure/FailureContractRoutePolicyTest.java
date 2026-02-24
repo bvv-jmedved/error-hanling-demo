@@ -2,7 +2,7 @@ package cz.bvv.errorhandlingdemo.builder.common.failure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.ExchangePropertyKeys;
+import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.lang.reflect.Field;
 import org.apache.camel.Exchange;
@@ -53,7 +53,7 @@ class FailureContractRoutePolicyTest {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         exchange.setException(new RuntimeException("failed"));
         exchange.setProperty(
-          ExchangePropertyKeys.INTEGRATION_EXCEPTION_OVERRIDE,
+          IntegrationExchangeProperties.EXCEPTION_OVERRIDE,
           new IntegrationException(HttpStatus.BAD_GATEWAY, "TOKEN_REFRESH_FAILED", "Token refresh failed", null)
         );
 
