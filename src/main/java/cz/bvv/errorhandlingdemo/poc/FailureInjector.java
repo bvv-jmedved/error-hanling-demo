@@ -1,8 +1,10 @@
 package cz.bvv.errorhandlingdemo.poc;
 
+import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.http.base.HttpOperationFailedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.context.annotation.Profile;
 
 /**
@@ -24,6 +26,9 @@ public class FailureInjector implements Processor {
     private static final String X_THROW_STATUS = "X_THROW_STATUS";
     private static final String X_THROW_STATUS_TEXT = "X_THROW_STATUS_TEXT";
     private static final String X_THROW_BODY = "X_THROW_BODY";
+    private static final String THROW_TYPE_BUSINESS_VALIDATION = "business-validation";
+    private static final String THROW_TYPE_BUSINESS_UNAUTHORIZED = "business-unauthorized";
+    private static final String THROW_TYPE_HTTP = "http";
     private static final int DEFAULT_HTTP_STATUS = 500;
     private static final String DEFAULT_HTTP_STATUS_TEXT = "Simulated HTTP failure";
     private final FailureStep step;
@@ -45,7 +50,7 @@ public class FailureInjector implements Processor {
         }
 
         String throwType = exchange.getIn().getHeader(X_THROW_TYPE, String.class);
-        if ("http".equals(throwType)) {
+        if (THROW_TYPE_HTTP.equals(throwType)) {
             int statusCode =
               parseStatusCode(exchange.getIn().getHeader(X_THROW_STATUS, String.class));
             String statusText = exchange.getIn().getHeader(X_THROW_STATUS_TEXT, String.class);
@@ -58,6 +63,22 @@ public class FailureInjector implements Processor {
               null,
               null,
               responseBody
+            );
+        }
+        if (THROW_TYPE_BUSINESS_VALIDATION.equals(throwType) && step == FailureStep.SENDER_VALIDATE) {
+            throw new IntegrationException(
+              HttpStatus.BAD_REQUEST,
+              "VALIDATION_FAILED",
+              "Validation failed",
+              null
+            );
+        }
+        if (THROW_TYPE_BUSINESS_UNAUTHORIZED.equals(throwType) && step == FailureStep.SENDER_AUTH) {
+            throw new IntegrationException(
+              HttpStatus.UNAUTHORIZED,
+              "UNAUTHORIZED",
+              "Unauthorized",
+              null
             );
         }
         throw new RuntimeException("Injected failure at " + step.headerValue());

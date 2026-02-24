@@ -16,6 +16,7 @@ public class DemoSenderRouteBuilder extends BaseRestSenderRouteBuilder {
         from("direct:demo-sender")
           .routeId("demo-sender")
           .process(pocStep(FailureStep.SENDER_VALIDATE))
+          .process(pocStep(FailureStep.SENDER_AUTH))
           .to("direct:demo-process?exchangePattern=InOut");
     }
 }

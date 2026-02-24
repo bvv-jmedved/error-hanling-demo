@@ -2,6 +2,7 @@ package cz.bvv.errorhandlingdemo.poc;
 
 public enum FailureStep {
     SENDER_VALIDATE("sender-validate", "Sender validation"),
+    SENDER_AUTH("sender-auth", "Sender authorization"),
     PROCESS_TRANSFORM_REQUEST("process-transform-request", "Process transform request"),
     PROCESS_TRANSFORM_RESPONSE("process-transform-response", "Process transform response"),
     TECHNICAL_CALL("technical-call", "Technical call");
