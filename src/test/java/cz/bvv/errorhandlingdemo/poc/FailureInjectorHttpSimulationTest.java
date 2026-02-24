@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.poc;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.apache.camel.Exchange;
@@ -51,5 +52,19 @@ class FailureInjectorHttpSimulationTest {
         assertThatThrownBy(() -> failureInjector.process(exchange))
           .isInstanceOf(RuntimeException.class)
           .hasMessage("Injected failure at sender-validate");
+    }
+
+    @Test
+    void shouldSimulateHttp200BySettingResponseBodyWithoutThrowing() {
+        FailureInjector failureInjector = new FailureInjector(FailureStep.TECHNICAL_CALL);
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        exchange.getIn().setHeader("X_THROW_IN", "technical-call");
+        exchange.getIn().setHeader("X_THROW_TYPE", "http");
+        exchange.getIn().setHeader("X_THROW_STATUS", "200");
+        exchange.getIn().setHeader("X_THROW_BODY", "{\"errCode\":\"K2_123\",\"errMsg\":\"Business validation failed\"}");
+
+        assertThatCode(() -> failureInjector.process(exchange)).doesNotThrowAnyException();
+        org.assertj.core.api.Assertions.assertThat(exchange.getMessage().getBody(String.class))
+          .isEqualTo("{\"errCode\":\"K2_123\",\"errMsg\":\"Business validation failed\"}");
     }
 }
