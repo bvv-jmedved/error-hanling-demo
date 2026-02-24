@@ -40,7 +40,7 @@ public class DefaultIntegrationExceptionMapperImpl implements IntegrationExcepti
         if (downstreamStatus == HttpStatus.UNAUTHORIZED.value() || downstreamStatus >= 500) {
             return HttpStatus.BAD_GATEWAY;
         }
-        if (downstreamStatus >= 400 && downstreamStatus < 500) {
+        if (downstreamStatus >= 400) {
             return HttpStatus.valueOf(downstreamStatus);
         }
         return HttpStatus.BAD_GATEWAY;
