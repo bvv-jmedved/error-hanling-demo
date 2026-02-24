@@ -19,8 +19,9 @@ public class DefaultIntegrationExceptionMapperImpl implements IntegrationExcepti
                 int downstreamStatus = operationException.getStatusCode();
                 String errorCode = DOWNSTREAM_HTTP_ERROR_PREFIX + downstreamStatus;
                 String message = extractMessage(operationException);
+                HttpStatus mappedStatus = mapDownstreamStatus(downstreamStatus);
                 yield new IntegrationException(
-                  HttpStatus.BAD_GATEWAY,
+                  mappedStatus,
                   errorCode,
                   message,
                   operationException);
@@ -33,6 +34,16 @@ public class DefaultIntegrationExceptionMapperImpl implements IntegrationExcepti
             );
         };
 
+    }
+
+    private static HttpStatus mapDownstreamStatus(int downstreamStatus) {
+        if (downstreamStatus == HttpStatus.UNAUTHORIZED.value() || downstreamStatus >= 500) {
+            return HttpStatus.BAD_GATEWAY;
+        }
+        if (downstreamStatus >= 400 && downstreamStatus < 500) {
+            return HttpStatus.valueOf(downstreamStatus);
+        }
+        return HttpStatus.BAD_GATEWAY;
     }
 
     private static String extractMessage(HttpOperationFailedException operationException) {
