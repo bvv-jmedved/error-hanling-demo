@@ -1,6 +1,8 @@
 package cz.bvv.errorhandlingdemo.poc;
 
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.http.base.HttpOperationFailedException;
@@ -24,6 +26,7 @@ public class FailureInjector implements Processor {
     private static final String X_THROW_IN = "X_THROW_IN";
     private static final String X_THROW_TYPE = "X_THROW_TYPE";
     private static final String X_THROW_STATUS = "X_THROW_STATUS";
+    private static final String X_THROW_STATUS_SEQUENCE = "X_THROW_STATUS_SEQUENCE";
     private static final String X_THROW_STATUS_TEXT = "X_THROW_STATUS_TEXT";
     private static final String X_THROW_BODY = "X_THROW_BODY";
     private static final String THROW_TYPE_BUSINESS_VALIDATION = "business-validation";
@@ -51,8 +54,7 @@ public class FailureInjector implements Processor {
 
         String throwType = exchange.getIn().getHeader(X_THROW_TYPE, String.class);
         if (THROW_TYPE_HTTP.equals(throwType)) {
-            int statusCode =
-              parseStatusCode(exchange.getIn().getHeader(X_THROW_STATUS, String.class));
+            int statusCode = resolveStatusCode(exchange);
             String statusText = exchange.getIn().getHeader(X_THROW_STATUS_TEXT, String.class);
             String responseBody = exchange.getIn().getHeader(X_THROW_BODY, String.class);
 
@@ -85,6 +87,19 @@ public class FailureInjector implements Processor {
 
     }
 
+    private static int resolveStatusCode(Exchange exchange) {
+        String rawSequence = exchange.getIn().getHeader(X_THROW_STATUS_SEQUENCE, String.class);
+        List<Integer> sequence = parseStatusSequence(rawSequence);
+        if (!sequence.isEmpty()) {
+            Integer redeliveryCounter =
+              exchange.getMessage().getHeader(Exchange.REDELIVERY_COUNTER, Integer.class);
+            int attemptIndex = redeliveryCounter == null ? 0 : redeliveryCounter;
+            int sequenceIndex = Math.min(attemptIndex, sequence.size() - 1);
+            return sequence.get(sequenceIndex);
+        }
+        return parseStatusCode(exchange.getIn().getHeader(X_THROW_STATUS, String.class));
+    }
+
     private static int parseStatusCode(String rawStatusCode) {
         if (rawStatusCode == null) {
             return DEFAULT_HTTP_STATUS;
@@ -94,6 +109,17 @@ public class FailureInjector implements Processor {
         } catch (NumberFormatException ex) {
             return DEFAULT_HTTP_STATUS;
         }
+    }
+
+    private static List<Integer> parseStatusSequence(String rawSequence) {
+        if (rawSequence == null || rawSequence.trim().isEmpty()) {
+            return List.of();
+        }
+        return Arrays.stream(rawSequence.split(","))
+          .map(String::trim)
+          .filter(token -> !token.isEmpty())
+          .map(FailureInjector::parseStatusCode)
+          .toList();
     }
 
 }
