@@ -4,7 +4,7 @@ import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoTechnicalSender extends BaseTechnicalSenderRouteBuilder {
+public class DemoRestTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     public static final String DEMO1_ENDPOINT = "/demo1";
     public static final String DEMO2_ENDPOINT = "/demo2";
 

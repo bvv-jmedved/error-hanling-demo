@@ -1,5 +1,5 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoTechnicalSender;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +55,7 @@ class BusinessErrorInsideHttp200IntegrationTest {
         headers.set("X_THROW_BODY", "{\"errCode\":\"K2_123\",\"errMsg\":\"Business validation failed\"}");
 
         ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + DemoTechnicalSender.DEMO1_ENDPOINT,
+          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
           HttpMethod.POST,
           new HttpEntity<>("{}", headers),
           String.class
