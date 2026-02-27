@@ -1,11 +1,9 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.common.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.rest.DefaultRestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;

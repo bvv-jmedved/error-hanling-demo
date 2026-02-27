@@ -1,19 +1,18 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.common.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.Demo1RestFailureContractMapper;
-import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.model.Demo1RestError;
-import cz.bvv.errorhandlingdemo.exception.IntegrationException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,8 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
-@Import(RestFailureContractMappingFallbackTest.MappingFailureConfig.class)
-class RestFailureContractMappingFallbackTest {
+@Import(DefaultRestFailureContractSerializationFallbackTest.SerializationFailureConfig.class)
+class DefaultRestFailureContractSerializationFallbackTest {
 
     private static final String FALLBACK_ERROR_BODY = """
       {
@@ -45,7 +44,7 @@ class RestFailureContractMappingFallbackTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    void shouldFallbackToInternalErrorJsonWhenErrorMappingFails() {
+    void shouldFallbackToInternalErrorJsonWhenSerializationFails() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X_THROW_IN", "technical-call");
@@ -66,14 +65,14 @@ class RestFailureContractMappingFallbackTest {
     }
 
     @TestConfiguration
-    static class MappingFailureConfig {
+    static class SerializationFailureConfig {
         @Bean
         @Primary
-        Demo1RestFailureContractMapper failingFailureContractMapper() {
-            return new Demo1RestFailureContractMapper() {
+        ObjectMapper failingObjectMapper() {
+            return new ObjectMapper() {
                 @Override
-                public Demo1RestError map(IntegrationException integrationException) {
-                    throw new RuntimeException("forced mapping failure");
+                public String writeValueAsString(Object value) throws JsonProcessingException {
+                    throw new JsonProcessingException("forced serialization failure") { };
                 }
             };
         }
