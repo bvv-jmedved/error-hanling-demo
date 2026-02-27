@@ -1,4 +1,5 @@
 package cz.bvv.errorhandlingdemo;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +46,7 @@ class HappyPathIntegrationTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + "/demo",
+          "http://localhost:" + port + DemoTechnicalSender.DEMO1_ENDPOINT,
           HttpMethod.POST,
           new HttpEntity<>("{}", headers),
           String.class

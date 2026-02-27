@@ -1,4 +1,5 @@
 package cz.bvv.errorhandlingdemo.builder.common.rest;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +40,7 @@ class DefaultRestFailureContractRoutePolicyTest {
         headers.set("X_THROW_STATUS", "500");
 
         ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + "/demo",
+          "http://localhost:" + port + DemoTechnicalSender.DEMO1_ENDPOINT,
           HttpMethod.POST,
           new HttpEntity<>("{}", headers),
           String.class
