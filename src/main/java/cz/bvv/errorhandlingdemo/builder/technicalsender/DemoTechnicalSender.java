@@ -10,5 +10,9 @@ public class DemoTechnicalSender extends BaseTechnicalSenderRouteBuilder {
         rest()
           .post("/demo")
           .to("direct:demo-sender");
+
+        rest()
+          .post("/demo2")
+          .to("direct:demo2-sender");
     }
 }
