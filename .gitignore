@@ -35,3 +35,5 @@ build/
 ### Codex
 .codex/
 
+### FTP
+ftp-home/
