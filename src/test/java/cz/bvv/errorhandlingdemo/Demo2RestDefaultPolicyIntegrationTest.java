@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo;
 
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoTechnicalSender;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -71,7 +71,7 @@ class Demo2RestDefaultPolicyIntegrationTest {
 
     private ResponseEntity<String> callDemo2(HttpHeaders headers) {
         return restTemplate.exchange(
-          "http://localhost:" + port + DemoTechnicalSender.DEMO2_ENDPOINT,
+          "http://localhost:" + port + DemoRestTechnicalSender.DEMO2_ENDPOINT,
           HttpMethod.POST,
           new HttpEntity<>("{}", headers),
           String.class
