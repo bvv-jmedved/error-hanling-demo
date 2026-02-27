@@ -1,0 +1,106 @@
+package cz.bvv.errorhandlingdemo;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("poc")
+class FtpSenderAsyncFileMoveIntegrationTest {
+
+    private static final Path INPUT_DIR = Path.of("ftp-home", "test");
+    private static final Path ARCHIVE_DIR = INPUT_DIR.resolve(".archive");
+    private static final Path ERROR_DIR = INPUT_DIR.resolve(".error");
+
+    @BeforeEach
+    void cleanFolders() throws IOException {
+        Files.createDirectories(INPUT_DIR);
+        deleteChildren(INPUT_DIR);
+        Files.createDirectories(INPUT_DIR);
+        Files.createDirectories(ARCHIVE_DIR);
+        Files.createDirectories(ERROR_DIR);
+    }
+
+    @Test
+    void shouldMoveHappyPathFileToArchive() throws Exception {
+        String fileName = "ftp-happy-" + UUID.randomUUID() + ".txt";
+        Path inputFile = INPUT_DIR.resolve(fileName);
+
+        Files.writeString(inputFile, "payload=demo", StandardCharsets.UTF_8);
+
+        Path archivedFile = waitForFileBySuffix(ARCHIVE_DIR, fileName, Duration.ofSeconds(12));
+        assertThat(archivedFile).isNotNull();
+        assertThat(Files.exists(inputFile)).isFalse();
+    }
+
+    @Test
+    void shouldMoveFailedFileToErrorFolder() throws Exception {
+        String fileName = "ftp-failure-" + UUID.randomUUID() + ".txt";
+        Path inputFile = INPUT_DIR.resolve(fileName);
+
+        Files.writeString(
+          inputFile,
+          String.join(
+            "\n",
+            "payload=demo",
+            "X_THROW_IN=sender-validate",
+            "X_THROW_TYPE=business-validation"
+          ),
+          StandardCharsets.UTF_8
+        );
+
+        Path failedFile = waitForFileBySuffix(ERROR_DIR, fileName, Duration.ofSeconds(12));
+        assertThat(failedFile).isNotNull();
+        assertThat(findFileBySuffix(ARCHIVE_DIR, fileName)).isNull();
+        assertThat(Files.exists(inputFile)).isFalse();
+    }
+
+    private static Path waitForFileBySuffix(Path dir, String expectedFileNameSuffix, Duration timeout)
+      throws InterruptedException, IOException {
+        Instant deadline = Instant.now().plus(timeout);
+        while (Instant.now().isBefore(deadline)) {
+            Path file = findFileBySuffix(dir, expectedFileNameSuffix);
+            if (file != null) {
+                return file;
+            }
+            Thread.sleep(150);
+        }
+        throw new AssertionError("Timed out waiting for file with suffix " + expectedFileNameSuffix);
+    }
+
+    private static Path findFileBySuffix(Path dir, String expectedSuffix) throws IOException {
+        try (var stream = Files.list(dir)) {
+            return stream
+              .filter(Files::isRegularFile)
+              .filter(path -> path.getFileName().toString().endsWith("-" + expectedSuffix))
+              .findFirst()
+              .orElse(null);
+        }
+    }
+
+    private static void deleteChildren(Path root) throws IOException {
+        try (var stream = Files.walk(root)) {
+            stream
+              .filter(path -> !path.equals(root))
+              .sorted(Comparator.reverseOrder())
+              .forEach(path -> {
+                  try {
+                      Files.deleteIfExists(path);
+                  } catch (IOException ex) {
+                      throw new IllegalStateException("Failed to clean test FTP path: " + path, ex);
+                  }
+              });
+        }
+    }
+}
