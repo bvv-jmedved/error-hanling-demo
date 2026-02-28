@@ -90,11 +90,11 @@ class DemoSoapDefaultFailureContractIntegrationTest {
       String failureType,
       Integer failureStatus) {
         String failureNode = "";
-        if (failureStep != null || failureType != null || failureStatus != null || null != null) {
+        if (failureStep != null || failureType != null || failureStatus != null) {
             String stepNode = failureStep == null ? "" : "<dem:step>" + failureStep + "</dem:step>";
             String typeNode = failureType == null ? "" : "<dem:type>" + failureType + "</dem:type>";
             String statusNode = failureStatus == null ? "" : "<dem:status>" + failureStatus + "</dem:status>";
-            String bodyNode = null == null ? "" : "<dem:body>" + null + "</dem:body>";
+            String bodyNode = "";
             failureNode = """
               <dem:failure>
                 %s

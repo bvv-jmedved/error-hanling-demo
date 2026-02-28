@@ -2,19 +2,15 @@ package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.common.soap.SoapXmlSupport;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.DemoSoapResponse;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapFailureTrigger;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import org.apache.camel.Exchange;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,7 +22,6 @@ public class DemoSoapMessageMapper {
     private static final String HEADER_THROW_TYPE = "X_THROW_TYPE";
     private static final String HEADER_THROW_STATUS = "X_THROW_STATUS";
     private static final String HEADER_THROW_BODY = "X_THROW_BODY";
-    private static final String SOAP_NS = "http://schemas.xmlsoap.org/soap/envelope/";
     private static final String DEMO_NS = "urn:error-handling-demo:soap";
     private static final String DETAIL_NS = "urn:error-handling-demo:soap:fault";
     private final ObjectMapper objectMapper;
@@ -104,12 +99,10 @@ public class DemoSoapMessageMapper {
     }
 
     public String createSuccessResponseXml(DemoSoapResponse response) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        Document document = factory.newDocumentBuilder().newDocument();
+        Document document = SoapXmlSupport.newDocument();
 
-        Element envelope = document.createElementNS(SOAP_NS, "soap:Envelope");
-        Element body = document.createElementNS(SOAP_NS, "soap:Body");
+        Element envelope = document.createElementNS(SoapXmlSupport.SOAP_NS, "soap:Envelope");
+        Element body = document.createElementNS(SoapXmlSupport.SOAP_NS, "soap:Body");
         Element operationResponse = document.createElementNS(DEMO_NS, "dem:processDemoResponse");
         Element payloadNode = document.createElementNS(DEMO_NS, "dem:response");
         Element statusNode = document.createElementNS(DEMO_NS, "dem:status");
@@ -121,7 +114,7 @@ public class DemoSoapMessageMapper {
         payloadNode.appendChild(statusNode);
         statusNode.setTextContent(response.getStatus());
 
-        return toXmlString(document);
+        return SoapXmlSupport.toXmlString(document);
     }
 
     public String createSuccessResponseXml(String downstreamBody) throws Exception {
@@ -139,30 +132,16 @@ public class DemoSoapMessageMapper {
     }
 
     public String createFailureResponseXml(String faultString, SoapError soapError) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        Document document = factory.newDocumentBuilder().newDocument();
-
-        Element envelope = document.createElementNS(SOAP_NS, "soap:Envelope");
-        Element body = document.createElementNS(SOAP_NS, "soap:Body");
-        Element fault = document.createElementNS(SOAP_NS, "soap:Fault");
-        Element faultCode = document.createElement("faultcode");
-        Element faultStringNode = document.createElement("faultstring");
-        Element detail = document.createElement("detail");
-        Element soapErrorNode = document.createElementNS(DETAIL_NS, "err:soapError");
+        SoapXmlSupport.SoapFaultSkeleton skeleton = SoapXmlSupport.newSoapFaultSkeleton(
+          faultString,
+          DETAIL_NS,
+          "err:soapError"
+        );
+        Document document = skeleton.document();
+        Element soapErrorNode = skeleton.detailRoot();
         Element failuresNode = document.createElementNS(DETAIL_NS, "err:failures");
 
-        envelope.appendChild(body);
-        body.appendChild(fault);
-        fault.appendChild(faultCode);
-        fault.appendChild(faultStringNode);
-        fault.appendChild(detail);
-        detail.appendChild(soapErrorNode);
         soapErrorNode.appendChild(failuresNode);
-        document.appendChild(envelope);
-
-        faultCode.setTextContent("soap:Server");
-        faultStringNode.setTextContent(faultString);
 
         if (soapError.failures() != null) {
             for (SoapError.Failure failure : soapError.failures()) {
@@ -177,7 +156,7 @@ public class DemoSoapMessageMapper {
             }
         }
 
-        return toXmlString(document);
+        return SoapXmlSupport.toXmlString(document);
     }
 
     private static String findDirectValue(Element parent, String localName) {
@@ -197,11 +176,4 @@ public class DemoSoapMessageMapper {
         return value == null ? fallbackValue : value;
     }
 
-    private static String toXmlString(Document document) throws Exception {
-        StringWriter writer = new StringWriter();
-        var transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.transform(new DOMSource(document), new StreamResult(writer));
-        return writer.toString();
-    }
 }

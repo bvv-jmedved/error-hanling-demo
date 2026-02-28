@@ -2,7 +2,6 @@ package cz.bvv.errorhandlingdemo.ftp;
 
 import org.apache.ftpserver.ftplet.Authentication;
 import org.apache.ftpserver.ftplet.AuthenticationFailedException;
-import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.User;
 import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
 

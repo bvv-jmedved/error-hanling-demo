@@ -11,48 +11,56 @@ class IntegrationExceptionTest {
 
     @Test
     void shouldThrowWhenStatusIsNullForSingleErrorConstructor() {
-        assertThatThrownBy(() -> new IntegrationException(
-          null,
-          "ERR_CODE",
-          "Error message",
-          null
-        ))
+        assertThatThrownBy(() -> {
+            throw new IntegrationException(
+              null,
+              "ERR_CODE",
+              "Error message",
+              null
+            );
+        })
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("status must not be null");
     }
 
     @Test
     void shouldThrowWhenStatusIsNullForListConstructor() {
-        assertThatThrownBy(() -> new IntegrationException(
-          null,
-          List.of(new IntegrationError("ERR_CODE", "Error message")),
-          "Error message",
-          null
-        ))
+        assertThatThrownBy(() -> {
+            throw new IntegrationException(
+              null,
+              List.of(new IntegrationError("ERR_CODE", "Error message")),
+              "Error message",
+              null
+            );
+        })
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("status must not be null");
     }
 
     @Test
     void shouldThrowWhenErrorsListIsNull() {
-        assertThatThrownBy(() -> new IntegrationException(
-          HttpStatus.BAD_REQUEST,
-          (List<IntegrationError>) null,
-          "Error message",
-          null
-        ))
+        assertThatThrownBy(() -> {
+            throw new IntegrationException(
+              HttpStatus.BAD_REQUEST,
+              (List<IntegrationError>) null,
+              "Error message",
+              null
+            );
+        })
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("errors must not be null or empty");
     }
 
     @Test
     void shouldThrowWhenErrorsListIsEmpty() {
-        assertThatThrownBy(() -> new IntegrationException(
-          HttpStatus.BAD_REQUEST,
-          List.of(),
-          "Error message",
-          null
-        ))
+        assertThatThrownBy(() -> {
+            throw new IntegrationException(
+              HttpStatus.BAD_REQUEST,
+              List.of(),
+              "Error message",
+              null
+            );
+        })
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("errors must not be null or empty");
     }

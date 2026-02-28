@@ -17,6 +17,7 @@ public class FailContractModule implements RouteConfigurationModule {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void afterRoutes(RouteBuilder builder) {
         FailContractRoute failContractRoute = (FailContractRoute) builder;
         FailureContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();

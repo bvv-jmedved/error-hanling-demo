@@ -23,7 +23,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder implements Monitorin
     private final List<RouteConfigurationModule> modules = List.of();
 
     @Override
-    public final void configure() throws Exception {
+    public final void configure() {
         configureRoutes();
         modules.stream()
           .filter(module -> module.supports(this))

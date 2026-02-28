@@ -24,7 +24,7 @@ class FailContractModuleTest {
     }
 
     @Test
-    void shouldAttachPolicyOnlyOnceWhenAppliedMultipleTimes() throws Exception {
+    void shouldAttachPolicyOnlyOnceWhenAppliedMultipleTimes() {
         FailContractModule module = new FailContractModule();
         IntegrationExceptionMapper mapper = exception -> new IntegrationException(
           HttpStatus.BAD_GATEWAY,

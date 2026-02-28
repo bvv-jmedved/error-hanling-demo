@@ -24,6 +24,7 @@ public class LoggingModule implements RouteConfigurationModule {
     }
 
     @Override
+    @SuppressWarnings("resource")
     public void afterRoutes(RouteBuilder builder) {
         Monitored monitored = builder.getClass().getAnnotation(Monitored.class);
         LoggingRoutePolicy policy = loggingRoutePolicyFactory.create(builder, monitored);

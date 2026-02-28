@@ -1,15 +1,16 @@
 package cz.bvv.errorhandlingdemo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,17 +67,17 @@ class FtpSenderAsyncFileMoveIntegrationTest {
         assertThat(Files.exists(inputFile)).isFalse();
     }
 
-    private static Path waitForFileBySuffix(Path dir, String expectedFileNameSuffix, Duration timeout)
-      throws InterruptedException, IOException {
-        Instant deadline = Instant.now().plus(timeout);
-        while (Instant.now().isBefore(deadline)) {
-            Path file = findFileBySuffix(dir, expectedFileNameSuffix);
-            if (file != null) {
-                return file;
-            }
-            Thread.sleep(150);
-        }
-        throw new AssertionError("Timed out waiting for file with suffix " + expectedFileNameSuffix);
+    private static Path waitForFileBySuffix(Path dir, String expectedFileNameSuffix, Duration timeout) {
+        AtomicReference<Path> fileRef = new AtomicReference<>();
+        await()
+          .atMost(timeout)
+          .pollInterval(Duration.ofMillis(150))
+          .until(() -> {
+              Path file = findFileBySuffix(dir, expectedFileNameSuffix);
+              fileRef.set(file);
+              return file != null;
+          });
+        return fileRef.get();
     }
 
     private static Path findFileBySuffix(Path dir, String expectedSuffix) throws IOException {
