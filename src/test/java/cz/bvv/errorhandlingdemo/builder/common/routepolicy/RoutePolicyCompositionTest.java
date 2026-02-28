@@ -19,6 +19,7 @@ import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractR
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoSoapTechnicalSender;
+import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -137,8 +138,7 @@ class RoutePolicyCompositionTest {
         assertThat(loggingPolicy.isCritical()).isTrue();
     }
 
-    private static Demo2RestSenderRouteBuilder createDemo2RestSenderRouteBuilder(
-      List<RouteConfigurationModule> modules) throws Exception {
+    private static Demo2RestSenderRouteBuilder createDemo2RestSenderRouteBuilder(List<RouteConfigurationModule> modules) throws Exception {
         DefaultIntegrationExceptionMapperImpl exceptionMapper = new DefaultIntegrationExceptionMapperImpl();
         DefaultRestFailureContractRoutePolicy failurePolicy = new DefaultRestFailureContractRoutePolicy(
           new ObjectMapper(),
@@ -147,14 +147,16 @@ class RoutePolicyCompositionTest {
         Constructor<Demo2RestSenderRouteBuilder> constructor =
           Demo2RestSenderRouteBuilder.class.getDeclaredConstructor(
             List.class,
-            DefaultRestFailureContractRoutePolicy.class
+            DefaultRestFailureContractRoutePolicy.class,
+            FailureStepProcessorFactory.class
           );
         constructor.setAccessible(true);
-        return constructor.newInstance(modules, failurePolicy);
+        FailureStepProcessorFactory failureStepProcessorFactory = step -> exchange -> {
+        };
+        return constructor.newInstance(modules, failurePolicy, failureStepProcessorFactory);
     }
 
-    private static DemoSoapSenderRouteBuilder createDemoSoapSenderRouteBuilder(
-      List<RouteConfigurationModule> modules) throws Exception {
+    private static DemoSoapSenderRouteBuilder createDemoSoapSenderRouteBuilder(List<RouteConfigurationModule> modules) throws Exception {
         DefaultIntegrationExceptionMapperImpl exceptionMapper = new DefaultIntegrationExceptionMapperImpl();
         DemoSoapMessageMapper messageMapper = new DemoSoapMessageMapper(new ObjectMapper());
         DemoSoapFailureContractRoutePolicy failurePolicy = new DemoSoapFailureContractRoutePolicy(
@@ -165,15 +167,22 @@ class RoutePolicyCompositionTest {
           DemoSoapSenderRouteBuilder.class.getDeclaredConstructor(
             List.class,
             DemoSoapFailureContractRoutePolicy.class,
-            DemoSoapMessageMapper.class
+            DemoSoapMessageMapper.class,
+            FailureStepProcessorFactory.class
           );
         constructor.setAccessible(true);
-        return constructor.newInstance(modules, failurePolicy, messageMapper);
+        FailureStepProcessorFactory failureStepProcessorFactory = step -> exchange -> {
+        };
+        return constructor.newInstance(
+          modules,
+          failurePolicy,
+          messageMapper,
+          failureStepProcessorFactory
+        );
     }
 
     private static final class SyncRouteBuilder extends BaseSyncSenderRouteBuilder {
-        private SyncRouteBuilder(
-          List<RouteConfigurationModule> modules,
+        private SyncRouteBuilder(List<RouteConfigurationModule> modules,
           FailContractRoutePolicy failureContractRoutePolicy) {
             super(modules, failureContractRoutePolicy);
         }

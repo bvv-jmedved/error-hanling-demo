@@ -6,8 +6,7 @@ import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationMod
 import java.util.List;
 
 public abstract class BaseSoapSenderRouteBuilder extends BaseSyncSenderRouteBuilder {
-    protected BaseSoapSenderRouteBuilder(
-      List<RouteConfigurationModule> modules,
+    protected BaseSoapSenderRouteBuilder(List<RouteConfigurationModule> modules,
       FailContractRoutePolicy failureContractRoutePolicy) {
         super(modules, failureContractRoutePolicy);
     }

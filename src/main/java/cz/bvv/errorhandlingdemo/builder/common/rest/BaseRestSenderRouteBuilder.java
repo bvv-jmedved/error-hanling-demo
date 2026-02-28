@@ -6,8 +6,7 @@ import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationMod
 import java.util.List;
 
 public abstract class BaseRestSenderRouteBuilder extends BaseSyncSenderRouteBuilder {
-    protected BaseRestSenderRouteBuilder(
-      List<RouteConfigurationModule> modules,
+    protected BaseRestSenderRouteBuilder(List<RouteConfigurationModule> modules,
       FailContractRoutePolicy failureContractRoutePolicy) {
         super(modules, failureContractRoutePolicy);
     }

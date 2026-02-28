@@ -3,6 +3,7 @@ package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 import cz.bvv.errorhandlingdemo.builder.common.soap.BaseSoapSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
+import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import java.util.List;
 import org.apache.camel.Exchange;
@@ -12,13 +13,15 @@ import org.springframework.stereotype.Component;
 @Monitored(service = "sender-demo-soap")
 public class DemoSoapSenderRouteBuilder extends BaseSoapSenderRouteBuilder {
     private final DemoSoapMessageMapper demoSoapMessageMapper;
+    private final FailureStepProcessorFactory failureStepProcessorFactory;
 
-    protected DemoSoapSenderRouteBuilder(
-      List<RouteConfigurationModule> modules,
+    protected DemoSoapSenderRouteBuilder(List<RouteConfigurationModule> modules,
       DemoSoapFailureContractRoutePolicy failureContractRoutePolicy,
-      DemoSoapMessageMapper demoSoapMessageMapper) {
+      DemoSoapMessageMapper demoSoapMessageMapper,
+      FailureStepProcessorFactory failureStepProcessorFactory) {
         super(modules, failureContractRoutePolicy);
         this.demoSoapMessageMapper = demoSoapMessageMapper;
+        this.failureStepProcessorFactory = failureStepProcessorFactory;
     }
 
     @Override
@@ -30,8 +33,8 @@ public class DemoSoapSenderRouteBuilder extends BaseSoapSenderRouteBuilder {
               exchange.getMessage().setBody(soapBody);
               demoSoapMessageMapper.applyFailureHeaders(exchange, soapBody);
           })
-          .process(pocStep(FailureStep.SENDER_VALIDATE))
-          .process(pocStep(FailureStep.SENDER_AUTH))
+          .process(failureStepProcessorFactory.forStep(FailureStep.SENDER_VALIDATE))
+          .process(failureStepProcessorFactory.forStep(FailureStep.SENDER_AUTH))
           .to("direct:demo-process?exchangePattern=InOut")
           .process(exchange -> {
               String soapResponse = demoSoapMessageMapper.createSuccessResponseXml(

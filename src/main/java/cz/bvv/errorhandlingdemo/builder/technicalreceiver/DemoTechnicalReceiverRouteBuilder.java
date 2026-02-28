@@ -4,6 +4,7 @@ import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalReceiverRouteBuilder
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
+import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -11,8 +12,12 @@ import org.springframework.stereotype.Component;
 @Component
 @Monitored(service = "technical-receiver-demo")
 public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRouteBuilder {
-    public DemoTechnicalReceiverRouteBuilder(List<RouteConfigurationModule> modules) {
+    private final FailureStepProcessorFactory failureStepProcessorFactory;
+
+    public DemoTechnicalReceiverRouteBuilder(List<RouteConfigurationModule> modules,
+      FailureStepProcessorFactory failureStepProcessorFactory) {
         super(modules);
+        this.failureStepProcessorFactory = failureStepProcessorFactory;
     }
 
     @Override
@@ -23,7 +28,7 @@ public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRout
 
         from("direct:technical-receiver")
           .routeId("technical-receiver")
-          .process(pocStep(FailureStep.TECHNICAL_CALL))
+          .process(failureStepProcessorFactory.forStep(FailureStep.TECHNICAL_CALL))
           .choice()
           .when(exchangeProperty(IntegrationExchangeProperties.POC_HTTP_RESPONSE_BODY_SET).isNotEqualTo(true))
           .setBody(constant("{\"status\":\"ok\"}"))

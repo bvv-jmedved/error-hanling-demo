@@ -3,6 +3,7 @@ package cz.bvv.errorhandlingdemo.poc;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * PoC-only token manager used to simulate token refresh failure flow.
  */
 @Component
+@Profile("poc")
 public class FakeTokenManager implements TokenManager {
 
     @Override

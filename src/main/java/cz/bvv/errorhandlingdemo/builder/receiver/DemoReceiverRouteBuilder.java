@@ -16,8 +16,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
     private final TokenRefreshRetryDecider tokenRefreshRetryDecider;
     private final DownstreamBusinessErrorProcessor downstreamBusinessErrorProcessor;
 
-    public DemoReceiverRouteBuilder(
-      List<RouteConfigurationModule> modules,
+    public DemoReceiverRouteBuilder(List<RouteConfigurationModule> modules,
       TokenRefreshRetryDecider tokenRefreshRetryDecider,
       DownstreamBusinessErrorProcessor downstreamBusinessErrorProcessor) {
         super(modules);

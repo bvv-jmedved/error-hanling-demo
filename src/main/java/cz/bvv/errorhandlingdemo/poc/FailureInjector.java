@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
  * NOT part of the production error handling design. MUST NOT be copied to integration-services
  * project.
  * <p>
- * Used only when profile "poc" is active (guarded by BaseRouteBuilder.pocStep()).
+ * Used only when profile "poc" is active (wired by {@link PocFailureStepProcessorFactory}).
  */
 public class FailureInjector implements Processor {
 

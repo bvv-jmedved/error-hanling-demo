@@ -3,6 +3,7 @@ package cz.bvv.errorhandlingdemo.builder.sender.demoftp;
 import cz.bvv.errorhandlingdemo.builder.common.BaseSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
+import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 public class DemoFtpSenderRouteBuilder extends BaseSenderRouteBuilder {
 
     private final DemoFtpFailureTriggerParser failureTriggerParser;
+    private final FailureStepProcessorFactory failureStepProcessorFactory;
 
-    public DemoFtpSenderRouteBuilder(
-      List<RouteConfigurationModule> modules,
-      DemoFtpFailureTriggerParser failureTriggerParser) {
+    public DemoFtpSenderRouteBuilder(List<RouteConfigurationModule> modules,
+      DemoFtpFailureTriggerParser failureTriggerParser,
+      FailureStepProcessorFactory failureStepProcessorFactory) {
         super(modules);
         this.failureTriggerParser = failureTriggerParser;
+        this.failureStepProcessorFactory = failureStepProcessorFactory;
     }
 
     @Override
@@ -25,8 +28,8 @@ public class DemoFtpSenderRouteBuilder extends BaseSenderRouteBuilder {
         from("direct:demo-ftp-sender")
           .routeId("demo-ftp-sender")
           .process(failureTriggerParser)
-          .process(pocStep(FailureStep.SENDER_VALIDATE))
-          .process(pocStep(FailureStep.SENDER_AUTH))
+          .process(failureStepProcessorFactory.forStep(FailureStep.SENDER_VALIDATE))
+          .process(failureStepProcessorFactory.forStep(FailureStep.SENDER_AUTH))
           .to("direct:demo-process?exchangePattern=InOut");
     }
 }

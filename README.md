@@ -17,6 +17,8 @@ The current design follows the RoutePolicy architecture in `.codex/doc/Camel_Rou
 
 - `BaseRouteBuilder` owns orchestration:
   - `final configure()` calls `configureRoutes()`
+  - configuration is guarded against accidental double invocation
+  - all created routes must define explicit `routeId`
   - then applies ordered `RouteConfigurationModule` beans
 - Capability interfaces:
   - `MonitoringRoute` (marker for logging policy support)
@@ -25,8 +27,11 @@ The current design follows the RoutePolicy architecture in `.codex/doc/Camel_Rou
   - `FailContractRoutePolicy` interface (capability-facing type)
   - `BaseFailContractRoutePolicy` abstract base class (shared fail mapping behavior)
 - Policy modules:
-  - `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
-  - `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
+- `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
+- `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
+
+RoutePolicy bean scope rule:
+- `RoutePolicy` implementations should be `@Scope("prototype")` unless fully stateless.
 
 Deterministic outcome:
 - sync sender routes: fail-contract policy, then logging policy
@@ -112,6 +117,11 @@ Run app with PoC profile (enables failure injection headers):
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=poc
 ```
+
+PoC profile behavior:
+- `poc` profile wires `PocFailureStepProcessorFactory` (active failure injection).
+- non-`poc` profiles wire `NoopFailureStepProcessorFactory` (no-op processors).
+- `TokenManager` is also profile-bound (`FakeTokenManager` for `poc`, `NoopTokenManager` otherwise).
 
 Default local base URL:
 - `http://localhost:8080`

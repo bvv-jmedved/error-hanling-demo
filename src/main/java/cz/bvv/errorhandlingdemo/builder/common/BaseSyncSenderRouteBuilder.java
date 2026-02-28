@@ -8,8 +8,7 @@ import java.util.List;
 public abstract class BaseSyncSenderRouteBuilder extends BaseSenderRouteBuilder implements FailContractRoute {
     private final FailContractRoutePolicy failureContractRoutePolicy;
 
-    protected BaseSyncSenderRouteBuilder(
-      List<RouteConfigurationModule> modules,
+    protected BaseSyncSenderRouteBuilder(List<RouteConfigurationModule> modules,
       FailContractRoutePolicy failureContractRoutePolicy) {
         super(modules);
         this.failureContractRoutePolicy = failureContractRoutePolicy;

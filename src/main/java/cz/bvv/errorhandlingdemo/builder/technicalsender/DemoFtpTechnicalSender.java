@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 public class DemoFtpTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     private final FtpRuntimeSettings ftpRuntimeSettings;
 
-    public DemoFtpTechnicalSender(
-      List<RouteConfigurationModule> modules,
+    public DemoFtpTechnicalSender(List<RouteConfigurationModule> modules,
       FtpRuntimeSettings ftpRuntimeSettings) {
         super(modules);
         this.ftpRuntimeSettings = ftpRuntimeSettings;

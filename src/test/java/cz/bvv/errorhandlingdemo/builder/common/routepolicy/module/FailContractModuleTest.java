@@ -59,8 +59,7 @@ class FailContractModuleTest {
     }
 
     private static final class SyncRouteBuilder extends BaseSyncSenderRouteBuilder {
-        private SyncRouteBuilder(
-          List<RouteConfigurationModule> modules,
+        private SyncRouteBuilder(List<RouteConfigurationModule> modules,
           FailContractRoutePolicy failureContractRoutePolicy) {
             super(modules, failureContractRoutePolicy);
         }

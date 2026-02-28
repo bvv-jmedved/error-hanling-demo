@@ -64,8 +64,7 @@ class DefaultRestFailureContractMultiErrorIntegrationTest {
     static class MultiErrorRouteConfig {
 
         @Bean
-        Td024SenderRouteBuilder td024SenderRouteBuilder(
-          List<RouteConfigurationModule> modules,
+        Td024SenderRouteBuilder td024SenderRouteBuilder(List<RouteConfigurationModule> modules,
           DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {
             return new Td024SenderRouteBuilder(modules, failureContractRoutePolicy);
         }
@@ -73,8 +72,7 @@ class DefaultRestFailureContractMultiErrorIntegrationTest {
 
     static class Td024SenderRouteBuilder extends BaseRestSenderRouteBuilder {
 
-        Td024SenderRouteBuilder(
-          List<RouteConfigurationModule> modules,
+        Td024SenderRouteBuilder(List<RouteConfigurationModule> modules,
           DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {
             super(modules, failureContractRoutePolicy);
         }
