@@ -37,6 +37,14 @@ Deterministic outcome:
 - sync sender routes: fail-contract policy, then logging policy
 - non-sync routes: logging policy only
 
+## PoC simulation boundary
+
+`FailureInjector` is **not** part of the RoutePolicy architecture or production design.
+
+- Architectural behavior (termination, mapping, logging) is implemented by RouteBuilders, RoutePolicy modules, and fail-contract policies.
+- `FailureInjector` is a PoC/testing utility used only to trigger controlled failures for demonstrations.
+- It is activated only through PoC wiring (`PocFailureStepProcessorFactory` under `poc` profile); non-`poc` profiles use no-op processors.
+
 ## Monitoring metadata model
 
 Logging is annotation-driven:
