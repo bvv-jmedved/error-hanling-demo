@@ -1,10 +1,12 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demoftp;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import org.springframework.stereotype.Component;
 
 @Component
+@Monitored(service = "sender-demo-ftp", critical = false)
 public class DemoFtpSenderRouteBuilder extends BaseSenderRouteBuilder {
 
     private final DemoFtpFailureTriggerParser failureTriggerParser;

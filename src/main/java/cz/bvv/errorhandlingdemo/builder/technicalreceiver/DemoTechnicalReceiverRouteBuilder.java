@@ -2,10 +2,12 @@ package cz.bvv.errorhandlingdemo.builder.technicalreceiver;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import org.springframework.stereotype.Component;
 
 @Component
+@Monitored(service = "technical-receiver-demo", critical = false)
 public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRouteBuilder {
     @Override
     protected void configureRoutes() {

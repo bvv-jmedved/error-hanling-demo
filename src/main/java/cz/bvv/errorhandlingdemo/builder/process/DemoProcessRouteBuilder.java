@@ -1,10 +1,12 @@
 package cz.bvv.errorhandlingdemo.builder.process;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseProcessRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import org.springframework.stereotype.Component;
 
 @Component
+@Monitored(service = "process-demo", critical = false)
 public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
     @Override
     protected void configureRoutes() {

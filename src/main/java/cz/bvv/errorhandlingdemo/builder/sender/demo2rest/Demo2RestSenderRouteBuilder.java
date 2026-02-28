@@ -2,10 +2,12 @@ package cz.bvv.errorhandlingdemo.builder.sender.demo2rest;
 
 import cz.bvv.errorhandlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.rest.DefaultRestFailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import org.springframework.stereotype.Component;
 
 @Component
+@Monitored(service = "sender-demo2-rest", critical = false)
 public class Demo2RestSenderRouteBuilder extends BaseRestSenderRouteBuilder {
     protected Demo2RestSenderRouteBuilder(
       DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {

@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common.failure;
 
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Route;
@@ -8,7 +9,7 @@ import org.apache.camel.support.RoutePolicySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
+public abstract class FailureContractRoutePolicy extends RoutePolicySupport implements FailContractRoutePolicy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FailureContractRoutePolicy.class);
 

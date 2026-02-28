@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common.routepolicy.capability;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
 
 public interface FailContractRoute {
-    FailureContractRoutePolicy failureContractRoutePolicy();
+    FailContractRoutePolicy failureContractRoutePolicy();
 }

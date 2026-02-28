@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.common.routepolicy.module;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.capability.FailContractRoute;
 import org.apache.camel.builder.RouteBuilder;
@@ -20,7 +20,7 @@ public class FailContractModule implements RouteConfigurationModule {
     @SuppressWarnings("resource")
     public void afterRoutes(RouteBuilder builder) {
         FailContractRoute failContractRoute = (FailContractRoute) builder;
-        FailureContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();
+        FailContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();
         builder.getRouteCollection()
           .getRoutes()
           .forEach(route -> {

@@ -1,10 +1,12 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.ftp.FtpRuntimeSettings;
 import org.springframework.stereotype.Component;
 
 @Component
+@Monitored(service = "technical-sender-demo-ftp", critical = true)
 public class DemoFtpTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     private final FtpRuntimeSettings ftpRuntimeSettings;
 
@@ -20,7 +22,7 @@ public class DemoFtpTechnicalSender extends BaseTechnicalSenderRouteBuilder {
             + "&binary=true"
             + "&autoCreate=true"
             + "&disconnect=true"
-            + "&delay=1000"
+            + "&delay=10000"
             + "&move=.archive/${date:now:yyyyMMddHHmmssSSS}-${file:name}"
             + "&moveFailed=.error/${date:now:yyyyMMddHHmmssSSS}-${file:name}")
           .routeId("demo-ftp-technical-sender")

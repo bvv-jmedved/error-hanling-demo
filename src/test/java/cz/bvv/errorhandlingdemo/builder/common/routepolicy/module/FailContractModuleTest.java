@@ -6,6 +6,7 @@ import cz.bvv.errorhandlingdemo.builder.common.BaseRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.BaseSyncSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -45,8 +46,19 @@ class FailContractModuleTest {
         assertThat(builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies().getFirst()).isSameAs(policy);
     }
 
+    @Test
+    void shouldExposeFailContractPolicyThroughInterface() {
+        IntegrationExceptionMapper mapper = exception -> IntegrationException.unknownError();
+        DummyFailureContractRoutePolicy policy = new DummyFailureContractRoutePolicy(mapper);
+        SyncRouteBuilder builder = new SyncRouteBuilder(policy);
+
+        FailContractRoutePolicy contractPolicy = builder.failureContractRoutePolicy();
+
+        assertThat(contractPolicy).isSameAs(policy);
+    }
+
     private static final class SyncRouteBuilder extends BaseSyncSenderRouteBuilder {
-        private SyncRouteBuilder(FailureContractRoutePolicy failureContractRoutePolicy) {
+        private SyncRouteBuilder(FailContractRoutePolicy failureContractRoutePolicy) {
             super(failureContractRoutePolicy);
         }
 
