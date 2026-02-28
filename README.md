@@ -1,9 +1,9 @@
 # Error Handling Demo (Apache Camel + Spring Boot)
 
 This project demonstrates:
-- out-of-route exception handling in Apache Camel routes,
-- centralized failure-contract mapping for REST responses,
-- sender/process/receiver route layering for clean orchestration.
+- layered sender/process/receiver route orchestration,
+- centralized failure-contract mapping outside route DSL,
+- deterministic RoutePolicy composition via Spring modules.
 
 ## Tech stack
 - Java 21
@@ -11,32 +11,63 @@ This project demonstrates:
 - Apache Camel 4.17.x
 - Maven
 
-## Purpose
-The demo exposes a REST endpoint and routes the request through:
-1. sender route,
-2. process route,
-3. receiver route,
-4. technical receiver route (simulated downstream call).
+## Architecture at a glance
 
-Failures are mapped into a stable JSON REST error contract by a route policy (outside main business DSL).
+The current design follows the RoutePolicy architecture in `.codex/doc/Camel_RoutePolicy_Architecture.md`.
 
-## Route flow
-- REST entry: `POST /demo`
-- Route chain:
-  - `DemoTechnicalSender`
-  - `DemoSenderRouteBuilder`
-  - `DemoProcessRouteBuilder`
-  - `DemoReceiverRouteBuilder`
-  - `DemoTechnicalReceiverRouteBuilder`
+- `BaseRouteBuilder` owns orchestration:
+  - `final configure()` calls `configureRoutes()`
+  - then applies ordered `RouteConfigurationModule` beans
+- Capability interfaces:
+  - `MonitoringRoute` (marker for logging policy support)
+  - `FailContractRoute` (provider of fail-contract policy)
+- Policy contracts:
+  - `FailContractRoutePolicy` interface (capability-facing type)
+  - `FailureContractRoutePolicy` abstract base class (shared fail mapping behavior)
+- Policy modules:
+  - `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
+  - `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
 
-Main components:
+Deterministic outcome:
+- sync sender routes: fail-contract policy, then logging policy
+- non-sync routes: logging policy only
+
+## Monitoring metadata model
+
+Logging is annotation-driven:
+- concrete `RouteBuilder` classes use `@Monitored(service = "...", critical = ...)`
+- `service` is an explicit stable identifier
+- `critical` marks externally exposed ingress routes (`true`) vs internal orchestration routes (`false`)
+
+`LoggingRoutePolicyFactory` falls back to class name + `critical=false` when annotation metadata is absent.
+
+## Route topology
+
+Ingress routes:
+- REST:
+  - `POST /demo1` -> `direct:demo-sender`
+  - `POST /demo2` -> `direct:demo2-sender`
+- SOAP:
+  - CXF endpoint `/services/demo-soap` -> `direct:demo-soap-sender`
+- FTP:
+  - `ftp://user@localhost:<port>/test` (poll delay `10000 ms`) -> `direct:demo-ftp-sender`
+
+Common orchestration path:
+- sender route
+- `direct:demo-process` (`DemoProcessRouteBuilder`)
+- `direct:demo-receiver` (`DemoReceiverRouteBuilder`)
+- `direct:technical-receiver` (`DemoTechnicalReceiverRouteBuilder`)
+
+Main policy/error components:
+- `FailContractRoutePolicy` (policy contract interface)
 - `FailureContractRoutePolicy` (base failure mapping hook)
-- `RestFailureContractRoutePolicy` (HTTP status/body contract mapping)
-- `IntegrationException` + `IntegrationError` (integration error model)
-- `DefaultIntegrationExceptionMapperImpl` (maps technical exceptions to integration contract)
+- `RestFailureContractRoutePolicy` / `SoapFailureContractRoutePolicy`
+- `IntegrationException` + `IntegrationError`
+- `DefaultIntegrationExceptionMapperImpl`
 
 ## Error response contract
-Errors are returned as JSON:
+
+REST errors are returned as JSON:
 
 ```json
 {
@@ -49,7 +80,7 @@ Errors are returned as JSON:
 }
 ```
 
-Fallback body when contract mapping/serialization fails:
+Fallback body when mapping/serialization fails:
 
 ```json
 {
@@ -63,6 +94,7 @@ Fallback body when contract mapping/serialization fails:
 ```
 
 ## Run locally
+
 Build:
 
 ```bash
@@ -75,19 +107,21 @@ Run app:
 ./mvnw spring-boot:run
 ```
 
-Run with PoC profile (enables failure injection headers):
+Run app with PoC profile (enables failure injection headers):
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=poc
 ```
 
-Default endpoint:
-- `http://localhost:8080/demo`
+Default local base URL:
+- `http://localhost:8080`
 
-## Quick usage examples
-### 1) Happy path
+## Quick usage examples (REST)
+
+### 1) Happy path (`/demo2`)
+
 ```bash
-curl -i -X POST http://localhost:8080/demo \
+curl -i -X POST http://localhost:8080/demo2 \
   -H 'Content-Type: application/json' \
   -d '{}'
 ```
@@ -96,9 +130,10 @@ Expected:
 - `HTTP 200`
 - body: `{"status":"ok"}`
 
-### 2) Simulate downstream HTTP 500 (PoC profile)
+### 2) Simulate downstream HTTP 500 (`/demo2`, PoC profile)
+
 ```bash
-curl -i -X POST http://localhost:8080/demo \
+curl -i -X POST http://localhost:8080/demo2 \
   -H 'Content-Type: application/json' \
   -H 'X_THROW_IN: technical-call' \
   -H 'X_THROW_TYPE: http' \
@@ -110,9 +145,10 @@ Expected:
 - mapped to `HTTP 502`
 - body code: `DOWNSTREAM_HTTP_500`
 
-### 3) Simulate business error inside HTTP 200 (PoC profile)
+### 3) Simulate business error inside HTTP 200 (`/demo2`, PoC profile)
+
 ```bash
-curl -i -X POST http://localhost:8080/demo \
+curl -i -X POST http://localhost:8080/demo2 \
   -H 'Content-Type: application/json' \
   -H 'X_THROW_IN: technical-call' \
   -H 'X_THROW_TYPE: http' \
@@ -126,15 +162,16 @@ Expected:
 - body code: `K2_123`
 
 ## Testing
+
 Run all tests:
 
 ```bash
 ./mvnw test
 ```
 
-Test suite includes:
-- happy path and sender completion behavior,
-- retry exhaustion and token refresh edge cases,
-- downstream HTTP status mapping alignment,
-- failure contract fallback behavior,
-- unit tests for exception mapping and PoC injectors.
+Relevant architecture/composition coverage includes:
+- `RouteConfigurationModuleOrchestrationTest`
+- `RoutePolicyCompositionTest`
+- `FailContractModuleTest`
+- `LoggingRoutePolicyFactoryTest`
+- integration tests for REST/SOAP/FTP flows and failure mapping.
