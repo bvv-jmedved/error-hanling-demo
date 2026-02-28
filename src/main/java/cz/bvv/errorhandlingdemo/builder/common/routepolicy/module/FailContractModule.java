@@ -17,18 +17,11 @@ public class FailContractModule implements RouteConfigurationModule {
     }
 
     @Override
-    @SuppressWarnings("resource")
     public void afterRoutes(RouteBuilder builder) {
         FailContractRoute failContractRoute = (FailContractRoute) builder;
         FailContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();
         builder.getRouteCollection()
           .getRoutes()
-          .forEach(route -> {
-              if (route.getRoutePolicies() != null
-                && route.getRoutePolicies().stream().anyMatch(existing -> existing == policy)) {
-                  return;
-              }
-              route.routePolicy(policy);
-          });
+          .forEach(route -> route.routePolicy(policy));
     }
 }

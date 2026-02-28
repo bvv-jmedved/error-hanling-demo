@@ -9,13 +9,20 @@ import org.apache.camel.support.RoutePolicySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class FailureContractRoutePolicy extends RoutePolicySupport implements FailContractRoutePolicy {
+/**
+ * Base fail-contract policy that maps failures to integration-facing error contracts.
+ * <p>
+ * IMPORTANT:
+ * This policy clears {@link Exchange#getException()} after contract mapping.
+ * Downstream interceptors and policies will not see the original exception instance.
+ */
+public abstract class BaseFailContractRoutePolicy extends RoutePolicySupport implements FailContractRoutePolicy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FailureContractRoutePolicy.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseFailContractRoutePolicy.class);
 
     private final IntegrationExceptionMapper integrationExceptionMapper;
 
-    protected FailureContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {
+    protected BaseFailContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {
         this.integrationExceptionMapper = integrationExceptionMapper;
     }
 

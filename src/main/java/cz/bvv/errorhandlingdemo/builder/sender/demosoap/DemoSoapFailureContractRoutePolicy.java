@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class DemoSoapFailureContractRoutePolicy extends FailureContractRoutePolicy {
+public class DemoSoapFailureContractRoutePolicy extends BaseFailContractRoutePolicy {
     private static final Logger LOG = LoggerFactory.getLogger(DemoSoapFailureContractRoutePolicy.class);
     private static final String FALLBACK_MESSAGE = "Internal error while preparing SOAP error response";
     private final DemoSoapMessageMapper demoSoapMessageMapper;

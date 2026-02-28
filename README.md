@@ -23,7 +23,7 @@ The current design follows the RoutePolicy architecture in `.codex/doc/Camel_Rou
   - `FailContractRoute` (provider of fail-contract policy)
 - Policy contracts:
   - `FailContractRoutePolicy` interface (capability-facing type)
-  - `FailureContractRoutePolicy` abstract base class (shared fail mapping behavior)
+  - `BaseFailContractRoutePolicy` abstract base class (shared fail mapping behavior)
 - Policy modules:
   - `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
   - `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
@@ -60,7 +60,7 @@ Common orchestration path:
 
 Main policy/error components:
 - `FailContractRoutePolicy` (policy contract interface)
-- `FailureContractRoutePolicy` (base failure mapping hook)
+- `BaseFailContractRoutePolicy` (base failure mapping hook)
 - `RestFailureContractRoutePolicy` / `SoapFailureContractRoutePolicy`
 - `IntegrationException` + `IntegrationError`
 - `DefaultIntegrationExceptionMapperImpl`

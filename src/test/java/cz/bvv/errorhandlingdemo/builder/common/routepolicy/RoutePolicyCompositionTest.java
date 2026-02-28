@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.common.BaseRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.BaseSyncSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.failure.DefaultIntegrationExceptionMapperImpl;
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.rest.DefaultRestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
@@ -21,8 +21,8 @@ import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapSenderRouteBuild
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoSoapTechnicalSender;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.List;
+import lombok.NonNull;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.spi.RoutePolicy;
@@ -32,20 +32,9 @@ import org.springframework.http.HttpStatus;
 class RoutePolicyCompositionTest {
 
     @Test
-    void shouldApplyFailContractThenLoggingOnSyncRouteBuilder() throws Exception {
-        SyncRouteBuilder builder = new SyncRouteBuilder(
-          new DummyFailureContractRoutePolicy(exception -> new IntegrationException(
-            HttpStatus.BAD_GATEWAY,
-            "MAPPED",
-            "mapped",
-            exception
-          ))
-        );
-        builder.setCamelContext(new DefaultCamelContext());
-        setModules(builder, List.of(
-          new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
-        ));
+    void shouldApplyFailContractThenLoggingOnSyncRouteBuilder() {
+        SyncRouteBuilder
+          builder = getSyncRouteBuilder();
 
         builder.configure();
 
@@ -55,14 +44,32 @@ class RoutePolicyCompositionTest {
         assertThat(policies.get(1)).isInstanceOf(LoggingRoutePolicy.class);
     }
 
-    @Test
-    void shouldApplyOnlyLoggingOnNonSyncRouteBuilder() throws Exception {
-        NonSyncRouteBuilder builder = new NonSyncRouteBuilder();
-        builder.setCamelContext(new DefaultCamelContext());
-        setModules(builder, List.of(
+    private @NonNull SyncRouteBuilder getSyncRouteBuilder() {
+        List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
           new LoggingModule(new LoggingRoutePolicyFactory())
-        ));
+        );
+        SyncRouteBuilder builder = new SyncRouteBuilder(
+          modules,
+          new DummyFailureContractRoutePolicy(exception -> new IntegrationException(
+            HttpStatus.BAD_GATEWAY,
+            "MAPPED",
+            "mapped",
+            exception
+          ))
+        );
+        builder.setCamelContext(new DefaultCamelContext());
+        return builder;
+    }
+
+    @Test
+    void shouldApplyOnlyLoggingOnNonSyncRouteBuilder() {
+        List<RouteConfigurationModule> modules = List.of(
+          new FailContractModule(),
+          new LoggingModule(new LoggingRoutePolicyFactory())
+        );
+        NonSyncRouteBuilder builder = new NonSyncRouteBuilder(modules);
+        builder.setCamelContext(new DefaultCamelContext());
 
         builder.configure();
 
@@ -73,18 +80,18 @@ class RoutePolicyCompositionTest {
 
     @Test
     void shouldApplyConfiguredMonitoringMetadataOnRestSenderRouteBuilder() throws Exception {
-        Demo2RestSenderRouteBuilder builder = createDemo2RestSenderRouteBuilder();
-        builder.setCamelContext(new DefaultCamelContext());
-        setModules(builder, List.of(
+        List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
           new LoggingModule(new LoggingRoutePolicyFactory())
-        ));
+        );
+        Demo2RestSenderRouteBuilder builder = createDemo2RestSenderRouteBuilder(modules);
+        builder.setCamelContext(new DefaultCamelContext());
 
         builder.configure();
 
         List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies();
         assertThat(policies).hasSize(2);
-        assertThat(policies.get(0)).isInstanceOf(FailureContractRoutePolicy.class);
+        assertThat(policies.get(0)).isInstanceOf(BaseFailContractRoutePolicy.class);
         assertThat(policies.get(1)).isInstanceOf(LoggingRoutePolicy.class);
         LoggingRoutePolicy loggingPolicy = (LoggingRoutePolicy) policies.get(1);
         assertThat(loggingPolicy.getService()).isEqualTo("sender-demo2-rest");
@@ -93,18 +100,18 @@ class RoutePolicyCompositionTest {
 
     @Test
     void shouldApplyConfiguredMonitoringMetadataOnSoapSenderRouteBuilder() throws Exception {
-        DemoSoapSenderRouteBuilder builder = createDemoSoapSenderRouteBuilder();
-        builder.setCamelContext(new DefaultCamelContext());
-        setModules(builder, List.of(
+        List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
           new LoggingModule(new LoggingRoutePolicyFactory())
-        ));
+        );
+        DemoSoapSenderRouteBuilder builder = createDemoSoapSenderRouteBuilder(modules);
+        builder.setCamelContext(new DefaultCamelContext());
 
         builder.configure();
 
         List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies();
         assertThat(policies).hasSize(2);
-        assertThat(policies.get(0)).isInstanceOf(FailureContractRoutePolicy.class);
+        assertThat(policies.get(0)).isInstanceOf(BaseFailContractRoutePolicy.class);
         assertThat(policies.get(1)).isInstanceOf(LoggingRoutePolicy.class);
         LoggingRoutePolicy loggingPolicy = (LoggingRoutePolicy) policies.get(1);
         assertThat(loggingPolicy.getService()).isEqualTo("sender-demo-soap");
@@ -112,13 +119,13 @@ class RoutePolicyCompositionTest {
     }
 
     @Test
-    void shouldApplyConfiguredMonitoringMetadataOnTechnicalIngressRouteBuilder() throws Exception {
-        DemoSoapTechnicalSender builder = new DemoSoapTechnicalSender();
-        builder.setCamelContext(new DefaultCamelContext());
-        setModules(builder, List.of(
+    void shouldApplyConfiguredMonitoringMetadataOnTechnicalIngressRouteBuilder() {
+        List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
           new LoggingModule(new LoggingRoutePolicyFactory())
-        ));
+        );
+        DemoSoapTechnicalSender builder = new DemoSoapTechnicalSender(modules);
+        builder.setCamelContext(new DefaultCamelContext());
 
         builder.configure();
 
@@ -130,25 +137,24 @@ class RoutePolicyCompositionTest {
         assertThat(loggingPolicy.isCritical()).isTrue();
     }
 
-    private static void setModules(BaseRouteBuilder builder, List<RouteConfigurationModule> modules) throws Exception {
-        Field modulesField = BaseRouteBuilder.class.getDeclaredField("modules");
-        modulesField.setAccessible(true);
-        modulesField.set(builder, modules);
-    }
-
-    private static Demo2RestSenderRouteBuilder createDemo2RestSenderRouteBuilder() throws Exception {
+    private static Demo2RestSenderRouteBuilder createDemo2RestSenderRouteBuilder(
+      List<RouteConfigurationModule> modules) throws Exception {
         DefaultIntegrationExceptionMapperImpl exceptionMapper = new DefaultIntegrationExceptionMapperImpl();
         DefaultRestFailureContractRoutePolicy failurePolicy = new DefaultRestFailureContractRoutePolicy(
           new ObjectMapper(),
           exceptionMapper
         );
         Constructor<Demo2RestSenderRouteBuilder> constructor =
-          Demo2RestSenderRouteBuilder.class.getDeclaredConstructor(DefaultRestFailureContractRoutePolicy.class);
+          Demo2RestSenderRouteBuilder.class.getDeclaredConstructor(
+            List.class,
+            DefaultRestFailureContractRoutePolicy.class
+          );
         constructor.setAccessible(true);
-        return constructor.newInstance(failurePolicy);
+        return constructor.newInstance(modules, failurePolicy);
     }
 
-    private static DemoSoapSenderRouteBuilder createDemoSoapSenderRouteBuilder() throws Exception {
+    private static DemoSoapSenderRouteBuilder createDemoSoapSenderRouteBuilder(
+      List<RouteConfigurationModule> modules) throws Exception {
         DefaultIntegrationExceptionMapperImpl exceptionMapper = new DefaultIntegrationExceptionMapperImpl();
         DemoSoapMessageMapper messageMapper = new DemoSoapMessageMapper(new ObjectMapper());
         DemoSoapFailureContractRoutePolicy failurePolicy = new DemoSoapFailureContractRoutePolicy(
@@ -157,16 +163,19 @@ class RoutePolicyCompositionTest {
         );
         Constructor<DemoSoapSenderRouteBuilder> constructor =
           DemoSoapSenderRouteBuilder.class.getDeclaredConstructor(
+            List.class,
             DemoSoapFailureContractRoutePolicy.class,
             DemoSoapMessageMapper.class
           );
         constructor.setAccessible(true);
-        return constructor.newInstance(failurePolicy, messageMapper);
+        return constructor.newInstance(modules, failurePolicy, messageMapper);
     }
 
     private static final class SyncRouteBuilder extends BaseSyncSenderRouteBuilder {
-        private SyncRouteBuilder(FailContractRoutePolicy failureContractRoutePolicy) {
-            super(failureContractRoutePolicy);
+        private SyncRouteBuilder(
+          List<RouteConfigurationModule> modules,
+          FailContractRoutePolicy failureContractRoutePolicy) {
+            super(modules, failureContractRoutePolicy);
         }
 
         @Override
@@ -178,6 +187,10 @@ class RoutePolicyCompositionTest {
     }
 
     private static final class NonSyncRouteBuilder extends BaseRouteBuilder {
+        private NonSyncRouteBuilder(List<RouteConfigurationModule> modules) {
+            super(modules);
+        }
+
         @Override
         protected void configureRoutes() {
             from("direct:route-policy-composition-nonsync")
@@ -186,7 +199,7 @@ class RoutePolicyCompositionTest {
         }
     }
 
-    private static final class DummyFailureContractRoutePolicy extends FailureContractRoutePolicy {
+    private static final class DummyFailureContractRoutePolicy extends BaseFailContractRoutePolicy {
         private DummyFailureContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {
             super(integrationExceptionMapper);
         }

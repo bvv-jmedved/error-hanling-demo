@@ -19,8 +19,11 @@ public abstract class BaseRouteBuilder extends RouteBuilder implements Monitorin
     @Autowired
     private Environment environment;
 
-    @Autowired(required = false)
-    private final List<RouteConfigurationModule> modules = List.of();
+    private final List<RouteConfigurationModule> modules;
+
+    protected BaseRouteBuilder(List<RouteConfigurationModule> modules) {
+        this.modules = modules == null ? List.of() : List.copyOf(modules);
+    }
 
     @Override
     public final void configure() {
@@ -51,4 +54,3 @@ public abstract class BaseRouteBuilder extends RouteBuilder implements Monitorin
         };
     }
 }
-

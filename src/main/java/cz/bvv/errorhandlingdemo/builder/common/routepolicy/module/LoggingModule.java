@@ -30,12 +30,6 @@ public class LoggingModule implements RouteConfigurationModule {
         LoggingRoutePolicy policy = loggingRoutePolicyFactory.create(builder, monitored);
         builder.getRouteCollection()
           .getRoutes()
-          .forEach(route -> {
-              if (route.getRoutePolicies() != null
-                && route.getRoutePolicies().stream().anyMatch(existing -> existing == policy)) {
-                  return;
-              }
-              route.routePolicy(policy);
-          });
+          .forEach(route -> route.routePolicy(policy));
     }
 }

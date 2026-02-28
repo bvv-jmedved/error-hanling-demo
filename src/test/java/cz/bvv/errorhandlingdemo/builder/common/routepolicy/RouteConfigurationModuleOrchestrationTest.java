@@ -3,7 +3,6 @@ package cz.bvv.errorhandlingdemo.builder.common.routepolicy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseRouteBuilder;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.camel.builder.RouteBuilder;
@@ -13,27 +12,19 @@ import org.junit.jupiter.api.Test;
 class RouteConfigurationModuleOrchestrationTest {
 
     @Test
-    void shouldRunModulesAfterDslInConfiguredOrder() throws Exception {
+    void shouldRunModulesAfterDslInConfiguredOrder() {
         List<String> invocationOrder = new ArrayList<>();
-        TestRouteBuilder builder = new TestRouteBuilder();
-        builder.setCamelContext(new DefaultCamelContext());
-
-        setModules(builder, List.of(
+        TestRouteBuilder builder = new TestRouteBuilder(List.of(
           new RecordingModule("first", invocationOrder),
           new RecordingModule("second", invocationOrder)
         ));
+        builder.setCamelContext(new DefaultCamelContext());
 
         builder.configure();
 
         assertThat(invocationOrder).containsExactly("first:1", "second:1");
         assertThat(builder.getRouteCollection().getRoutes()).hasSize(1);
         assertThat(builder.getRouteCollection().getRoutes().getFirst().getId()).isEqualTo("module-order-test-route");
-    }
-
-    private static void setModules(BaseRouteBuilder builder, List<RouteConfigurationModule> modules) throws Exception {
-        Field modulesField = BaseRouteBuilder.class.getDeclaredField("modules");
-        modulesField.setAccessible(true);
-        modulesField.set(builder, modules);
     }
 
     private record RecordingModule(
@@ -53,6 +44,10 @@ class RouteConfigurationModuleOrchestrationTest {
         }
 
     private static final class TestRouteBuilder extends BaseRouteBuilder {
+        private TestRouteBuilder(List<RouteConfigurationModule> modules) {
+            super(modules);
+        }
+
         @Override
         protected void configureRoutes() {
             from("direct:module-order-test")

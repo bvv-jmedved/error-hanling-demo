@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.common.soap;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.soap.model.SoapErrorEntry;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -10,7 +10,7 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class SoapFailureContractRoutePolicy<T> extends FailureContractRoutePolicy {
+public abstract class SoapFailureContractRoutePolicy<T> extends BaseFailContractRoutePolicy {
     private static final Logger LOG = LoggerFactory.getLogger(SoapFailureContractRoutePolicy.class);
     private static final String FALLBACK_MESSAGE = "Internal error while preparing SOAP error response";
 

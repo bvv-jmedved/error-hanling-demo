@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public abstract class RestFailureContractRoutePolicy<T> extends FailureContractRoutePolicy {
+public abstract class RestFailureContractRoutePolicy<T> extends BaseFailContractRoutePolicy {
     private static final Logger LOG = LoggerFactory.getLogger(RestFailureContractRoutePolicy.class);
     private static final String FALLBACK_ERROR_BODY = """
       {

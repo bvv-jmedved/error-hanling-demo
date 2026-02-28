@@ -1,10 +1,14 @@
 package cz.bvv.errorhandlingdemo.builder.common.soap;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseSyncSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
+import java.util.List;
 
 public abstract class BaseSoapSenderRouteBuilder extends BaseSyncSenderRouteBuilder {
-    protected BaseSoapSenderRouteBuilder(FailureContractRoutePolicy failureContractRoutePolicy) {
-        super(failureContractRoutePolicy);
+    protected BaseSoapSenderRouteBuilder(
+      List<RouteConfigurationModule> modules,
+      FailContractRoutePolicy failureContractRoutePolicy) {
+        super(modules, failureContractRoutePolicy);
     }
 }

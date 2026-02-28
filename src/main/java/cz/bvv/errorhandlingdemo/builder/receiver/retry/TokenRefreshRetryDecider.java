@@ -17,7 +17,7 @@ public class TokenRefreshRetryDecider {
 
     @SuppressWarnings("unused")
     public boolean shouldRetry(Exchange exchange) {
-        Integer counter = exchange.getMessage()
+        Integer counter = exchange.getIn()
           .getHeader(Exchange.REDELIVERY_COUNTER, Integer.class);
 
         if (counter == null || counter != 1) {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -64,15 +65,18 @@ class DefaultRestFailureContractMultiErrorIntegrationTest {
 
         @Bean
         Td024SenderRouteBuilder td024SenderRouteBuilder(
+          List<RouteConfigurationModule> modules,
           DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {
-            return new Td024SenderRouteBuilder(failureContractRoutePolicy);
+            return new Td024SenderRouteBuilder(modules, failureContractRoutePolicy);
         }
     }
 
     static class Td024SenderRouteBuilder extends BaseRestSenderRouteBuilder {
 
-        Td024SenderRouteBuilder(DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {
-            super(failureContractRoutePolicy);
+        Td024SenderRouteBuilder(
+          List<RouteConfigurationModule> modules,
+          DefaultRestFailureContractRoutePolicy failureContractRoutePolicy) {
+            super(modules, failureContractRoutePolicy);
         }
 
         @Override

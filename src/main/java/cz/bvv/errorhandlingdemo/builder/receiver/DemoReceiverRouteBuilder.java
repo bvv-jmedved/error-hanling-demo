@@ -1,22 +1,26 @@
 package cz.bvv.errorhandlingdemo.builder.receiver;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseReceiverRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.builder.receiver.processor.DownstreamBusinessErrorProcessor;
 import cz.bvv.errorhandlingdemo.builder.receiver.retry.TokenRefreshRetryDecider;
+import java.util.List;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
 
 @Component
-@Monitored(service = "receiver-demo", critical = false)
+@Monitored(service = "receiver-demo")
 public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
 
     private final TokenRefreshRetryDecider tokenRefreshRetryDecider;
     private final DownstreamBusinessErrorProcessor downstreamBusinessErrorProcessor;
 
     public DemoReceiverRouteBuilder(
+      List<RouteConfigurationModule> modules,
       TokenRefreshRetryDecider tokenRefreshRetryDecider,
       DownstreamBusinessErrorProcessor downstreamBusinessErrorProcessor) {
+        super(modules);
         this.tokenRefreshRetryDecider = tokenRefreshRetryDecider;
         this.downstreamBusinessErrorProcessor = downstreamBusinessErrorProcessor;
     }

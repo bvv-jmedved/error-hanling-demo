@@ -8,7 +8,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.http.HttpStatus;
-import org.springframework.context.annotation.Profile;
 
 /**
  * PoC-only failure injection component.
@@ -19,9 +18,8 @@ import org.springframework.context.annotation.Profile;
  * NOT part of the production error handling design. MUST NOT be copied to integration-services
  * project.
  * <p>
- * Activated only under Spring profile "poc".
+ * Used only when profile "poc" is active (guarded by BaseRouteBuilder.pocStep()).
  */
-@Profile("poc")
 public class FailureInjector implements Processor {
 
     private static final String X_THROW_IN = "X_THROW_IN";
@@ -103,7 +101,7 @@ public class FailureInjector implements Processor {
         List<Integer> sequence = parseStatusSequence(rawSequence);
         if (!sequence.isEmpty()) {
             Integer redeliveryCounter =
-              exchange.getMessage().getHeader(Exchange.REDELIVERY_COUNTER, Integer.class);
+              exchange.getIn().getHeader(Exchange.REDELIVERY_COUNTER, Integer.class);
             int attemptIndex = redeliveryCounter == null ? 0 : redeliveryCounter;
             int sequenceIndex = Math.min(attemptIndex, sequence.size() - 1);
             return sequence.get(sequenceIndex);

@@ -1,8 +1,10 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.ftp.FtpRuntimeSettings;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,7 +12,10 @@ import org.springframework.stereotype.Component;
 public class DemoFtpTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     private final FtpRuntimeSettings ftpRuntimeSettings;
 
-    public DemoFtpTechnicalSender(FtpRuntimeSettings ftpRuntimeSettings) {
+    public DemoFtpTechnicalSender(
+      List<RouteConfigurationModule> modules,
+      FtpRuntimeSettings ftpRuntimeSettings) {
+        super(modules);
         this.ftpRuntimeSettings = ftpRuntimeSettings;
     }
 

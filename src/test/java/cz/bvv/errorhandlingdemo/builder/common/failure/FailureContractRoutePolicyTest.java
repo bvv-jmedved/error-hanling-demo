@@ -120,7 +120,7 @@ class FailureContractRoutePolicyTest {
         }
     }
 
-    private static final class CountingFailureContractRoutePolicy extends FailureContractRoutePolicy {
+    private static final class CountingFailureContractRoutePolicy extends BaseFailContractRoutePolicy {
         private int mapContractCalls;
 
         private CountingFailureContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {

@@ -21,7 +21,7 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
     @Override
     public void onStart(Route route) {
         LOG.info(
-          "route_policy=monitor event=start routeId={} service={} critical={}",
+          "event=route_start routeId={} service={} critical={}",
           route.getRouteId(),
           service,
           critical
@@ -31,7 +31,7 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
     @Override
     public void onStop(Route route) {
         LOG.info(
-          "route_policy=monitor event=stop routeId={} service={} critical={}",
+          "event=route_stop routeId={} service={} critical={}",
           route.getRouteId(),
           service,
           critical

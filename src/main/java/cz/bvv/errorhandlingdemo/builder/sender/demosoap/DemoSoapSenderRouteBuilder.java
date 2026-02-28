@@ -1,20 +1,23 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import cz.bvv.errorhandlingdemo.builder.common.soap.BaseSoapSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
+import java.util.List;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
 @Component
-@Monitored(service = "sender-demo-soap", critical = false)
+@Monitored(service = "sender-demo-soap")
 public class DemoSoapSenderRouteBuilder extends BaseSoapSenderRouteBuilder {
     private final DemoSoapMessageMapper demoSoapMessageMapper;
 
     protected DemoSoapSenderRouteBuilder(
+      List<RouteConfigurationModule> modules,
       DemoSoapFailureContractRoutePolicy failureContractRoutePolicy,
       DemoSoapMessageMapper demoSoapMessageMapper) {
-        super(failureContractRoutePolicy);
+        super(modules, failureContractRoutePolicy);
         this.demoSoapMessageMapper = demoSoapMessageMapper;
     }
 
