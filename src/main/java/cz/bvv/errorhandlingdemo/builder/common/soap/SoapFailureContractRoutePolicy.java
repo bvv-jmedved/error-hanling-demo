@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common.soap;
 
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.soap.model.SoapErrorEntry;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;
@@ -15,7 +16,10 @@ public abstract class SoapFailureContractRoutePolicy<T> extends FailureContractR
 
     private final SoapFaultMessageMapper soapFaultMessageMapper;
 
-    protected SoapFailureContractRoutePolicy(SoapFaultMessageMapper soapFaultMessageMapper) {
+    protected SoapFailureContractRoutePolicy(
+      SoapFaultMessageMapper soapFaultMessageMapper,
+      IntegrationExceptionMapper integrationExceptionMapper) {
+        super(integrationExceptionMapper);
         this.soapFaultMessageMapper = soapFaultMessageMapper;
     }
 

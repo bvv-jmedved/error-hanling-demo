@@ -13,7 +13,7 @@ public class Demo2RestSenderRouteBuilder extends BaseRestSenderRouteBuilder {
     }
 
     @Override
-    public void config() {
+    public void configureRoutes() {
         from("direct:demo2-sender")
           .routeId("demo2-sender")
           .process(pocStep(FailureStep.SENDER_VALIDATE))

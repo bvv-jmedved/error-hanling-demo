@@ -7,14 +7,16 @@ import org.apache.camel.Route;
 import org.apache.camel.support.RoutePolicySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FailureContractRoutePolicy extends RoutePolicySupport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FailureContractRoutePolicy.class);
 
-    @Autowired
-    private IntegrationExceptionMapper integrationExceptionMapper;
+    private final IntegrationExceptionMapper integrationExceptionMapper;
+
+    protected FailureContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {
+        this.integrationExceptionMapper = integrationExceptionMapper;
+    }
 
     @Override
     public final void onExchangeDone(Route route, Exchange exchange) {

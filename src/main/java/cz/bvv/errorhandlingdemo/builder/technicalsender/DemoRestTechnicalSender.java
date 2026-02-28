@@ -9,7 +9,7 @@ public class DemoRestTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     public static final String DEMO2_ENDPOINT = "/demo2";
 
     @Override
-    protected void config() {
+    protected void configureRoutes() {
         rest()
           .post(DEMO1_ENDPOINT)
           .to("direct:demo-sender");

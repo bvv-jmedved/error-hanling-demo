@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DemoTechnicalReceiverRouteBuilder extends BaseTechnicalReceiverRouteBuilder {
     @Override
-    protected void config() {
+    protected void configureRoutes() {
         errorHandler(noErrorHandler());
 
         from("direct:technical-receiver")

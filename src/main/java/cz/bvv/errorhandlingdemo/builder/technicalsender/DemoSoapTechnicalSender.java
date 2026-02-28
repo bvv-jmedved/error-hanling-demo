@@ -9,7 +9,7 @@ public class DemoSoapTechnicalSender extends BaseSoapTechnicalSenderRouteBuilder
     public static final String SOAP_ENDPOINT = "/services" + DemoSoapEndpointConfig.ENDPOINT_ADDRESS;
 
     @Override
-    protected void config() {
+    protected void configureRoutes() {
         from("cxf:bean:" + DemoSoapEndpointConfig.ENDPOINT_BEAN_ID)
           .routeId("demo-soap-technical-sender")
           .to("direct:demo-soap-sender?exchangePattern=InOut");

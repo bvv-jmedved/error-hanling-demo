@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.common.soap;
 
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.soap.model.DefaultSoapError;
 import cz.bvv.errorhandlingdemo.builder.common.soap.model.SoapErrorEntry;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -12,8 +13,10 @@ import org.springframework.stereotype.Component;
 public class DefaultSoapFailureContractRoutePolicy
   extends SoapFailureContractRoutePolicy<DefaultSoapError> {
 
-    public DefaultSoapFailureContractRoutePolicy(SoapFaultMessageMapper soapFaultMessageMapper) {
-        super(soapFaultMessageMapper);
+    public DefaultSoapFailureContractRoutePolicy(
+      SoapFaultMessageMapper soapFaultMessageMapper,
+      IntegrationExceptionMapper integrationExceptionMapper) {
+        super(soapFaultMessageMapper, integrationExceptionMapper);
     }
 
     @Override

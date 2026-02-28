@@ -17,6 +17,11 @@ import java.util.List;
 
 @Configuration
 public class FtpServerConfig {
+    private final FtpRuntimeSettings ftpRuntimeSettings;
+
+    public FtpServerConfig(FtpRuntimeSettings ftpRuntimeSettings) {
+        this.ftpRuntimeSettings = ftpRuntimeSettings;
+    }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public FtpServer ftpServer() throws Exception {
@@ -25,7 +30,7 @@ public class FtpServerConfig {
 
         // Listener
         ListenerFactory lf = new ListenerFactory();
-        lf.setPort(2121);
+        lf.setPort(ftpRuntimeSettings.port());
         DataConnectionConfigurationFactory dccf = new DataConnectionConfigurationFactory();
         dccf.setActiveEnabled(false);
         dccf.setPassivePorts("2200-2210");

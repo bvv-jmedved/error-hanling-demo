@@ -20,7 +20,7 @@ public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {
     }
 
     @Override
-    protected void config() {
+    protected void configureRoutes() {
         onException(HttpOperationFailedException.class)
           .onWhen(simple("${exception.statusCode} == 401"))
           .retryWhile(method(tokenRefreshRetryDecider, "shouldRetry"))

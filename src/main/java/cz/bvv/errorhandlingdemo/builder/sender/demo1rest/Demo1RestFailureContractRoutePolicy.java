@@ -1,6 +1,8 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractMapper;
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.rest.RestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.model.Demo1RestError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -12,10 +14,13 @@ import org.springframework.stereotype.Component;
 public class Demo1RestFailureContractRoutePolicy
   extends RestFailureContractRoutePolicy<Demo1RestError> {
 
-    final FailureContractMapper<Demo1RestError> failureContractMapper;
+    private final FailureContractMapper<Demo1RestError> failureContractMapper;
 
     public Demo1RestFailureContractRoutePolicy(
-      Demo1RestFailureContractMapper failureContractMapper) {
+      Demo1RestFailureContractMapper failureContractMapper,
+      ObjectMapper objectMapper,
+      IntegrationExceptionMapper integrationExceptionMapper) {
+        super(objectMapper, integrationExceptionMapper);
         this.failureContractMapper = failureContractMapper;
     }
 

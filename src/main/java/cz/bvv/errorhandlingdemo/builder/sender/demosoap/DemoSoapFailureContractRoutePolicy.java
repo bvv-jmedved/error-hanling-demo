@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
@@ -18,7 +19,10 @@ public class DemoSoapFailureContractRoutePolicy extends FailureContractRoutePoli
     private static final String FALLBACK_MESSAGE = "Internal error while preparing SOAP error response";
     private final DemoSoapMessageMapper demoSoapMessageMapper;
 
-    public DemoSoapFailureContractRoutePolicy(DemoSoapMessageMapper demoSoapMessageMapper) {
+    public DemoSoapFailureContractRoutePolicy(
+      DemoSoapMessageMapper demoSoapMessageMapper,
+      IntegrationExceptionMapper integrationExceptionMapper) {
+        super(integrationExceptionMapper);
         this.demoSoapMessageMapper = demoSoapMessageMapper;
     }
 

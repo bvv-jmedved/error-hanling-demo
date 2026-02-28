@@ -14,7 +14,7 @@ public class DemoFtpSenderRouteBuilder extends BaseSenderRouteBuilder {
     }
 
     @Override
-    protected void config() {
+    protected void configureRoutes() {
         from("direct:demo-ftp-sender")
           .routeId("demo-ftp-sender")
           .process(failureTriggerParser)

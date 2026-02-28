@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
-import java.lang.reflect.Field;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
@@ -14,15 +13,14 @@ import org.springframework.http.HttpStatus;
 class FailureContractRoutePolicyTest {
 
     @Test
-    void shouldApplyFailureContractOnlyOnceForSameExchange() throws Exception {
-        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy();
+    void shouldApplyFailureContractOnlyOnceForSameExchange() {
         CountingIntegrationExceptionMapper mapper = new CountingIntegrationExceptionMapper(exception -> new IntegrationException(
           HttpStatus.BAD_GATEWAY,
           HttpStatus.BAD_GATEWAY.name(),
           exception == null ? "unknown" : exception.getMessage(),
           exception
         ));
-        setIntegrationExceptionMapper(policy, mapper);
+        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy(mapper);
 
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
 
@@ -48,11 +46,10 @@ class FailureContractRoutePolicyTest {
     }
 
     @Test
-    void shouldGiveAbsolutePrecedenceToOverrideWhenExceptionCaughtAlsoExists() throws Exception {
-        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy();
+    void shouldGiveAbsolutePrecedenceToOverrideWhenExceptionCaughtAlsoExists() {
         CountingIntegrationExceptionMapper mapper = new CountingIntegrationExceptionMapper(
           exception -> IntegrationException.unknownError());
-        setIntegrationExceptionMapper(policy, mapper);
+        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy(mapper);
 
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         RuntimeException exceptionCaught = new RuntimeException("exception-caught-must-be-ignored");
@@ -74,15 +71,14 @@ class FailureContractRoutePolicyTest {
     }
 
     @Test
-    void shouldIgnoreInvalidOverrideAndFallbackToExceptionCaught() throws Exception {
-        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy();
+    void shouldIgnoreInvalidOverrideAndFallbackToExceptionCaught() {
         CountingIntegrationExceptionMapper mapper = new CountingIntegrationExceptionMapper(exception -> new IntegrationException(
           HttpStatus.BAD_GATEWAY,
           "MAPPED_FROM_EXCEPTION_CAUGHT",
           exception == null ? "unknown" : exception.getMessage(),
           exception
         ));
-        setIntegrationExceptionMapper(policy, mapper);
+        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy(mapper);
 
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         RuntimeException exceptionCaught = new RuntimeException("exception-caught-wins");
@@ -101,11 +97,10 @@ class FailureContractRoutePolicyTest {
     }
 
     @Test
-    void shouldIgnoreOverrideWhenExchangeIsNotFailed() throws Exception {
-        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy();
+    void shouldIgnoreOverrideWhenExchangeIsNotFailed() {
         CountingIntegrationExceptionMapper mapper = new CountingIntegrationExceptionMapper(
           exception -> IntegrationException.unknownError());
-        setIntegrationExceptionMapper(policy, mapper);
+        CountingFailureContractRoutePolicy policy = new CountingFailureContractRoutePolicy(mapper);
 
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         exchange.setProperty(
@@ -121,16 +116,12 @@ class FailureContractRoutePolicyTest {
         assertThat(exchange.getProperty(IntegrationExchangeProperties.FAILURE_HANDLED)).isNull();
     }
 
-    private static void setIntegrationExceptionMapper(
-      FailureContractRoutePolicy policy,
-      IntegrationExceptionMapper mapper) throws Exception {
-        Field field = FailureContractRoutePolicy.class.getDeclaredField("integrationExceptionMapper");
-        field.setAccessible(true);
-        field.set(policy, mapper);
-    }
-
     private static final class CountingFailureContractRoutePolicy extends FailureContractRoutePolicy {
         private int mapContractCalls;
+
+        private CountingFailureContractRoutePolicy(IntegrationExceptionMapper integrationExceptionMapper) {
+            super(integrationExceptionMapper);
+        }
 
         @Override
         protected void mapContract(IntegrationException exception, Exchange exchange) {

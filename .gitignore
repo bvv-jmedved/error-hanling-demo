@@ -34,6 +34,7 @@ build/
 
 ### Codex
 .codex/
+PLANS.md
 
 ### FTP
 ftp-home/

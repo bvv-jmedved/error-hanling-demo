@@ -6,6 +6,7 @@ import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractR
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoSoapTechnicalSender;
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -95,8 +96,9 @@ class DemoSoapFailureContractFallbackIntegrationTest {
         @Bean
         @Primary
         DemoSoapFailureContractRoutePolicy failingSoapFailureContractRoutePolicy(
-          DemoSoapMessageMapper demoSoapMessageMapper) {
-            return new DemoSoapFailureContractRoutePolicy(demoSoapMessageMapper) {
+          DemoSoapMessageMapper demoSoapMessageMapper,
+          IntegrationExceptionMapper integrationExceptionMapper) {
+            return new DemoSoapFailureContractRoutePolicy(demoSoapMessageMapper, integrationExceptionMapper) {
                 @Override
                 protected SoapError createSoapError(IntegrationException exception) {
                     throw new IllegalStateException("forced SOAP mapping failure");

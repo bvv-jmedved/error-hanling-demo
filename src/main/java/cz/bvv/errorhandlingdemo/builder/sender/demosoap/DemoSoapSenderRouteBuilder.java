@@ -17,7 +17,7 @@ public class DemoSoapSenderRouteBuilder extends BaseSoapSenderRouteBuilder {
     }
 
     @Override
-    public void config() {
+    public void configureRoutes() {
         from("direct:demo-soap-sender")
           .routeId("demo-soap-sender")
           .process(exchange -> {

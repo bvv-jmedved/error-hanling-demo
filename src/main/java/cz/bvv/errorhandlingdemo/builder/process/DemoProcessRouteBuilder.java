@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
     @Override
-    protected void config() {
+    protected void configureRoutes() {
 
         from("direct:demo-process")
           .routeId("demo-process")

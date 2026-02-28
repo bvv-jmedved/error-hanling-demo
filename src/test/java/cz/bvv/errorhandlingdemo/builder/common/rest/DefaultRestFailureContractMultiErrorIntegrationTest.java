@@ -77,7 +77,7 @@ class DefaultRestFailureContractMultiErrorIntegrationTest {
         }
 
         @Override
-        protected void config() {
+        protected void configureRoutes() {
             from("rest:post:/td024")
               .routeId("td024-sender")
               .process(exchange -> {

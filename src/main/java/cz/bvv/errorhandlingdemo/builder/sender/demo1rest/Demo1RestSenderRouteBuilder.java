@@ -12,7 +12,7 @@ public class Demo1RestSenderRouteBuilder extends BaseRestSenderRouteBuilder {
     }
 
     @Override
-    public void config() {
+    public void configureRoutes() {
 
         from("direct:demo-sender")
           .routeId("demo-sender")

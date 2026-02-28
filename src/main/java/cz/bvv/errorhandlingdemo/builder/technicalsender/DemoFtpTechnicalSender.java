@@ -1,13 +1,20 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.ftp.FtpRuntimeSettings;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DemoFtpTechnicalSender extends BaseTechnicalSenderRouteBuilder {
+    private final FtpRuntimeSettings ftpRuntimeSettings;
+
+    public DemoFtpTechnicalSender(FtpRuntimeSettings ftpRuntimeSettings) {
+        this.ftpRuntimeSettings = ftpRuntimeSettings;
+    }
+
     @Override
-    protected void config() {
-        from("ftp://user@localhost:2121/test"
+    protected void configureRoutes() {
+        from("ftp://user@localhost:" + ftpRuntimeSettings.port() + "/test"
             + "?password=password"
             + "&passiveMode=true"
             + "&binary=true"

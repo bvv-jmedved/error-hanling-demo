@@ -2,16 +2,15 @@ package cz.bvv.errorhandlingdemo.builder.common.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Component
 @Scope("prototype")
 public abstract class RestFailureContractRoutePolicy<T> extends FailureContractRoutePolicy {
@@ -28,8 +27,14 @@ public abstract class RestFailureContractRoutePolicy<T> extends FailureContractR
       """.trim();
     private static final String FALLBACK_RESPONSE_TEXT = "Internal error while preparing error response";
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    protected RestFailureContractRoutePolicy(
+      ObjectMapper objectMapper,
+      IntegrationExceptionMapper integrationExceptionMapper) {
+        super(integrationExceptionMapper);
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     protected void mapContract(IntegrationException exception,  Exchange exchange) {
