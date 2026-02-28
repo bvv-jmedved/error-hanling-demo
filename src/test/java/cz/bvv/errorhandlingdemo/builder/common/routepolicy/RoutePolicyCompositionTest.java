@@ -39,7 +39,7 @@ class RoutePolicyCompositionTest {
 
         builder.configure();
 
-        List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().get(0).getRoutePolicies();
+        List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies();
         assertThat(policies).hasSize(2);
         assertThat(policies.get(0)).isInstanceOf(DummyFailureContractRoutePolicy.class);
         assertThat(policies.get(1)).isInstanceOf(LoggingRoutePolicy.class);
@@ -56,9 +56,9 @@ class RoutePolicyCompositionTest {
 
         builder.configure();
 
-        List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().get(0).getRoutePolicies();
+        List<RoutePolicy> policies = builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies();
         assertThat(policies).hasSize(1);
-        assertThat(policies.get(0)).isInstanceOf(LoggingRoutePolicy.class);
+        assertThat(policies.getFirst()).isInstanceOf(LoggingRoutePolicy.class);
     }
 
     private static void setModules(BaseRouteBuilder builder, List<RouteConfigurationModule> modules) throws Exception {

@@ -97,7 +97,6 @@ public class DemoSoapMessageMapper {
             try {
                 status = Integer.valueOf(statusToken.trim());
             } catch (NumberFormatException ignored) {
-                status = null;
             }
         }
 

@@ -42,22 +42,7 @@ class DemoSoapFailureContractFallbackIntegrationTest {
 
     @Test
     void shouldFallbackToInternalErrorSoapFaultWhenSoapMappingFails() throws Exception {
-        ResponseEntity<String> response = callSoap("""
-          <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dem="urn:error-handling-demo:soap">
-            <soap:Body>
-              <dem:processDemo>
-                  <dem:request>
-                    <dem:payload>demo</dem:payload>
-                  </dem:request>
-                  <dem:failure>
-                    <dem:step>technical-call</dem:step>
-                    <dem:type>http</dem:type>
-                    <dem:status>500</dem:status>
-                  </dem:failure>
-              </dem:processDemo>
-            </soap:Body>
-          </soap:Envelope>
-          """);
+        ResponseEntity<String> response = callSoap();
 
         assertThat(response.getBody()).isNotBlank();
         assertThat(xpath(response.getBody(), "//*[local-name()='Fault']")).isNotBlank();
@@ -68,7 +53,7 @@ class DemoSoapFailureContractFallbackIntegrationTest {
           .isNotBlank();
     }
 
-    private ResponseEntity<String> callSoap(String soapBody) {
+    private ResponseEntity<String> callSoap() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.TEXT_XML);
         headers.setAccept(java.util.List.of(MediaType.TEXT_XML));
@@ -77,7 +62,22 @@ class DemoSoapFailureContractFallbackIntegrationTest {
         return restTemplate.exchange(
           "http://localhost:" + port + DemoSoapTechnicalSender.SOAP_ENDPOINT,
           HttpMethod.POST,
-          new HttpEntity<>(soapBody, headers),
+          new HttpEntity<>("""
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dem="urn:error-handling-demo:soap">
+              <soap:Body>
+                <dem:processDemo>
+                    <dem:request>
+                      <dem:payload>demo</dem:payload>
+                    </dem:request>
+                    <dem:failure>
+                      <dem:step>technical-call</dem:step>
+                      <dem:type>http</dem:type>
+                      <dem:status>500</dem:status>
+                    </dem:failure>
+                </dem:processDemo>
+              </soap:Body>
+            </soap:Envelope>
+            """, headers),
           String.class
         );
     }

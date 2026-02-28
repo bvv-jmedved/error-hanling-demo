@@ -1,5 +1,10 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class DemoSoapResponse {
     private String status;
 
@@ -10,11 +15,4 @@ public class DemoSoapResponse {
         this.status = status;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

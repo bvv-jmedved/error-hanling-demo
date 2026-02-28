@@ -30,6 +30,6 @@ public class DefaultSoapFailureContractRoutePolicy
 
     @Override
     protected List<SoapErrorEntry> getSoapErrors(DefaultSoapError errorDto) {
-        return errorDto.getErrors();
+        return errorDto.errors();
     }
 }

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;
-import org.apache.camel.Exchange;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;

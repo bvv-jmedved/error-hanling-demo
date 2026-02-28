@@ -32,7 +32,7 @@ class DemoSoapDefaultFailureContractIntegrationTest {
 
     @Test
     void shouldReturnSoapSuccessOnHappyPath() throws Exception {
-        ResponseEntity<String> response = callSoap(buildRequestEnvelope(null, null, null, null));
+        ResponseEntity<String> response = callSoap(buildRequestEnvelope(null, null, null));
 
         assertThat(response.getBody()).isNotBlank();
         assertThat(response.getHeaders().getContentType()).isNotNull();
@@ -44,7 +44,7 @@ class DemoSoapDefaultFailureContractIntegrationTest {
     @Test
     void shouldReturnSoapFaultWithValidationFailedCodeForSenderValidationFailure() throws Exception {
         ResponseEntity<String> response = callSoap(
-          buildRequestEnvelope("sender-validate", "business-validation", null, null)
+          buildRequestEnvelope("sender-validate", "business-validation", null)
         );
 
         assertThat(response.getBody()).isNotBlank();
@@ -59,7 +59,7 @@ class DemoSoapDefaultFailureContractIntegrationTest {
     @Test
     void shouldReturnSoapFaultWithDownstreamHttp500CodeForTechnicalFailure() throws Exception {
         ResponseEntity<String> response = callSoap(
-          buildRequestEnvelope("technical-call", "http", 500, null)
+          buildRequestEnvelope("technical-call", "http", 500)
         );
 
         assertThat(response.getBody()).isNotBlank();
@@ -88,14 +88,13 @@ class DemoSoapDefaultFailureContractIntegrationTest {
     private static String buildRequestEnvelope(
       String failureStep,
       String failureType,
-      Integer failureStatus,
-      String failureBody) {
+      Integer failureStatus) {
         String failureNode = "";
-        if (failureStep != null || failureType != null || failureStatus != null || failureBody != null) {
+        if (failureStep != null || failureType != null || failureStatus != null || null != null) {
             String stepNode = failureStep == null ? "" : "<dem:step>" + failureStep + "</dem:step>";
             String typeNode = failureType == null ? "" : "<dem:type>" + failureType + "</dem:type>";
             String statusNode = failureStatus == null ? "" : "<dem:status>" + failureStatus + "</dem:status>";
-            String bodyNode = failureBody == null ? "" : "<dem:body>" + failureBody + "</dem:body>";
+            String bodyNode = null == null ? "" : "<dem:body>" + null + "</dem:body>";
             failureNode = """
               <dem:failure>
                 %s

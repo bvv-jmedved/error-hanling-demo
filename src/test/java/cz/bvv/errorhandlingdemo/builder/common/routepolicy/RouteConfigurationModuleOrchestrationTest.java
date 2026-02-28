@@ -27,7 +27,7 @@ class RouteConfigurationModuleOrchestrationTest {
 
         assertThat(invocationOrder).containsExactly("first:1", "second:1");
         assertThat(builder.getRouteCollection().getRoutes()).hasSize(1);
-        assertThat(builder.getRouteCollection().getRoutes().get(0).getId()).isEqualTo("module-order-test-route");
+        assertThat(builder.getRouteCollection().getRoutes().getFirst().getId()).isEqualTo("module-order-test-route");
     }
 
     private static void setModules(BaseRouteBuilder builder, List<RouteConfigurationModule> modules) throws Exception {
@@ -36,25 +36,21 @@ class RouteConfigurationModuleOrchestrationTest {
         modulesField.set(builder, modules);
     }
 
-    private static final class RecordingModule implements RouteConfigurationModule {
-        private final String name;
-        private final List<String> invocationOrder;
-
-        private RecordingModule(String name, List<String> invocationOrder) {
-            this.name = name;
-            this.invocationOrder = invocationOrder;
-        }
+    private record RecordingModule(
+      String name,
+      List<String> invocationOrder
+    ) implements RouteConfigurationModule {
 
         @Override
-        public boolean supports(RouteBuilder builder) {
-            return true;
-        }
+            public boolean supports(RouteBuilder builder) {
+                return true;
+            }
 
-        @Override
-        public void afterRoutes(RouteBuilder builder) {
-            invocationOrder.add(name + ":" + builder.getRouteCollection().getRoutes().size());
+            @Override
+            public void afterRoutes(RouteBuilder builder) {
+                invocationOrder.add(name + ":" + builder.getRouteCollection().getRoutes().size());
+            }
         }
-    }
 
     private static final class TestRouteBuilder extends BaseRouteBuilder {
         @Override

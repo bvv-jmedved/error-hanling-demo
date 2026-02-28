@@ -26,7 +26,7 @@ class FtpSenderAsyncFileMoveIntegrationTest {
     @BeforeEach
     void cleanFolders() throws IOException {
         Files.createDirectories(INPUT_DIR);
-        deleteChildren(INPUT_DIR);
+        deleteChildren();
         Files.createDirectories(INPUT_DIR);
         Files.createDirectories(ARCHIVE_DIR);
         Files.createDirectories(ERROR_DIR);
@@ -89,10 +89,10 @@ class FtpSenderAsyncFileMoveIntegrationTest {
         }
     }
 
-    private static void deleteChildren(Path root) throws IOException {
-        try (var stream = Files.walk(root)) {
+    private static void deleteChildren() throws IOException {
+        try (var stream = Files.walk(FtpSenderAsyncFileMoveIntegrationTest.INPUT_DIR)) {
             stream
-              .filter(path -> !path.equals(root))
+              .filter(path -> !path.equals(FtpSenderAsyncFileMoveIntegrationTest.INPUT_DIR))
               .sorted(Comparator.reverseOrder())
               .forEach(path -> {
                   try {

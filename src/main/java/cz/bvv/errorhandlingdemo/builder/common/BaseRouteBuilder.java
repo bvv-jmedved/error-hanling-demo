@@ -20,7 +20,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder implements Monitorin
     private Environment environment;
 
     @Autowired(required = false)
-    private List<RouteConfigurationModule> modules = List.of();
+    private final List<RouteConfigurationModule> modules = List.of();
 
     @Override
     public final void configure() throws Exception {
@@ -30,7 +30,7 @@ public abstract class BaseRouteBuilder extends RouteBuilder implements Monitorin
           .forEach(module -> module.afterRoutes(this));
     }
 
-    protected abstract void configureRoutes() throws Exception;
+    protected abstract void configureRoutes();
 
     protected Processor pocStep(FailureStep step) {
         FailureInjector injector = new FailureInjector(step);

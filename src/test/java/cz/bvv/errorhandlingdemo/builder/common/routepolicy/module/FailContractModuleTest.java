@@ -41,8 +41,8 @@ class FailContractModuleTest {
         module.afterRoutes(builder);
 
         assertThat(builder.getRouteCollection().getRoutes()).hasSize(1);
-        assertThat(builder.getRouteCollection().getRoutes().get(0).getRoutePolicies()).hasSize(1);
-        assertThat(builder.getRouteCollection().getRoutes().get(0).getRoutePolicies().get(0)).isSameAs(policy);
+        assertThat(builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies()).hasSize(1);
+        assertThat(builder.getRouteCollection().getRoutes().getFirst().getRoutePolicies().getFirst()).isSameAs(policy);
     }
 
     private static final class SyncRouteBuilder extends BaseSyncSenderRouteBuilder {

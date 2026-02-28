@@ -18,7 +18,7 @@ public final class UserManager implements org.apache.ftpserver.ftplet.UserManage
     }
 
     @Override
-    public void save(User user) throws FtpException {
+    public void save(User user) {
         put(user);
     }
 
