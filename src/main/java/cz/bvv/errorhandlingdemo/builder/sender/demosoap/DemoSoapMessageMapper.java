@@ -2,9 +2,9 @@ package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.DemoSoapResponse;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapFailureTrigger;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.soap.model.DemoSoapResponse;
 import cz.bvv.errorhandlingdemo.support.soap.SoapXmlSupport;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender.soap;
 
-import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.DemoSoapRequest;
-import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.DemoSoapResponse;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.soap.model.DemoSoapRequest;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.soap.model.DemoSoapResponse;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebResult;

@@ -1,9 +1,8 @@
-package cz.bvv.errorhandlingdemo.support.retry;
+package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import cz.bvv.errorhandlingdemo.policy.route.logging.CorrelationIdResolver;
 import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
-import cz.bvv.errorhandlingdemo.policy.route.logging.RecoveryAction;
 import cz.bvv.errorhandlingdemo.support.auth.TokenManager;
 import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import org.apache.camel.Exchange;
@@ -12,10 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Retry support component used by receiver-side error handling.
+ * Receiver retry strategy component for token-refresh based recovery.
  *
- * <p>The implementation demonstrates how retry decisions are extracted from route DSL into a
- * focused, testable service.
+ * <p>The implementation keeps retry conditions and side effects outside route DSL so retry logic
+ * remains explicit, testable, and reusable by receiver routes.
  */
 @Component
 public class TokenRefreshRetryDecider {

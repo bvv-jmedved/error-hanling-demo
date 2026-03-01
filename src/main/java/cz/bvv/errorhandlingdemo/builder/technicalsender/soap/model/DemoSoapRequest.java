@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.sender.demosoap.model;
+package cz.bvv.errorhandlingdemo.builder.technicalsender.soap.model;
 
 import lombok.Getter;
 import lombok.Setter;

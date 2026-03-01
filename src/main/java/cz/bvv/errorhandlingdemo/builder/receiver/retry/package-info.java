@@ -1,2 +1,2 @@
-/** Receiver retry extension points and helpers for retry-aware route behavior. */
+/** Receiver retry strategies and retry detail action models for receiver route error handling. */
 package cz.bvv.errorhandlingdemo.builder.receiver.retry;
