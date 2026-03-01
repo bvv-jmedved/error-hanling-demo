@@ -2,6 +2,7 @@ package cz.bvv.errorhandlingdemo.policy.route.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import org.apache.camel.builder.RouteBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,7 @@ class LoggingRoutePolicyFactoryTest {
 
             assertThat(policy.getService()).isEqualTo("NonAnnotatedBuilder");
             assertThat(policy.isCritical()).isFalse();
+            assertThat(policy.getFlowDirection()).isEqualTo(FlowDirectionConfig.EMPTY);
             assertThat(policy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.RUNNING);
             assertThat(policy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.RUNNING);
             assertThat(policy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILURE);
@@ -31,6 +33,9 @@ class LoggingRoutePolicyFactoryTest {
 
             assertThat(policy.getService()).isEqualTo("orders-api");
             assertThat(policy.isCritical()).isTrue();
+            assertThat(policy.getFlowDirection().source()).isEqualTo("source-a");
+            assertThat(policy.getFlowDirection().target()).isEqualTo("target-b");
+            assertThat(policy.getFlowDirection().process()).isEqualTo("create-order");
             assertThat(policy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.STARTED);
             assertThat(policy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.COMPLETED);
             assertThat(policy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILED);
@@ -43,6 +48,7 @@ class LoggingRoutePolicyFactoryTest {
 
             assertThat(policy.getService()).isEqualTo("BlankServiceAnnotatedBuilder");
             assertThat(policy.isCritical()).isTrue();
+            assertThat(policy.getFlowDirection()).isEqualTo(FlowDirectionConfig.EMPTY);
             assertThat(policy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.RUNNING);
             assertThat(policy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.RUNNING);
             assertThat(policy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILURE);
@@ -56,6 +62,7 @@ class LoggingRoutePolicyFactoryTest {
     }
 
     @Monitored(service = "orders-api", critical = true)
+    @FlowDirection(source = "source-a", target = "target-b", process = "create-order")
     @LoggingStatus(
       onStart = ExchangeLoggingStatus.STARTED,
       onComplete = ExchangeLoggingStatus.COMPLETED,

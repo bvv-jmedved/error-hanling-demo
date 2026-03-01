@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demoftp;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Monitored(service = "sender-demo-ftp")
+@FlowDirection(source = "ftp-client", target = "order-system", process = "create-order")
 public class DemoFtpSenderRouteBuilder extends BaseSenderRouteBuilder {
 
     private final DemoFtpFailureTriggerParser failureTriggerParser;

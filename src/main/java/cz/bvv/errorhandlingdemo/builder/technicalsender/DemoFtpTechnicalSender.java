@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseTechnicalSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
 import cz.bvv.errorhandlingdemo.policy.route.logging.LoggingStatus;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Monitored(service = "technical-sender-demo-ftp", critical = true)
+@FlowDirection(source = "ftp-client", target = "order-system", process = "create-order")
 @LoggingStatus(
   onStart = ExchangeLoggingStatus.STARTED,
   onComplete = ExchangeLoggingStatus.COMPLETED,

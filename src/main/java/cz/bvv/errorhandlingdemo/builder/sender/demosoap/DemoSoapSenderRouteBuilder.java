@@ -1,6 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import cz.bvv.errorhandlingdemo.builder.base.soap.BaseSoapSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Monitored(service = "sender-demo-soap")
+@FlowDirection(source = "soap-client", target = "order-system", process = "create-order")
 public class DemoSoapSenderRouteBuilder extends BaseSoapSenderRouteBuilder {
     private final DemoSoapMessageMapper demoSoapMessageMapper;
     private final FailureStepProcessorFactory failureStepProcessorFactory;

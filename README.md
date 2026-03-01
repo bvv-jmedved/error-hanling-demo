@@ -55,8 +55,10 @@ Deterministic outcome:
 
 Logging is annotation-driven and split into two concerns:
 - concrete `RouteBuilder` classes use `@Monitored(service = "...", critical = ...)`
+- concrete `RouteBuilder` classes can also use `@FlowDirection(source = "...", target = "...", process = "...")`
 - `service` is an explicit stable identifier
 - `critical` marks externally exposed ingress routes (`true`) vs internal orchestration routes (`false`)
+- `source` = code of source system, `target` = code of target system, `process` = end-to-end business process code
 - optional `@LoggingStatus(onStart = ..., onComplete = ..., onFailure = ...)` configures exchange status semantics
   - defaults: `onStart=RUNNING`, `onComplete=RUNNING`, `onFailure=FAILURE`
   - ingress technical sender routes override defaults to `STARTED/COMPLETED/FAILED`
@@ -65,7 +67,12 @@ Logging is annotation-driven and split into two concerns:
 
 For every exchange, the logging policy emits canonical `event=process_status` records:
 - status is logged only when it changed (so the last log per `correlationId` is the current process status)
-- log payload is intentionally minimal for monitoring: `status`, `routeId`, `correlationId`
+- flow direction fields are logged for monitoring filters: `source`, `target`, `process`
+- log payload: `status`, `routeId`, `source`, `target`, `process`, `correlationId`
+
+Flow direction values are written to message headers and mirrored into exchange properties:
+- headers: `X-Flow-Source`, `X-Flow-Target`, `X-Flow-Process`
+- properties: `integration.flow.source`, `integration.flow.target`, `integration.flow.process`
 
 Token refresh retry flow emits additional `event=process_detail` logs from retry decider:
 - `detailState=RUNNING recoveryAction=TOKEN_REFRESH_START`
