@@ -1,5 +1,7 @@
-package cz.bvv.errorhandlingdemo.policy.route.logging;
+package cz.bvv.errorhandlingdemo.policy.route.logging.annotation;
 
+import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
+import cz.bvv.errorhandlingdemo.policy.route.logging.LoggingRoutePolicy;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

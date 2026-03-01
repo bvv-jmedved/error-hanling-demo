@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.foundation.annotation;
+package cz.bvv.errorhandlingdemo.policy.route.logging.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

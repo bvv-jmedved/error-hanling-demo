@@ -2,7 +2,9 @@ package cz.bvv.errorhandlingdemo.policy.route.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.LoggingStatus;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.Monitored;
 import org.apache.camel.builder.RouteBuilder;
 import org.junit.jupiter.api.Test;
 

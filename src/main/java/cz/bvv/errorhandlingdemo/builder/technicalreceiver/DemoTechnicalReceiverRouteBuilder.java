@@ -4,7 +4,7 @@ import cz.bvv.errorhandlingdemo.builder.base.BaseTechnicalReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
-import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.Monitored;
 import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import java.util.List;
 import org.springframework.stereotype.Component;

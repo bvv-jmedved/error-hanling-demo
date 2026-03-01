@@ -1,11 +1,11 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
 import cz.bvv.errorhandlingdemo.builder.base.rest.BaseRestSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
-import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.Monitored;
 import java.util.List;
 import org.springframework.stereotype.Component;
 

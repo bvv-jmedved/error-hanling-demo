@@ -1,11 +1,11 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseTechnicalSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
-import cz.bvv.errorhandlingdemo.policy.route.logging.LoggingStatus;
-import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.LoggingStatus;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.Monitored;
 import java.util.List;
 import org.springframework.stereotype.Component;
 

@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.policy.route.logging;
 
-import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.FlowDirection;
 import org.springframework.util.StringUtils;
 
 /**

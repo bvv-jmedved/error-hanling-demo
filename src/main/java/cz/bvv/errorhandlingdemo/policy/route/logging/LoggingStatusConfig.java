@@ -1,5 +1,6 @@
 package cz.bvv.errorhandlingdemo.policy.route.logging;
 
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.LoggingStatus;
 import java.util.Objects;
 
 /**

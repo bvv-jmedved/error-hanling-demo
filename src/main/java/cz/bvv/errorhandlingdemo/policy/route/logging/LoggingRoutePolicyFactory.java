@@ -1,6 +1,8 @@
 package cz.bvv.errorhandlingdemo.policy.route.logging;
 
-import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.FlowDirection;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.LoggingStatus;
+import cz.bvv.errorhandlingdemo.policy.route.logging.annotation.Monitored;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
