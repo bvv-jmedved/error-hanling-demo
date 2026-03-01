@@ -1,6 +1,6 @@
-package cz.bvv.errorhandlingdemo.builder.common.soap;
+package cz.bvv.errorhandlingdemo.builder.base.soap;
 
-import cz.bvv.errorhandlingdemo.builder.common.BaseSyncSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseSyncSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.policy.route.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import java.util.List;

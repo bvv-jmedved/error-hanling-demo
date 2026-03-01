@@ -2,7 +2,7 @@ package cz.bvv.errorhandlingdemo.policy.route;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.BaseRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseRouteBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.camel.builder.RouteBuilder;

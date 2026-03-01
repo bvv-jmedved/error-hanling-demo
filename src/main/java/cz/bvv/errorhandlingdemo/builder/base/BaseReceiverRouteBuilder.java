@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common;
+package cz.bvv.errorhandlingdemo.builder.base;
 
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import java.util.List;

@@ -2,8 +2,8 @@ package cz.bvv.errorhandlingdemo.policy.route;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.soap.BaseSoapSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.rest.BaseRestSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.soap.BaseSoapSenderRouteBuilder;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo2rest;
 
-import cz.bvv.errorhandlingdemo.builder.common.rest.BaseRestSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.rest.BaseRestSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.rest.DefaultRestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;

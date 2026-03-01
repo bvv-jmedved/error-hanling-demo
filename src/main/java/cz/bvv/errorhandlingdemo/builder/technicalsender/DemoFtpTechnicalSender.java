@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
-import cz.bvv.errorhandlingdemo.builder.common.BaseTechnicalSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseTechnicalSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
 import cz.bvv.errorhandlingdemo.policy.route.logging.LoggingStatus;

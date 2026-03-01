@@ -3,8 +3,8 @@ package cz.bvv.errorhandlingdemo.policy.route;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.common.BaseRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.BaseSyncSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseSyncSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.failure.DefaultIntegrationExceptionMapperImpl;
 import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;

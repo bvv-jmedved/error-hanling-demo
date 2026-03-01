@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.receiver;
 
-import cz.bvv.errorhandlingdemo.builder.common.BaseReceiverRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.builder.receiver.processor.DownstreamBusinessErrorProcessor;

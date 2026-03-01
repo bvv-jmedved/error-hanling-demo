@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demoftp;
 
-import cz.bvv.errorhandlingdemo.builder.common.BaseSenderRouteBuilder;
+import cz.bvv.errorhandlingdemo.builder.base.BaseSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
