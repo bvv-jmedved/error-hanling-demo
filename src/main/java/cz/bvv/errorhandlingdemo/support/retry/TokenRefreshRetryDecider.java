@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.receiver.retry;
+package cz.bvv.errorhandlingdemo.support.retry;
 
 import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.support.auth.TokenManager;

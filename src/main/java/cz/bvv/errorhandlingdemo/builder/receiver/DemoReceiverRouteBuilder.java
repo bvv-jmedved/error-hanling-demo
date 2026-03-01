@@ -4,7 +4,7 @@ import cz.bvv.errorhandlingdemo.builder.base.BaseReceiverRouteBuilder;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.builder.receiver.processor.DownstreamBusinessErrorProcessor;
-import cz.bvv.errorhandlingdemo.builder.receiver.retry.TokenRefreshRetryDecider;
+import cz.bvv.errorhandlingdemo.support.retry.TokenRefreshRetryDecider;
 import java.util.List;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
