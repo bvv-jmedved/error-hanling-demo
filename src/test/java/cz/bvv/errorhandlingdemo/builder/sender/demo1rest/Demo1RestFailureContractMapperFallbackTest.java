@@ -22,6 +22,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+
+/**
+ * Demo1RestFailureContractMapperFallbackTest contract test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * failure-contract mapping and exception-to-contract translation. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(Demo1RestFailureContractMapperFallbackTest.MappingFailureConfig.class)

@@ -10,6 +10,12 @@ import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
+/**
+ * Concrete route definition used in the error-handling architecture walkthrough.
+ *
+ * <p>The class intentionally focuses on Camel DSL only and delegates cross-cutting behavior
+ * (logging, failure-contract mapping, monitoring status) to policy modules.
+ */
 @Component
 @Monitored(service = "sender-demo2-rest")
 @FlowDirection(source = "rest-client", target = "order-system", process = "create-order")

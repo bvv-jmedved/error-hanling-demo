@@ -17,6 +17,12 @@ import org.springframework.stereotype.Component;
   onComplete = ExchangeLoggingStatus.COMPLETED,
   onFailure = ExchangeLoggingStatus.FAILED
 )
+/**
+ * DemoRestTechnicalSender is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 public class DemoRestTechnicalSender extends BaseTechnicalSenderRouteBuilder {
     public static final String DEMO1_ENDPOINT = "/demo1";
     public static final String DEMO2_ENDPOINT = "/demo2";

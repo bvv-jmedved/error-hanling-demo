@@ -5,6 +5,12 @@ import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * DemoSoapEndpointConfig is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 @Configuration
 public class DemoSoapEndpointConfig {
     public static final String ENDPOINT_BEAN_ID = "demoSoapEndpoint";

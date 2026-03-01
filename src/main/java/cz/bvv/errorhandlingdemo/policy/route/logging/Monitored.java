@@ -5,6 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Declares monitoring metadata consumed by {@link LoggingRoutePolicyFactory}.
+ *
+ * <p>Metadata allows stable service naming and criticality flags independent
+ * from concrete Java class names.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Monitored {

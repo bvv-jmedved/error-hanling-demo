@@ -16,6 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+
+/**
+ * FtpSenderAsyncFileMoveIntegrationTest integration test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 class FtpSenderAsyncFileMoveIntegrationTest {

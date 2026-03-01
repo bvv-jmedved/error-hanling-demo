@@ -14,6 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+
+/**
+ * RouteConfigurationModuleSpringIntegrationTest integration test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class RouteConfigurationModuleSpringIntegrationTest {
 

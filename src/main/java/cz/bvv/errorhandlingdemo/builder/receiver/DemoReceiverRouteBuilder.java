@@ -9,6 +9,12 @@ import java.util.List;
 import org.apache.camel.http.base.HttpOperationFailedException;
 import org.springframework.stereotype.Component;
 
+/**
+ * Concrete route definition used in the error-handling architecture walkthrough.
+ *
+ * <p>The class intentionally focuses on Camel DSL only and delegates cross-cutting behavior
+ * (logging, failure-contract mapping, monitoring status) to policy modules.
+ */
 @Component
 @Monitored(service = "receiver-demo")
 public class DemoReceiverRouteBuilder extends BaseReceiverRouteBuilder {

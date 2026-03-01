@@ -10,6 +10,12 @@ import org.apache.camel.Processor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+/**
+ * DownstreamBusinessErrorProcessor is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 @Component
 public class DownstreamBusinessErrorProcessor implements Processor {
 

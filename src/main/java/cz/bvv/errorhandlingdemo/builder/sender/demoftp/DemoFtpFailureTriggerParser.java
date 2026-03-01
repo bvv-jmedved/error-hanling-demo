@@ -5,6 +5,12 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.stereotype.Component;
 
+/**
+ * DemoFtpFailureTriggerParser is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 @Component
 public class DemoFtpFailureTriggerParser implements Processor {
     private static final Set<String> SUPPORTED_TRIGGER_HEADERS = Set.of(

@@ -9,6 +9,12 @@ import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Demo1RestFailureContractRoutePolicy is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 @Component
 @Scope("prototype")
 public class Demo1RestFailureContractRoutePolicy

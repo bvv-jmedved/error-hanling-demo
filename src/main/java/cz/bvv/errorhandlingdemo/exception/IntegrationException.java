@@ -4,6 +4,11 @@ import java.util.List;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+/**
+ * Canonical integration error model used across policy, contract, and route layers.
+ *
+ * <p>It provides a stable representation for mapping technical failures to integration responses.
+ */
 @Getter
 public class IntegrationException extends RuntimeException {
     private static final String DEFAULT_MESSAGE = "Integration error";

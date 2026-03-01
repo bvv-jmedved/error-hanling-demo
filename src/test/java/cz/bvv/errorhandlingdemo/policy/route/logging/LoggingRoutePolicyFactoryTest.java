@@ -6,6 +6,14 @@ import cz.bvv.errorhandlingdemo.foundation.annotation.FlowDirection;
 import org.apache.camel.builder.RouteBuilder;
 import org.junit.jupiter.api.Test;
 
+
+/**
+ * LoggingRoutePolicyFactoryTest architecture test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * route-policy orchestration and monitoring policy decisions. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 class LoggingRoutePolicyFactoryTest {
 
     private final LoggingRoutePolicyFactory factory = new LoggingRoutePolicyFactory(

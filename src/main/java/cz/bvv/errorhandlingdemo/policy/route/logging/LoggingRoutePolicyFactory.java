@@ -5,6 +5,12 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+/**
+ * Logging policy component used by the architecture demo.
+ *
+ * <p>This type participates in canonical process-status monitoring and demonstrates
+ * how route metadata is translated into stable operational logs.
+ */
 @Component
 public class LoggingRoutePolicyFactory {
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
@@ -20,6 +26,19 @@ public class LoggingRoutePolicyFactory {
         this.processStatusTracker = processStatusTracker;
     }
 
+    /**
+     * Creates route logging policy using annotations declared on the given builder type.
+     *
+     * <p>Factory composes:
+     * <ul>
+     *   <li>{@link Monitored} metadata (service and criticality),</li>
+     *   <li>{@link LoggingStatus} lifecycle overrides,</li>
+     *   <li>{@link FlowDirection} business flow metadata.</li>
+     * </ul>
+     *
+     * @param builder route builder for which logging policy is created
+     * @return configured logging route policy
+     */
     public LoggingRoutePolicy create(RouteBuilder builder) {
         String defaultService = builder.getClass().getSimpleName();
         Monitored monitored = builder.getClass().getAnnotation(Monitored.class);

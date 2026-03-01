@@ -5,6 +5,11 @@ import java.net.ServerSocket;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * Embedded FTP test infrastructure used by the demo runtime.
+ *
+ * <p>It allows repeatable local and test execution without external FTP dependencies.
+ */
 @Component
 public class FtpRuntimeSettings {
     private final int port;

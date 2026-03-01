@@ -1,5 +1,11 @@
 package cz.bvv.errorhandlingdemo.support.exchange;
 
+/**
+ * Canonical Camel exchange properties used by policies and contract mapping.
+ *
+ * <p>Properties mirror selected headers for resilience and cross-step access where direct
+ * message headers may not be sufficient.
+ */
 public final class IntegrationExchangeProperties {
     public static final String CORRELATION_ID = "integration.correlation.id";
     public static final String FLOW_SOURCE = "integration.flow.source";

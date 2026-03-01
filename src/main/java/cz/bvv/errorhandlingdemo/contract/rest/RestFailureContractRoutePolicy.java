@@ -11,6 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Abstract fail-contract policy for JSON/REST responses.
+ *
+ * <p>It centralizes HTTP status/body mapping and provides a safe fallback response when
+ * contract serialization fails.
+ *
+ * @param <T> DTO type representing REST error payload contract
+ */
 @Component
 @Scope("prototype")
 public abstract class RestFailureContractRoutePolicy<T> extends BaseFailContractRoutePolicy {
@@ -56,5 +64,11 @@ public abstract class RestFailureContractRoutePolicy<T> extends BaseFailContract
         }
     }
 
+    /**
+     * Creates the transport error DTO from canonical {@link IntegrationException}.
+     *
+     * @param exception canonical integration exception
+     * @return transport-specific REST error DTO
+     */
     protected abstract T createRestError(IntegrationException exception);
 }

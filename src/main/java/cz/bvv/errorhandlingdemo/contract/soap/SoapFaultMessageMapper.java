@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * SOAP failure-contract component used by sender routes.
+ *
+ * <p>It illustrates centralized SOAP fault generation in the contract layer.
+ */
 @Component
 public class SoapFaultMessageMapper {
     private static final String DETAIL_NS = "urn:error-handling-demo:soap:fault";

@@ -6,6 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+/**
+ * Failure-contract mapping component in the architecture demo.
+ *
+ * <p>Types in this package define how technical exceptions are transformed
+ * into integration-facing error contracts outside route DSL code.
+ */
 @Component
 public class DefaultIntegrationExceptionMapperImpl implements IntegrationExceptionMapper {
     private static final String DOWNSTREAM_HTTP_ERROR_PREFIX = "DOWNSTREAM_HTTP_";

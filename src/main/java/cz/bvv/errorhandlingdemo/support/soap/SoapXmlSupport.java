@@ -9,12 +9,24 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Small SOAP XML utility used by SOAP failure-contract mappers.
+ *
+ * <p>This helper keeps DOM creation details outside policy classes so route/contract code
+ * remains focused on integration semantics.
+ */
 public final class SoapXmlSupport {
     public static final String SOAP_NS = "http://schemas.xmlsoap.org/soap/envelope/";
 
     private SoapXmlSupport() {
     }
 
+    /**
+     * Creates namespace-aware DOM document.
+     *
+     * @return empty namespace-aware DOM document
+     * @throws Exception when DOM factory cannot create a document builder
+     */
     public static Document newDocument() throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -47,6 +59,13 @@ public final class SoapXmlSupport {
         return new SoapFaultSkeleton(document, detailRoot);
     }
 
+    /**
+     * Serializes DOM document to XML string without XML declaration.
+     *
+     * @param document DOM document to serialize
+     * @return XML string representation
+     * @throws Exception when XML transformer fails
+     */
     public static String toXmlString(Document document) throws Exception {
         StringWriter writer = new StringWriter();
         var transformer = TransformerFactory.newInstance().newTransformer();
@@ -55,6 +74,12 @@ public final class SoapXmlSupport {
         return writer.toString();
     }
 
+    /**
+     * Structured result returned by {@link #newSoapFaultSkeleton(String, String, String)}.
+     *
+     * @param document created SOAP document
+     * @param detailRoot root XML element where caller appends transport-specific fault entries
+     */
     public record SoapFaultSkeleton(Document document, Element detailRoot) {
     }
 }

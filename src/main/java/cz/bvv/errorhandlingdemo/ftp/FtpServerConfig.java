@@ -15,6 +15,11 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 
+/**
+ * Embedded FTP test infrastructure used by the demo runtime.
+ *
+ * <p>It allows repeatable local and test execution without external FTP dependencies.
+ */
 @Configuration
 public class FtpServerConfig {
     private final FtpRuntimeSettings ftpRuntimeSettings;
@@ -23,12 +28,18 @@ public class FtpServerConfig {
         this.ftpRuntimeSettings = ftpRuntimeSettings;
     }
 
+    /**
+     * Builds and starts embedded FTP server used by local demo runs and integration tests.
+     *
+     * @return configured embedded FTP server
+     * @throws Exception when server initialization fails
+     */
     @Bean(initMethod = "start", destroyMethod = "stop")
     public FtpServer ftpServer() throws Exception {
 
         FtpServerFactory factory = new FtpServerFactory();
 
-        // Listener
+        // Configure listener and passive data channel settings.
         ListenerFactory lf = new ListenerFactory();
         lf.setPort(ftpRuntimeSettings.port());
         DataConnectionConfigurationFactory dccf = new DataConnectionConfigurationFactory();
@@ -38,7 +49,7 @@ public class FtpServerConfig {
         lf.setDataConnectionConfiguration(dccf.createDataConnectionConfiguration());
         factory.addListener("default", lf.createListener());
 
-        // Connection config
+        // Configure global FTP server connection limits.
         ConnectionConfigFactory ccf = new ConnectionConfigFactory();
         ccf.setAnonymousLoginEnabled(false);
         ccf.setMaxAnonymousLogins(0);
@@ -46,10 +57,10 @@ public class FtpServerConfig {
         ccf.setMaxThreads(100);
         factory.setConnectionConfig(ccf.createConnectionConfig());
 
-        // Home dir
+        // Ensure FTP home directory exists.
         Files.createDirectories(new File("ftp-home").toPath());
 
-        // User manager
+        // Register in-memory demo user manager.
         UserManager userManager = new UserManager();
 
         BaseUser user = new BaseUser();

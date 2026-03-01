@@ -16,6 +16,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+/**
+ * DemoSoapMessageMapper is part of the Camel error-handling architecture demo.
+ *
+ * <p>The type is documented to serve as an implementation guide for teams that want
+ * to apply the same separation of route DSL, policy composition, and failure contracts.
+ */
 @Component
 public class DemoSoapMessageMapper {
     private static final String HEADER_THROW_IN = "X_THROW_IN";

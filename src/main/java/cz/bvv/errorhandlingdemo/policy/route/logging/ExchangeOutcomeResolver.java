@@ -4,9 +4,24 @@ import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
+/**
+ * Logging policy component used by the architecture demo.
+ *
+ * <p>This type participates in canonical process-status monitoring and demonstrates
+ * how route metadata is translated into stable operational logs.
+ */
 @Component
 public class ExchangeOutcomeResolver {
 
+    /**
+     * Determines whether exchange should be treated as failed from monitoring perspective.
+     *
+     * <p>Checks both Camel failure flags and architecture-specific properties
+     * set by fail-contract mapping.
+     *
+     * @param exchange Camel exchange being completed
+     * @return {@code true} when exchange represents failed outcome
+     */
     public boolean isFailure(Exchange exchange) {
         if (exchange.isFailed()) {
             return true;

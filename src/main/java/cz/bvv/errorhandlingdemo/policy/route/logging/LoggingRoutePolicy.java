@@ -10,6 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+/**
+ * Logging policy component used by the architecture demo.
+ *
+ * <p>The policy emits canonical {@code event=process_status} logs and keeps status updates
+ * idempotent per exchange. It also projects flow direction metadata from annotations
+ * into headers/properties so monitoring survives cross-component exchange handoffs.
+ */
 @Getter
 public class LoggingRoutePolicy extends RoutePolicySupport {
     private static final Logger LOG = LoggerFactory.getLogger(LoggingRoutePolicy.class);

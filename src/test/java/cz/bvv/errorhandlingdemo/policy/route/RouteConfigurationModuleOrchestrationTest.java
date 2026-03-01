@@ -9,6 +9,14 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.junit.jupiter.api.Test;
 
+
+/**
+ * RouteConfigurationModuleOrchestrationTest architecture test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * route-policy orchestration and monitoring policy decisions. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 class RouteConfigurationModuleOrchestrationTest {
 
     @Test

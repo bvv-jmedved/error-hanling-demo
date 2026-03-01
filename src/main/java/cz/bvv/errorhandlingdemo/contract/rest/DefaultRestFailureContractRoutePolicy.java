@@ -7,6 +7,11 @@ import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * REST failure-contract component used by sender routes.
+ *
+ * <p>It demonstrates response shaping that keeps route DSL clean and architecture rules centralized.
+ */
 @Component
 @Scope("prototype")
 public class DefaultRestFailureContractRoutePolicy

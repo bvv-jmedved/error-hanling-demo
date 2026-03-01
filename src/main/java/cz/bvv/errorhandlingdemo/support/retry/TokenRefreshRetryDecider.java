@@ -11,6 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Retry support component used by receiver-side error handling.
+ *
+ * <p>The implementation demonstrates how retry decisions are extracted from route DSL
+ * into a focused, testable service.
+ */
 @Component
 public class TokenRefreshRetryDecider {
     private static final Logger LOG = LoggerFactory.getLogger(TokenRefreshRetryDecider.class);

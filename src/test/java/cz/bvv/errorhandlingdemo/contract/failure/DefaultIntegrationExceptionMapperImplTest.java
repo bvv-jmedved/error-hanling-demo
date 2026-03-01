@@ -7,6 +7,14 @@ import org.apache.camel.http.base.HttpOperationFailedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+
+/**
+ * DefaultIntegrationExceptionMapperImplTest contract test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * failure-contract mapping and exception-to-contract translation. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 class DefaultIntegrationExceptionMapperImplTest {
 
     private final DefaultIntegrationExceptionMapperImpl mapper = new DefaultIntegrationExceptionMapperImpl();

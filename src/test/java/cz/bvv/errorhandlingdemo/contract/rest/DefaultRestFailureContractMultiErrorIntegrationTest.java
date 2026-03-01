@@ -25,6 +25,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+/**
+ * DefaultRestFailureContractMultiErrorIntegrationTest integration test.
+ *
+ * <p>This class serves as executable documentation for the demo architecture by validating
+ * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
+ * their own Camel integration modules.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(DefaultRestFailureContractMultiErrorIntegrationTest.MultiErrorRouteConfig.class)

@@ -7,6 +7,12 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * Policy module participating in post-DSL route configuration.
+ *
+ * <p>Modules provide deterministic, capability-driven infrastructure composition
+ * and are the main extension point for adding architecture-wide behavior.
+ */
 @Component
 @Order(10)
 public class FailContractModule implements RouteConfigurationModule {

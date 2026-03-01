@@ -10,6 +10,14 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract fail-contract policy for SOAP fault responses.
+ *
+ * <p>It centralizes SOAP fault XML creation and provides a fallback SOAP envelope when
+ * contract generation fails.
+ *
+ * @param <T> DTO type representing SOAP error payload contract
+ */
 public abstract class SoapFailureContractRoutePolicy<T> extends BaseFailContractRoutePolicy {
     private static final Logger LOG = LoggerFactory.getLogger(SoapFailureContractRoutePolicy.class);
     private static final String FALLBACK_MESSAGE = "Internal error while preparing SOAP error response";
@@ -68,7 +76,19 @@ public abstract class SoapFailureContractRoutePolicy<T> extends BaseFailContract
         }
     }
 
+    /**
+     * Creates the transport error DTO from canonical {@link IntegrationException}.
+     *
+     * @param exception canonical integration exception
+     * @return transport-specific SOAP error DTO
+     */
     protected abstract T createSoapError(IntegrationException exception);
 
+    /**
+     * Extracts flat SOAP fault entries from a transport error DTO.
+     *
+     * @param errorDto transport-specific SOAP error DTO
+     * @return list of SOAP fault entries used by {@link SoapFaultMessageMapper}
+     */
     protected abstract List<SoapErrorEntry> getSoapErrors(T errorDto);
 }

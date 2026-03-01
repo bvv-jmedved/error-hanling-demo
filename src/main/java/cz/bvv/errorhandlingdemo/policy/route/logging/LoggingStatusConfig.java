@@ -2,6 +2,12 @@ package cz.bvv.errorhandlingdemo.policy.route.logging;
 
 import java.util.Objects;
 
+/**
+ * Logging policy component used by the architecture demo.
+ *
+ * <p>This type participates in canonical process-status monitoring and demonstrates
+ * how route metadata is translated into stable operational logs.
+ */
 public record LoggingStatusConfig(
   ExchangeLoggingStatus onStart,
   ExchangeLoggingStatus onComplete,

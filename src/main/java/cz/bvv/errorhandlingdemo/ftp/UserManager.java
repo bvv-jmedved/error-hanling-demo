@@ -8,6 +8,11 @@ import org.apache.ftpserver.usermanager.UsernamePasswordAuthentication;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Minimal in-memory FTP user manager used by embedded FTP server configuration.
+ *
+ * <p>This implementation is intentionally lightweight and exists only for local demo/test runtime.
+ */
 public final class UserManager implements org.apache.ftpserver.ftplet.UserManager {
 
     private final Map<String, User> users = new ConcurrentHashMap<>();
@@ -21,7 +26,11 @@ public final class UserManager implements org.apache.ftpserver.ftplet.UserManage
         put(user);
     }
 
-    // pokud sis přidal overload bez FtpException, tak taky nesmí volat sám sebe:
+    /**
+     * Local helper variant used by configuration code to avoid checked-exception signatures.
+     *
+     * @param user FTP user to persist in the in-memory store
+     */
     public void saveLocal(User user) {
         put(user);
     }
