@@ -1,26 +1,42 @@
-package cz.bvv.errorhandlingdemo.builder.common.rest;
+package cz.bvv.errorhandlingdemo.contract.rest;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
-class DefaultRestFailureContractRoutePolicyTest {
+@Import(DefaultRestFailureContractSerializationFallbackTest.SerializationFailureConfig.class)
+class DefaultRestFailureContractSerializationFallbackTest {
+
+    private static final String FALLBACK_ERROR_BODY = """
+      {
+        "errors": [
+          {
+            "code": "INTERNAL_ERROR",
+            "message": "Internal error while preparing error response"
+          }
+        ]
+      }
+      """.trim();
 
     @LocalServerPort
     private int port;
@@ -28,11 +44,8 @@ class DefaultRestFailureContractRoutePolicyTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
-    void shouldReturnNonBlankJsonErrorBody() throws Exception {
+    void shouldFallbackToInternalErrorJsonWhenSerializationFails() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X_THROW_IN", "technical-call");
@@ -46,15 +59,23 @@ class DefaultRestFailureContractRoutePolicyTest {
           String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getHeaders().getContentType()).isNotNull();
         assertThat(response.getHeaders().getContentType().isCompatibleWith(MediaType.APPLICATION_JSON)).isTrue();
-        assertThat(response.getBody()).isNotBlank();
+        assertThat(response.getBody()).isEqualTo(FALLBACK_ERROR_BODY);
+    }
 
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.isObject()).isTrue();
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("DOWNSTREAM_HTTP_500");
+    @TestConfiguration
+    static class SerializationFailureConfig {
+        @Bean
+        @Primary
+        ObjectMapper failingObjectMapper() {
+            return new ObjectMapper() {
+                @Override
+                public String writeValueAsString(Object value) throws JsonProcessingException {
+                    throw new JsonProcessingException("forced serialization failure") { };
+                }
+            };
+        }
     }
 }

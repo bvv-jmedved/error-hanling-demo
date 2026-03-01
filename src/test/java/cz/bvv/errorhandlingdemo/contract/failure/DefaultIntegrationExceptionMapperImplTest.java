@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common.failure;
+package cz.bvv.errorhandlingdemo.contract.failure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

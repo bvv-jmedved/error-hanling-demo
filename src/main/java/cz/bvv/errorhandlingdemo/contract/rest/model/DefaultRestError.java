@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common.rest.model;
+package cz.bvv.errorhandlingdemo.contract.rest.model;
 
 import java.util.List;
 

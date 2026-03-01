@@ -1,8 +1,8 @@
-package cz.bvv.errorhandlingdemo.builder.common.rest;
+package cz.bvv.errorhandlingdemo.contract.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
-import cz.bvv.errorhandlingdemo.builder.common.rest.model.DefaultRestError;
+import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.contract.rest.model.DefaultRestError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

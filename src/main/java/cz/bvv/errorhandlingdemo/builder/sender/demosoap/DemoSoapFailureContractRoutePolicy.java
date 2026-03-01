@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.contract.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;

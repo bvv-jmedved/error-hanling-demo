@@ -1,6 +1,7 @@
-package cz.bvv.errorhandlingdemo.builder.common.soap;
+package cz.bvv.errorhandlingdemo.contract.soap;
 
-import cz.bvv.errorhandlingdemo.builder.common.soap.model.SoapErrorEntry;
+import cz.bvv.errorhandlingdemo.contract.soap.model.SoapErrorEntry;
+import cz.bvv.errorhandlingdemo.support.soap.SoapXmlSupport;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;

@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractMapper;
+import cz.bvv.errorhandlingdemo.contract.failure.FailureContractMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.model.Demo1RestError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;

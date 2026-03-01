@@ -2,7 +2,7 @@ package cz.bvv.errorhandlingdemo.policy.route;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.contract.failure.BaseFailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.policy.route.logging.LoggingRoutePolicy;
 import cz.bvv.errorhandlingdemo.policy.route.module.FailContractModule;
 import cz.bvv.errorhandlingdemo.policy.route.module.LoggingModule;

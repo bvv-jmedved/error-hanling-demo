@@ -6,7 +6,7 @@ import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractR
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoSoapTechnicalSender;
-import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common.failure;
+package cz.bvv.errorhandlingdemo.contract.failure;
 
 import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.policy.route.FailContractRoutePolicy;

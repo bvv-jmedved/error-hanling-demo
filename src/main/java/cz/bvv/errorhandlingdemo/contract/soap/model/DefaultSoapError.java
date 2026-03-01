@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common.soap.model;
+package cz.bvv.errorhandlingdemo.contract.soap.model;
 
 import java.util.List;
 

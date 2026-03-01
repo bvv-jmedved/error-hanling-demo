@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common.soap;
+package cz.bvv.errorhandlingdemo.support.soap;
 
 import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilderFactory;

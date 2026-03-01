@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.base.BaseSyncSenderRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePolicy;
-import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.contract.failure.BaseFailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.policy.route.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;

@@ -1,9 +1,9 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.FailureContractMapper;
-import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
-import cz.bvv.errorhandlingdemo.builder.common.rest.RestFailureContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.contract.failure.FailureContractMapper;
+import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
+import cz.bvv.errorhandlingdemo.contract.rest.RestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.model.Demo1RestError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.springframework.context.annotation.Scope;
