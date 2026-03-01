@@ -10,6 +10,7 @@ public class LoggigPolicy extends LoggingRoutePolicy {
       LoggingStatusConfig loggingStatus,
       ExchangeOutcomeResolver exchangeOutcomeResolver,
       CorrelationIdResolver correlationIdResolver,
+      ProcessStatusTracker processStatusTracker,
       RecoveryActionResolver recoveryActionResolver) {
         super(
           service,
@@ -17,6 +18,7 @@ public class LoggigPolicy extends LoggingRoutePolicy {
           loggingStatus,
           exchangeOutcomeResolver,
           correlationIdResolver,
+          processStatusTracker,
           recoveryActionResolver
         );
     }

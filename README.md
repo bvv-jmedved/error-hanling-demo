@@ -57,16 +57,17 @@ Logging is annotation-driven and split into two concerns:
 
 `LoggingRoutePolicyFactory` falls back to class name + `critical=false` when annotation metadata is absent.
 
-For every exchange, the logging policy emits:
-- `phase=BEGIN` with configured `onStart` status
-- `phase=DONE` with configured `onComplete` or `onFailure` status
-- `final=false` on begin, `final=true` on done
+For every exchange, the logging policy emits canonical `event=process_status` records:
+- `phase=BEGIN` proposes configured `onStart` status
+- `phase=DONE` proposes configured `onComplete` or `onFailure` status
+- status is logged only when it changed (so the last log per `correlationId` is the current process status)
+- `final=true` only for terminal states (`COMPLETED`, `FAILED`, `ENQUEUED`)
 
-Token refresh retry flow emits additional non-final status logs from retry decider:
-- `phase=RETRY status=RUNNING recoveryAction=TOKEN_REFRESH_START`
-- `phase=RETRY status=RUNNING recoveryAction=TOKEN_REFRESH_OK`
-- `phase=RETRY status=RUNNING recoveryAction=RETRY_AFTER_REFRESH`
-- or `phase=RETRY status=FAILURE recoveryAction=TOKEN_REFRESH_FAILED`
+Token refresh retry flow emits additional `event=process_detail` logs from retry decider:
+- `phase=RETRY detailState=RUNNING recoveryAction=TOKEN_REFRESH_START`
+- `phase=RETRY detailState=RUNNING recoveryAction=TOKEN_REFRESH_OK`
+- `phase=RETRY detailState=RUNNING recoveryAction=RETRY_AFTER_REFRESH`
+- or `phase=RETRY detailState=FAILURE recoveryAction=TOKEN_REFRESH_FAILED`
 
 `correlationId` is always logged. It is resolved in this order:
 - existing exchange property `integration.correlation.id`

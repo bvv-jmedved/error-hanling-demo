@@ -8,14 +8,17 @@ import org.springframework.util.StringUtils;
 public class LoggingRoutePolicyFactory {
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
     private final CorrelationIdResolver correlationIdResolver;
+    private final ProcessStatusTracker processStatusTracker;
     private final RecoveryActionResolver recoveryActionResolver;
 
     public LoggingRoutePolicyFactory(
       ExchangeOutcomeResolver exchangeOutcomeResolver,
       CorrelationIdResolver correlationIdResolver,
+      ProcessStatusTracker processStatusTracker,
       RecoveryActionResolver recoveryActionResolver) {
         this.exchangeOutcomeResolver = exchangeOutcomeResolver;
         this.correlationIdResolver = correlationIdResolver;
+        this.processStatusTracker = processStatusTracker;
         this.recoveryActionResolver = recoveryActionResolver;
     }
 
@@ -32,6 +35,7 @@ public class LoggingRoutePolicyFactory {
               statusConfig,
               exchangeOutcomeResolver,
               correlationIdResolver,
+              processStatusTracker,
               recoveryActionResolver
             );
         }
@@ -43,6 +47,7 @@ public class LoggingRoutePolicyFactory {
           statusConfig,
           exchangeOutcomeResolver,
           correlationIdResolver,
+          processStatusTracker,
           recoveryActionResolver
         );
     }
