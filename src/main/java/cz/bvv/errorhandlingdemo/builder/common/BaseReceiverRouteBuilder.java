@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.builder.common;
 
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
+import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import java.util.List;
 
 public abstract class BaseReceiverRouteBuilder extends BaseRouteBuilder {

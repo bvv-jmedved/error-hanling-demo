@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common;
 
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.capability.MonitoringRoute;
+import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
+import cz.bvv.errorhandlingdemo.policy.route.capability.MonitoringRoute;
 import java.util.List;
 import org.apache.camel.builder.RouteBuilder;
 

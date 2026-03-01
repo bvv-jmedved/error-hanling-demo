@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.common.failure;
 
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.policy.route.FailContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Route;

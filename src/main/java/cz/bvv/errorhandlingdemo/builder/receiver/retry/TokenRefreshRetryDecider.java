@@ -2,9 +2,9 @@ package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.CorrelationIdResolver;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeLoggingStatus;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryAction;
+import cz.bvv.errorhandlingdemo.policy.route.logging.CorrelationIdResolver;
+import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
+import cz.bvv.errorhandlingdemo.policy.route.logging.RecoveryAction;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;

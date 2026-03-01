@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.List;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
+import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;

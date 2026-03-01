@@ -1,8 +1,8 @@
 package cz.bvv.errorhandlingdemo.builder.common;
 
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.capability.FailContractRoute;
+import cz.bvv.errorhandlingdemo.policy.route.FailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
+import cz.bvv.errorhandlingdemo.policy.route.capability.FailContractRoute;
 import java.util.List;
 
 public abstract class BaseSyncSenderRouteBuilder extends BaseSenderRouteBuilder implements FailContractRoute {
