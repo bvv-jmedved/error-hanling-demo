@@ -60,6 +60,13 @@ Logging is annotation-driven and split into two concerns:
 For every exchange, the logging policy emits:
 - `phase=BEGIN` with configured `onStart` status
 - `phase=DONE` with configured `onComplete` or `onFailure` status
+- `final=false` on begin, `final=true` on done
+
+Token refresh retry flow emits additional non-final status logs from retry decider:
+- `phase=RETRY status=RUNNING recoveryAction=TOKEN_REFRESH_START`
+- `phase=RETRY status=RUNNING recoveryAction=TOKEN_REFRESH_OK`
+- `phase=RETRY status=RUNNING recoveryAction=RETRY_AFTER_REFRESH`
+- or `phase=RETRY status=FAILURE recoveryAction=TOKEN_REFRESH_FAILED`
 
 `correlationId` is always logged. It is resolved in this order:
 - existing exchange property `integration.correlation.id`

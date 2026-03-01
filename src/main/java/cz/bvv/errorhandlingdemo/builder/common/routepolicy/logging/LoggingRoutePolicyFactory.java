@@ -8,12 +8,15 @@ import org.springframework.util.StringUtils;
 public class LoggingRoutePolicyFactory {
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
     private final CorrelationIdResolver correlationIdResolver;
+    private final RecoveryActionResolver recoveryActionResolver;
 
     public LoggingRoutePolicyFactory(
       ExchangeOutcomeResolver exchangeOutcomeResolver,
-      CorrelationIdResolver correlationIdResolver) {
+      CorrelationIdResolver correlationIdResolver,
+      RecoveryActionResolver recoveryActionResolver) {
         this.exchangeOutcomeResolver = exchangeOutcomeResolver;
         this.correlationIdResolver = correlationIdResolver;
+        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     public LoggingRoutePolicy create(RouteBuilder builder) {
@@ -28,7 +31,8 @@ public class LoggingRoutePolicyFactory {
               false,
               statusConfig,
               exchangeOutcomeResolver,
-              correlationIdResolver
+              correlationIdResolver,
+              recoveryActionResolver
             );
         }
 
@@ -38,7 +42,8 @@ public class LoggingRoutePolicyFactory {
           monitored.critical(),
           statusConfig,
           exchangeOutcomeResolver,
-          correlationIdResolver
+          correlationIdResolver,
+          recoveryActionResolver
         );
     }
 }

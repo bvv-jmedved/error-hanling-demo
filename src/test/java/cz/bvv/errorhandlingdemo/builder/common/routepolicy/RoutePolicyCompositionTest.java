@@ -17,6 +17,7 @@ import cz.bvv.errorhandlingdemo.builder.common.routepolicy.module.FailContractMo
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.module.LoggingModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.CorrelationIdResolver;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeOutcomeResolver;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryActionResolver;
 import cz.bvv.errorhandlingdemo.builder.sender.demo2rest.Demo2RestSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
@@ -171,7 +172,8 @@ class RoutePolicyCompositionTest {
     private static LoggingRoutePolicyFactory loggingRoutePolicyFactory() {
         return new LoggingRoutePolicyFactory(
           new ExchangeOutcomeResolver(),
-          new CorrelationIdResolver()
+          new CorrelationIdResolver(),
+          new RecoveryActionResolver()
         );
     }
 

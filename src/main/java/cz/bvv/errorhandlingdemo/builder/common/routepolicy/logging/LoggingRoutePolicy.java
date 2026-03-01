@@ -16,26 +16,31 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
     private final LoggingStatusConfig loggingStatus;
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
     private final CorrelationIdResolver correlationIdResolver;
+    private final RecoveryActionResolver recoveryActionResolver;
 
     public LoggingRoutePolicy(
       String service,
       boolean critical,
       LoggingStatusConfig loggingStatus,
       ExchangeOutcomeResolver exchangeOutcomeResolver,
-      CorrelationIdResolver correlationIdResolver) {
+      CorrelationIdResolver correlationIdResolver,
+      RecoveryActionResolver recoveryActionResolver) {
         this.service = service;
         this.critical = critical;
         this.loggingStatus = loggingStatus;
         this.exchangeOutcomeResolver = exchangeOutcomeResolver;
         this.correlationIdResolver = correlationIdResolver;
+        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     @Override
     public void onExchangeBegin(Route route, Exchange exchange) {
         String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
+        RecoveryAction recoveryAction = recoveryActionResolver.currentAction(exchange);
         LOG.info(
-          "event=exchange_status phase=BEGIN status={} routeId={} service={} critical={} exchangeId={} correlationId={}",
+          "event=exchange_status phase=BEGIN final=false status={} recoveryAction={} routeId={} service={} critical={} exchangeId={} correlationId={}",
           loggingStatus.onStart(),
+          recoveryAction,
           route.getRouteId(),
           service,
           critical,
@@ -49,9 +54,11 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
         ExchangeLoggingStatus status =
           exchangeOutcomeResolver.isFailure(exchange) ? loggingStatus.onFailure() : loggingStatus.onComplete();
         String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
+        RecoveryAction recoveryAction = recoveryActionResolver.currentAction(exchange);
         LOG.info(
-          "event=exchange_status phase=DONE status={} routeId={} service={} critical={} exchangeId={} correlationId={}",
+          "event=exchange_status phase=DONE final=true status={} recoveryAction={} routeId={} service={} critical={} exchangeId={} correlationId={}",
           status,
+          recoveryAction,
           route.getRouteId(),
           service,
           critical,

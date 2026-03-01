@@ -9,7 +9,15 @@ public class LoggigPolicy extends LoggingRoutePolicy {
       boolean critical,
       LoggingStatusConfig loggingStatus,
       ExchangeOutcomeResolver exchangeOutcomeResolver,
-      CorrelationIdResolver correlationIdResolver) {
-        super(service, critical, loggingStatus, exchangeOutcomeResolver, correlationIdResolver);
+      CorrelationIdResolver correlationIdResolver,
+      RecoveryActionResolver recoveryActionResolver) {
+        super(
+          service,
+          critical,
+          loggingStatus,
+          exchangeOutcomeResolver,
+          correlationIdResolver,
+          recoveryActionResolver
+        );
     }
 }

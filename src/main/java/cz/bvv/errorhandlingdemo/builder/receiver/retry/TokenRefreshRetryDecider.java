@@ -2,17 +2,31 @@ package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
 import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.CorrelationIdResolver;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeLoggingStatus;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryAction;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryActionResolver;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TokenRefreshRetryDecider {
+    private static final Logger LOG = LoggerFactory.getLogger(TokenRefreshRetryDecider.class);
 
     private final TokenManager tokenManager;
+    private final CorrelationIdResolver correlationIdResolver;
+    private final RecoveryActionResolver recoveryActionResolver;
 
-    public TokenRefreshRetryDecider(TokenManager tokenManager) {
+    public TokenRefreshRetryDecider(
+      TokenManager tokenManager,
+      CorrelationIdResolver correlationIdResolver,
+      RecoveryActionResolver recoveryActionResolver) {
         this.tokenManager = tokenManager;
+        this.correlationIdResolver = correlationIdResolver;
+        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     @SuppressWarnings("unused")
@@ -25,11 +39,31 @@ public class TokenRefreshRetryDecider {
         }
 
         try {
+            logIntermediate(exchange, ExchangeLoggingStatus.RUNNING, RecoveryAction.TOKEN_REFRESH_START);
             tokenManager.refreshToken(exchange);
+            logIntermediate(exchange, ExchangeLoggingStatus.RUNNING, RecoveryAction.TOKEN_REFRESH_OK);
+            logIntermediate(exchange, ExchangeLoggingStatus.RUNNING, RecoveryAction.RETRY_AFTER_REFRESH);
             return true;
         } catch (IntegrationException ie) {
+            logIntermediate(exchange, ExchangeLoggingStatus.FAILURE, RecoveryAction.TOKEN_REFRESH_FAILED);
             exchange.setProperty(IntegrationExchangeProperties.EXCEPTION_OVERRIDE, ie);
             return false;
         }
+    }
+
+    private void logIntermediate(Exchange exchange, ExchangeLoggingStatus status, RecoveryAction action) {
+        recoveryActionResolver.markAction(exchange, action);
+        String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
+        String routeId = exchange.getFromRouteId() == null ? "unknown" : exchange.getFromRouteId();
+        LOG.info(
+          "event=exchange_status phase=RETRY final=false status={} recoveryAction={} routeId={} service={} critical={} exchangeId={} correlationId={}",
+          status,
+          action,
+          routeId,
+          "receiver-token-refresh",
+          false,
+          exchange.getExchangeId(),
+          correlationId
+        );
     }
 }

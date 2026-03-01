@@ -13,7 +13,8 @@ class LoggigPolicyAliasTest {
           true,
           LoggingStatusConfig.defaults(),
           new ExchangeOutcomeResolver(),
-          new CorrelationIdResolver()
+          new CorrelationIdResolver(),
+          new RecoveryActionResolver()
         );
 
         assertThat(policy).isInstanceOf(LoggingRoutePolicy.class);

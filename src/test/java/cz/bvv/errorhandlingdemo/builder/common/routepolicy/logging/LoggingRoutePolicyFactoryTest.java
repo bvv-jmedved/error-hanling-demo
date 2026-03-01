@@ -9,7 +9,8 @@ class LoggingRoutePolicyFactoryTest {
 
     private final LoggingRoutePolicyFactory factory = new LoggingRoutePolicyFactory(
       new ExchangeOutcomeResolver(),
-      new CorrelationIdResolver()
+      new CorrelationIdResolver(),
+      new RecoveryActionResolver()
     );
 
     @Test
