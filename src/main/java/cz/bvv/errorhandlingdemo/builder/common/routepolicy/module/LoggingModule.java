@@ -4,7 +4,6 @@ import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationMod
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.capability.MonitoringRoute;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.LoggingRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.LoggingRoutePolicyFactory;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -26,8 +25,7 @@ public class LoggingModule implements RouteConfigurationModule {
     @Override
     @SuppressWarnings("resource")
     public void afterRoutes(RouteBuilder builder) {
-        Monitored monitored = builder.getClass().getAnnotation(Monitored.class);
-        LoggingRoutePolicy policy = loggingRoutePolicyFactory.create(builder, monitored);
+        LoggingRoutePolicy policy = loggingRoutePolicyFactory.create(builder);
         builder.getRouteCollection()
           .getRoutes()
           .forEach(route -> route.routePolicy(policy));

@@ -10,10 +10,13 @@ import cz.bvv.errorhandlingdemo.builder.common.failure.BaseFailContractRoutePoli
 import cz.bvv.errorhandlingdemo.builder.common.failure.IntegrationExceptionMapper;
 import cz.bvv.errorhandlingdemo.builder.common.rest.DefaultRestFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.FailContractRoutePolicy;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeLoggingStatus;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.LoggingRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.LoggingRoutePolicyFactory;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.module.FailContractModule;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.module.LoggingModule;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.CorrelationIdResolver;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeOutcomeResolver;
 import cz.bvv.errorhandlingdemo.builder.sender.demo2rest.Demo2RestSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractRoutePolicy;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
@@ -48,7 +51,7 @@ class RoutePolicyCompositionTest {
     private @NonNull SyncRouteBuilder getSyncRouteBuilder() {
         List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
+          new LoggingModule(loggingRoutePolicyFactory())
         );
         SyncRouteBuilder builder = new SyncRouteBuilder(
           modules,
@@ -67,7 +70,7 @@ class RoutePolicyCompositionTest {
     void shouldApplyOnlyLoggingOnNonSyncRouteBuilder() {
         List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
+          new LoggingModule(loggingRoutePolicyFactory())
         );
         NonSyncRouteBuilder builder = new NonSyncRouteBuilder(modules);
         builder.setCamelContext(new DefaultCamelContext());
@@ -83,7 +86,7 @@ class RoutePolicyCompositionTest {
     void shouldApplyConfiguredMonitoringMetadataOnRestSenderRouteBuilder() throws Exception {
         List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
+          new LoggingModule(loggingRoutePolicyFactory())
         );
         Demo2RestSenderRouteBuilder builder = createDemo2RestSenderRouteBuilder(modules);
         builder.setCamelContext(new DefaultCamelContext());
@@ -97,13 +100,16 @@ class RoutePolicyCompositionTest {
         LoggingRoutePolicy loggingPolicy = (LoggingRoutePolicy) policies.get(1);
         assertThat(loggingPolicy.getService()).isEqualTo("sender-demo2-rest");
         assertThat(loggingPolicy.isCritical()).isFalse();
+        assertThat(loggingPolicy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.RUNNING);
+        assertThat(loggingPolicy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.RUNNING);
+        assertThat(loggingPolicy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILURE);
     }
 
     @Test
     void shouldApplyConfiguredMonitoringMetadataOnSoapSenderRouteBuilder() throws Exception {
         List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
+          new LoggingModule(loggingRoutePolicyFactory())
         );
         DemoSoapSenderRouteBuilder builder = createDemoSoapSenderRouteBuilder(modules);
         builder.setCamelContext(new DefaultCamelContext());
@@ -117,13 +123,16 @@ class RoutePolicyCompositionTest {
         LoggingRoutePolicy loggingPolicy = (LoggingRoutePolicy) policies.get(1);
         assertThat(loggingPolicy.getService()).isEqualTo("sender-demo-soap");
         assertThat(loggingPolicy.isCritical()).isFalse();
+        assertThat(loggingPolicy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.RUNNING);
+        assertThat(loggingPolicy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.RUNNING);
+        assertThat(loggingPolicy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILURE);
     }
 
     @Test
     void shouldApplyConfiguredMonitoringMetadataOnTechnicalIngressRouteBuilder() {
         List<RouteConfigurationModule> modules = List.of(
           new FailContractModule(),
-          new LoggingModule(new LoggingRoutePolicyFactory())
+          new LoggingModule(loggingRoutePolicyFactory())
         );
         DemoSoapTechnicalSender builder = new DemoSoapTechnicalSender(modules);
         builder.setCamelContext(new DefaultCamelContext());
@@ -136,6 +145,9 @@ class RoutePolicyCompositionTest {
         LoggingRoutePolicy loggingPolicy = (LoggingRoutePolicy) policies.getFirst();
         assertThat(loggingPolicy.getService()).isEqualTo("technical-sender-demo-soap");
         assertThat(loggingPolicy.isCritical()).isTrue();
+        assertThat(loggingPolicy.getLoggingStatus().onStart()).isEqualTo(ExchangeLoggingStatus.STARTED);
+        assertThat(loggingPolicy.getLoggingStatus().onComplete()).isEqualTo(ExchangeLoggingStatus.COMPLETED);
+        assertThat(loggingPolicy.getLoggingStatus().onFailure()).isEqualTo(ExchangeLoggingStatus.FAILED);
     }
 
     private static Demo2RestSenderRouteBuilder createDemo2RestSenderRouteBuilder(List<RouteConfigurationModule> modules) throws Exception {
@@ -154,6 +166,13 @@ class RoutePolicyCompositionTest {
         FailureStepProcessorFactory failureStepProcessorFactory = step -> exchange -> {
         };
         return constructor.newInstance(modules, failurePolicy, failureStepProcessorFactory);
+    }
+
+    private static LoggingRoutePolicyFactory loggingRoutePolicyFactory() {
+        return new LoggingRoutePolicyFactory(
+          new ExchangeOutcomeResolver(),
+          new CorrelationIdResolver()
+        );
     }
 
     private static DemoSoapSenderRouteBuilder createDemoSoapSenderRouteBuilder(List<RouteConfigurationModule> modules) throws Exception {

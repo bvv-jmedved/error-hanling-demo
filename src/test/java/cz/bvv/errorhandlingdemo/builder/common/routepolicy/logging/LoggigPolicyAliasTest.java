@@ -8,7 +8,13 @@ class LoggigPolicyAliasTest {
 
     @Test
     void shouldBehaveAsLoggingRoutePolicyAlias() {
-        LoggigPolicy policy = new LoggigPolicy("demo-service", true);
+        LoggigPolicy policy = new LoggigPolicy(
+          "demo-service",
+          true,
+          LoggingStatusConfig.defaults(),
+          new ExchangeOutcomeResolver(),
+          new CorrelationIdResolver()
+        );
 
         assertThat(policy).isInstanceOf(LoggingRoutePolicy.class);
         assertThat(policy.getService()).isEqualTo("demo-service");

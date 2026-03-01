@@ -27,8 +27,8 @@ The current design follows the RoutePolicy architecture in `.codex/doc/Camel_Rou
   - `FailContractRoutePolicy` interface (capability-facing type)
   - `BaseFailContractRoutePolicy` abstract base class (shared fail mapping behavior)
 - Policy modules:
-- `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
-- `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
+  - `FailContractModule` (`@Order(10)`) for `FailContractRoute` builders
+  - `LoggingModule` (`@Order(100)`) for `MonitoringRoute` builders
 
 RoutePolicy bean scope rule:
 - `RoutePolicy` implementations should be `@Scope("prototype")` unless fully stateless.
@@ -47,12 +47,24 @@ Deterministic outcome:
 
 ## Monitoring metadata model
 
-Logging is annotation-driven:
+Logging is annotation-driven and split into two concerns:
 - concrete `RouteBuilder` classes use `@Monitored(service = "...", critical = ...)`
 - `service` is an explicit stable identifier
 - `critical` marks externally exposed ingress routes (`true`) vs internal orchestration routes (`false`)
+- optional `@LoggingStatus(onStart = ..., onComplete = ..., onFailure = ...)` configures exchange status semantics
+  - defaults: `onStart=RUNNING`, `onComplete=RUNNING`, `onFailure=FAILURE`
+  - ingress technical sender routes override defaults to `STARTED/COMPLETED/FAILED`
 
 `LoggingRoutePolicyFactory` falls back to class name + `critical=false` when annotation metadata is absent.
+
+For every exchange, the logging policy emits:
+- `phase=BEGIN` with configured `onStart` status
+- `phase=DONE` with configured `onComplete` or `onFailure` status
+
+`correlationId` is always logged. It is resolved in this order:
+- existing exchange property `integration.correlation.id`
+- incoming header `X-Correlation-Id`
+- generated UUID (when missing)
 
 ## Route topology
 

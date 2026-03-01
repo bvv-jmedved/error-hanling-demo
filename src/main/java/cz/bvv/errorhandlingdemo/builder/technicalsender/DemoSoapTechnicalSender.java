@@ -2,6 +2,8 @@ package cz.bvv.errorhandlingdemo.builder.technicalsender;
 
 import cz.bvv.errorhandlingdemo.builder.common.soap.BaseSoapTechnicalSenderRouteBuilder;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.RouteConfigurationModule;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeLoggingStatus;
+import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.LoggingStatus;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.Monitored;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.soap.DemoSoapEndpointConfig;
 import java.util.List;
@@ -9,6 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Monitored(service = "technical-sender-demo-soap", critical = true)
+@LoggingStatus(
+  onStart = ExchangeLoggingStatus.STARTED,
+  onComplete = ExchangeLoggingStatus.COMPLETED,
+  onFailure = ExchangeLoggingStatus.FAILED
+)
 public class DemoSoapTechnicalSender extends BaseSoapTechnicalSenderRouteBuilder {
     public static final String SOAP_ENDPOINT = "/services" + DemoSoapEndpointConfig.ENDPOINT_ADDRESS;
 
