@@ -2,7 +2,7 @@ package cz.bvv.errorhandlingdemo.policy.route.logging;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;

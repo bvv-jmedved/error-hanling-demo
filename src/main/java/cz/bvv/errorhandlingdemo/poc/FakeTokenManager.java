@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.poc;
 
-import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
+import cz.bvv.errorhandlingdemo.support.auth.TokenManager;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.springframework.context.annotation.Profile;

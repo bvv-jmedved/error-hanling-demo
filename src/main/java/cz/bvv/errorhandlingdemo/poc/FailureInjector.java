@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.poc;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import java.util.Arrays;
 import java.util.List;

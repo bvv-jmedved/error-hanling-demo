@@ -1,6 +1,6 @@
 package cz.bvv.errorhandlingdemo.policy.route.logging;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo.builder.common;
+package cz.bvv.errorhandlingdemo.support.auth;
 
 import org.apache.camel.Exchange;
 

@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
-import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.auth.TokenManager;
 import cz.bvv.errorhandlingdemo.policy.route.logging.CorrelationIdResolver;
 import cz.bvv.errorhandlingdemo.policy.route.logging.ExchangeLoggingStatus;
 import cz.bvv.errorhandlingdemo.policy.route.logging.RecoveryAction;

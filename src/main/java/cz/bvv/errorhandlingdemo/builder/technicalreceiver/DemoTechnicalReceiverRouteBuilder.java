@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.technicalreceiver;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseTechnicalReceiverRouteBuilder;
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
 import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;

@@ -2,7 +2,7 @@ package cz.bvv.errorhandlingdemo.builder.common.failure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.common.IntegrationExchangeProperties;
+import cz.bvv.errorhandlingdemo.support.exchange.IntegrationExchangeProperties;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
