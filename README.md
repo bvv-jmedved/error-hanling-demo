@@ -15,6 +15,12 @@ This project demonstrates:
 
 The current design follows the RoutePolicy architecture in `.codex/doc/Camel_RoutePolicy_Architecture.md`.
 
+Package layout:
+- `builder.base` - shared RouteBuilder hierarchy
+- `policy.route` - RoutePolicy capabilities, modules, and logging policy
+- `contract` - failure-contract mapping (`contract.failure`, `contract.rest`, `contract.soap`)
+- `support` - shared helpers (`support.exchange`, `support.auth`, `support.retry`, `support.soap`)
+
 - `BaseRouteBuilder` owns orchestration:
   - `final configure()` calls `configureRoutes()`
   - configuration is guarded against accidental double invocation
