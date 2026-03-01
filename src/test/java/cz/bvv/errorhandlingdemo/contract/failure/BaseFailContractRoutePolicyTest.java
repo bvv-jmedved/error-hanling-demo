@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 /**
- * FailureContractRoutePolicyTest architecture test.
+ * BaseFailContractRoutePolicyTest architecture test.
  *
  * <p>Verifies route-policy orchestration and monitoring policy decisions and documents expected
  * architecture behavior.
  */
-class FailureContractRoutePolicyTest {
+class BaseFailContractRoutePolicyTest {
 
   @Test
   void shouldApplyFailureContractOnlyOnceForSameExchange() throws Exception {

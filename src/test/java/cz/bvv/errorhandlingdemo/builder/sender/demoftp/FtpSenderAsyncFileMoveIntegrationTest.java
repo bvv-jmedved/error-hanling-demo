@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.sender.demoftp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;

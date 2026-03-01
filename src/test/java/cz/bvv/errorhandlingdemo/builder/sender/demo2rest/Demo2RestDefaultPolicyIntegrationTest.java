@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.sender.demo2rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

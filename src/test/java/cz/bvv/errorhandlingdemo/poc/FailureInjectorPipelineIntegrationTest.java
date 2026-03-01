@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.poc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.CamelEvent;
 import org.apache.camel.support.EventNotifierSupport;
@@ -29,15 +27,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * RetryExhaustionIntegrationTest integration test.
+ * SenderBusinessErrorModelingIntegrationTest integration test.
  *
  * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
  * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
-@Import(RetryExhaustionIntegrationTest.CamelProbeConfig.class)
-class RetryExhaustionIntegrationTest {
+@Import(SenderBusinessErrorModelingIntegrationTest.CamelProbeConfig.class)
+class SenderBusinessErrorModelingIntegrationTest {
 
   @LocalServerPort private int port;
 
@@ -45,73 +43,78 @@ class RetryExhaustionIntegrationTest {
 
   @Autowired private ObjectMapper objectMapper;
 
-  @Autowired private RetryProbe retryProbe;
+  @Autowired private SenderCompletionProbe senderCompletionProbe;
 
   @Test
-  void shouldMapFailureContractAfterRetryExhaustion() throws Exception {
-    retryProbe.reset();
+  void shouldMapSenderValidationBusinessFailureToClient400() throws Exception {
+    senderCompletionProbe.reset();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.set("X_THROW_IN", "technical-call");
-    headers.set("X_THROW_TYPE", "http");
-    headers.set("X_THROW_STATUS", "500");
+    headers.set("X_THROW_IN", "sender-validate");
+    headers.set("X_THROW_TYPE", "business-validation");
 
-    ResponseEntity<String> response =
-        restTemplate.exchange(
-            "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-            HttpMethod.POST,
-            new HttpEntity<>("{}", headers),
-            String.class);
+    ResponseEntity<String> response = callDemo(headers);
 
-    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(3);
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertErrorCode(response, "VALIDATION_FAILED");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @Test
+  void shouldMapSenderAuthorizationBusinessFailureToClient401() throws Exception {
+    senderCompletionProbe.reset();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "sender-auth");
+    headers.set("X_THROW_TYPE", "business-unauthorized");
+
+    ResponseEntity<String> response = callDemo(headers);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    assertErrorCode(response, "UNAUTHORIZED");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  private ResponseEntity<String> callDemo(HttpHeaders headers) {
+    return restTemplate.exchange(
+        "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+        HttpMethod.POST,
+        new HttpEntity<>("{}", headers),
+        String.class);
+  }
+
+  private void assertErrorCode(ResponseEntity<String> response, String expectedCode)
+      throws Exception {
     assertThat(response.getBody()).isNotBlank();
-
     JsonNode jsonBody = objectMapper.readTree(response.getBody());
     assertThat(jsonBody.path("errors").isArray()).isTrue();
     assertThat(jsonBody.path("errors")).isNotEmpty();
-    assertThat(jsonBody.path("errors").get(0).path("code").asText())
-        .isEqualTo("DOWNSTREAM_HTTP_500");
-
-    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedCode);
   }
 
   @TestConfiguration
   static class CamelProbeConfig {
-
     @Bean
-    RetryProbe retryProbe(CamelContext camelContext) {
-      RetryProbe probe = new RetryProbe();
+    SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
+      SenderCompletionProbe probe = new SenderCompletionProbe();
       camelContext.getManagementStrategy().addEventNotifier(probe);
       return probe;
     }
   }
 
-  static class RetryProbe extends EventNotifierSupport {
-    private final AtomicInteger technicalReceiverAttemptCount = new AtomicInteger(0);
+  static class SenderCompletionProbe extends EventNotifierSupport {
     private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
 
     @Override
     public void notify(CamelEvent event) {
-      if (event instanceof CamelEvent.ExchangeSendingEvent sendingEvent) {
-        Endpoint endpoint = sendingEvent.getEndpoint();
-        if (endpoint != null && endpoint.getEndpointUri().contains("technical-receiver")) {
-          technicalReceiverAttemptCount.incrementAndGet();
-        }
-      }
-
       if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
         Exchange exchange = completedEvent.getExchange();
-        String fromRouteId = exchange.getFromRouteId();
-        if ("demo-sender".equals(fromRouteId)) {
+        if ("demo-sender".equals(exchange.getFromRouteId())) {
           senderExchangeFailed.set(exchange.isFailed());
         }
       }
-    }
-
-    int getTechnicalReceiverAttemptCount() {
-      return technicalReceiverAttemptCount.get();
     }
 
     boolean getSenderExchangeFailed() {
@@ -119,7 +122,6 @@ class RetryExhaustionIntegrationTest {
     }
 
     void reset() {
-      technicalReceiverAttemptCount.set(0);
       senderExchangeFailed.set(true);
     }
   }

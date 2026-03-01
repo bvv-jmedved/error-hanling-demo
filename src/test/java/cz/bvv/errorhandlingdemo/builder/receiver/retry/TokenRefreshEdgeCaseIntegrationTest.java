@@ -1,4 +1,4 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,15 +29,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * TokenRefreshFailureIntegrationTest integration test.
+ * TokenRefreshEdgeCaseIntegrationTest integration test.
  *
  * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
  * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
-@Import(TokenRefreshFailureIntegrationTest.CamelProbeConfig.class)
-class TokenRefreshFailureIntegrationTest {
+@Import(TokenRefreshEdgeCaseIntegrationTest.CamelProbeConfig.class)
+class TokenRefreshEdgeCaseIntegrationTest {
 
   @LocalServerPort private int port;
 
@@ -48,33 +48,74 @@ class TokenRefreshFailureIntegrationTest {
   @Autowired private RetryProbe retryProbe;
 
   @Test
-  void shouldMapTokenRefreshFailureAfterUnauthorizedDownstreamCall() throws Exception {
+  void shouldReturn502AfterRefreshSuccessThen500RetryExhaustion() throws Exception {
     retryProbe.reset();
 
+    HttpHeaders headers = baseHttpFailureHeaders();
+    headers.set("X_THROW_STATUS_SEQUENCE", "401,500");
+
+    ResponseEntity<String> response = callDemo(headers);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(3);
+    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertErrorCode(response, "DOWNSTREAM_HTTP_500");
+  }
+
+  @Test
+  void shouldReturnImmediate502AfterRefreshSuccessThenSecond401() throws Exception {
+    retryProbe.reset();
+
+    HttpHeaders headers = baseHttpFailureHeaders();
+    headers.set("X_THROW_STATUS_SEQUENCE", "401,401");
+
+    ResponseEntity<String> response = callDemo(headers);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(2);
+    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertErrorCode(response, "DOWNSTREAM_HTTP_401");
+  }
+
+  @Test
+  void shouldReturnImmediate502WhenRefreshFailsAfterInitial401() throws Exception {
+    retryProbe.reset();
+
+    HttpHeaders headers = baseHttpFailureHeaders();
+    headers.set("X_THROW_STATUS", "401");
+    headers.set("X_TOKEN_REFRESH_FAIL", "true");
+
+    ResponseEntity<String> response = callDemo(headers);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(1);
+    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertErrorCode(response, "TOKEN_REFRESH_FAILED");
+  }
+
+  private HttpHeaders baseHttpFailureHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.set("X_THROW_IN", "technical-call");
     headers.set("X_THROW_TYPE", "http");
-    headers.set("X_THROW_STATUS", "401");
-    headers.set("X_TOKEN_REFRESH_FAIL", "true");
+    return headers;
+  }
 
-    ResponseEntity<String> response =
-        restTemplate.exchange(
-            "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-            HttpMethod.POST,
-            new HttpEntity<>("{}", headers),
-            String.class);
+  private ResponseEntity<String> callDemo(HttpHeaders headers) {
+    return restTemplate.exchange(
+        "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+        HttpMethod.POST,
+        new HttpEntity<>("{}", headers),
+        String.class);
+  }
 
-    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(1);
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+  private void assertErrorCode(ResponseEntity<String> response, String expectedCode)
+      throws Exception {
     assertThat(response.getBody()).isNotBlank();
-
     JsonNode jsonBody = objectMapper.readTree(response.getBody());
     assertThat(jsonBody.path("errors").isArray()).isTrue();
     assertThat(jsonBody.path("errors")).isNotEmpty();
-    assertThat(jsonBody.path("errors").get(0).path("code").asText())
-        .isEqualTo("TOKEN_REFRESH_FAILED");
-    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedCode);
   }
 
   @TestConfiguration

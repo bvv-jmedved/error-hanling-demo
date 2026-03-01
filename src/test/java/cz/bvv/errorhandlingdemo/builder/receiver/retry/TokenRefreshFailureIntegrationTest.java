@@ -1,10 +1,14 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.receiver.retry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.CamelEvent;
 import org.apache.camel.support.EventNotifierSupport;
@@ -25,28 +29,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 /**
- * HappyPathIntegrationTest integration test.
+ * TokenRefreshFailureIntegrationTest integration test.
  *
  * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
  * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
-@Import(HappyPathIntegrationTest.CamelProbeConfig.class)
-class HappyPathIntegrationTest {
+@Import(TokenRefreshFailureIntegrationTest.CamelProbeConfig.class)
+class TokenRefreshFailureIntegrationTest {
 
   @LocalServerPort private int port;
 
   @Autowired private TestRestTemplate restTemplate;
 
-  @Autowired private SenderCompletionProbe senderCompletionProbe;
+  @Autowired private ObjectMapper objectMapper;
+
+  @Autowired private RetryProbe retryProbe;
 
   @Test
-  void shouldReturnSuccessWhenNoFailureIsInjected() {
-    senderCompletionProbe.reset();
+  void shouldMapTokenRefreshFailureAfterUnauthorizedDownstreamCall() throws Exception {
+    retryProbe.reset();
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", "401");
+    headers.set("X_TOKEN_REFRESH_FAIL", "true");
 
     ResponseEntity<String> response =
         restTemplate.exchange(
@@ -55,26 +65,41 @@ class HappyPathIntegrationTest {
             new HttpEntity<>("{}", headers),
             String.class);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isEqualTo("{\"status\":\"ok\"}");
-    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(1);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(response.getBody()).isNotBlank();
+
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText())
+        .isEqualTo("TOKEN_REFRESH_FAILED");
+    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
   }
 
   @TestConfiguration
   static class CamelProbeConfig {
     @Bean
-    SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
-      SenderCompletionProbe probe = new SenderCompletionProbe();
+    RetryProbe retryProbe(CamelContext camelContext) {
+      RetryProbe probe = new RetryProbe();
       camelContext.getManagementStrategy().addEventNotifier(probe);
       return probe;
     }
   }
 
-  static class SenderCompletionProbe extends EventNotifierSupport {
+  static class RetryProbe extends EventNotifierSupport {
+    private final AtomicInteger technicalReceiverAttemptCount = new AtomicInteger(0);
     private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
 
     @Override
     public void notify(CamelEvent event) {
+      if (event instanceof CamelEvent.ExchangeSendingEvent sendingEvent) {
+        Endpoint endpoint = sendingEvent.getEndpoint();
+        if (endpoint != null && endpoint.getEndpointUri().contains("technical-receiver")) {
+          technicalReceiverAttemptCount.incrementAndGet();
+        }
+      }
+
       if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
         Exchange exchange = completedEvent.getExchange();
         if ("demo-sender".equals(exchange.getFromRouteId())) {
@@ -83,11 +108,16 @@ class HappyPathIntegrationTest {
       }
     }
 
+    int getTechnicalReceiverAttemptCount() {
+      return technicalReceiverAttemptCount.get();
+    }
+
     boolean getSenderExchangeFailed() {
       return senderExchangeFailed.get();
     }
 
     void reset() {
+      technicalReceiverAttemptCount.set(0);
       senderExchangeFailed.set(true);
     }
   }

@@ -1,9 +1,7 @@
-package cz.bvv.errorhandlingdemo;
+package cz.bvv.errorhandlingdemo.builder.sender.demosoap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapFailureContractRoutePolicy;
-import cz.bvv.errorhandlingdemo.builder.sender.demosoap.DemoSoapMessageMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demosoap.model.SoapError;
 import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoSoapTechnicalSender;
 import cz.bvv.errorhandlingdemo.contract.failure.IntegrationExceptionMapper;
