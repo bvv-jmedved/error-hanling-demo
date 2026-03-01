@@ -8,10 +8,10 @@ import org.apache.camel.Exchange;
  * <p>Support types isolate reusable technical concerns from route DSL and contract mapping.
  */
 public interface TokenManager {
-    /**
-     * Refreshes authentication token for the current integration exchange context.
-     *
-     * @param exchange Camel exchange that requires renewed authentication
-     */
-    void refreshToken(Exchange exchange);
+  /**
+   * Refreshes authentication token for the current integration exchange context.
+   *
+   * @param exchange Camel exchange that requires renewed authentication
+   */
+  void refreshToken(Exchange exchange);
 }

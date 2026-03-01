@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo;
 
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,71 +18,66 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * Demo2RestDefaultPolicyIntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 class Demo2RestDefaultPolicyIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Test
-    void shouldMapDownstreamHttp500ToBadGatewayUsingDefaultContract() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", "technical-call");
-        headers.set("X_THROW_TYPE", "http");
-        headers.set("X_THROW_STATUS", "500");
+  @Test
+  void shouldMapDownstreamHttp500ToBadGatewayUsingDefaultContract() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", "500");
 
-        ResponseEntity<String> response = callDemo2(headers);
+    ResponseEntity<String> response = callDemo2(headers);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertThat(response.getBody()).isNotBlank();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(response.getBody()).isNotBlank();
 
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("DOWNSTREAM_HTTP_500");
-        assertThat(jsonBody.path("errors").get(0).path("message").asText()).isNotBlank();
-    }
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText())
+        .isEqualTo("DOWNSTREAM_HTTP_500");
+    assertThat(jsonBody.path("errors").get(0).path("message").asText()).isNotBlank();
+  }
 
-    @Test
-    void shouldMapSenderValidationFailureToBadRequestUsingDefaultContract() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", "sender-validate");
-        headers.set("X_THROW_TYPE", "business-validation");
+  @Test
+  void shouldMapSenderValidationFailureToBadRequestUsingDefaultContract() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "sender-validate");
+    headers.set("X_THROW_TYPE", "business-validation");
 
-        ResponseEntity<String> response = callDemo2(headers);
+    ResponseEntity<String> response = callDemo2(headers);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isNotBlank();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getBody()).isNotBlank();
 
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("VALIDATION_FAILED");
-    }
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("VALIDATION_FAILED");
+  }
 
-    private ResponseEntity<String> callDemo2(HttpHeaders headers) {
-        return restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO2_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
-    }
+  private ResponseEntity<String> callDemo2(HttpHeaders headers) {
+    return restTemplate.exchange(
+        "http://localhost:" + port + DemoRestTechnicalSender.DEMO2_ENDPOINT,
+        HttpMethod.POST,
+        new HttpEntity<>("{}", headers),
+        String.class);
+  }
 }

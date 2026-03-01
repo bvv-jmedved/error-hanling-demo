@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -26,132 +26,126 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * FailureInjectorPipelineIntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(FailureInjectorPipelineIntegrationTest.CamelProbeConfig.class)
 class FailureInjectorPipelineIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private SenderCompletionProbe senderCompletionProbe;
+  @Autowired private SenderCompletionProbe senderCompletionProbe;
 
-    @Test
-    void shouldMapFailureWhenInjectedInSenderValidation() throws Exception {
-        senderCompletionProbe.reset();
+  @Test
+  void shouldMapFailureWhenInjectedInSenderValidation() throws Exception {
+    senderCompletionProbe.reset();
 
-        ResponseEntity<String> response = callDemoWithHeaders(headersFor("sender-validate"));
+    ResponseEntity<String> response = callDemoWithHeaders(headersFor("sender-validate"));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertErrorCode(response, "INTERNAL_SERVER_ERROR");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    assertErrorCode(response, "INTERNAL_SERVER_ERROR");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @Test
+  void shouldMapFailureWhenInjectedInProcessTransformRequest() throws Exception {
+    senderCompletionProbe.reset();
+
+    ResponseEntity<String> response = callDemoWithHeaders(headersFor("process-transform-request"));
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    assertErrorCode(response, "INTERNAL_SERVER_ERROR");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @Test
+  void shouldMapHttpFailureToBadGatewayWhenInjectedInTechnicalCall() throws Exception {
+    senderCompletionProbe.reset();
+
+    HttpHeaders headers = headersFor("technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", "500");
+
+    ResponseEntity<String> response = callDemoWithHeaders(headers);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertErrorCode(response, "DOWNSTREAM_HTTP_500");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @Test
+  void shouldMapFailureWhenInjectedInProcessTransformResponse() throws Exception {
+    senderCompletionProbe.reset();
+
+    ResponseEntity<String> response = callDemoWithHeaders(headersFor("process-transform-response"));
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    assertErrorCode(response, "INTERNAL_SERVER_ERROR");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  private ResponseEntity<String> callDemoWithHeaders(HttpHeaders headers) {
+    return restTemplate.exchange(
+        "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+        HttpMethod.POST,
+        new HttpEntity<>("{}", headers),
+        String.class);
+  }
+
+  private static HttpHeaders headersFor(String stepId) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", stepId);
+    return headers;
+  }
+
+  private void assertErrorCode(ResponseEntity<String> response, String expectedErrorCode)
+      throws Exception {
+    assertThat(response.getBody()).isNotBlank();
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedErrorCode);
+  }
+
+  @TestConfiguration
+  static class CamelProbeConfig {
+    @Bean
+    SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
+      SenderCompletionProbe probe = new SenderCompletionProbe();
+      camelContext.getManagementStrategy().addEventNotifier(probe);
+      return probe;
     }
+  }
 
-    @Test
-    void shouldMapFailureWhenInjectedInProcessTransformRequest() throws Exception {
-        senderCompletionProbe.reset();
+  static class SenderCompletionProbe extends EventNotifierSupport {
+    private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
 
-        ResponseEntity<String> response = callDemoWithHeaders(headersFor("process-transform-request"));
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertErrorCode(response, "INTERNAL_SERVER_ERROR");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
-    }
-
-    @Test
-    void shouldMapHttpFailureToBadGatewayWhenInjectedInTechnicalCall() throws Exception {
-        senderCompletionProbe.reset();
-
-        HttpHeaders headers = headersFor("technical-call");
-        headers.set("X_THROW_TYPE", "http");
-        headers.set("X_THROW_STATUS", "500");
-
-        ResponseEntity<String> response = callDemoWithHeaders(headers);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertErrorCode(response, "DOWNSTREAM_HTTP_500");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
-    }
-
-    @Test
-    void shouldMapFailureWhenInjectedInProcessTransformResponse() throws Exception {
-        senderCompletionProbe.reset();
-
-        ResponseEntity<String> response = callDemoWithHeaders(headersFor("process-transform-response"));
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertErrorCode(response, "INTERNAL_SERVER_ERROR");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
-    }
-
-    private ResponseEntity<String> callDemoWithHeaders(HttpHeaders headers) {
-        return restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
-    }
-
-    private static HttpHeaders headersFor(String stepId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", stepId);
-        return headers;
-    }
-
-    private void assertErrorCode(ResponseEntity<String> response, String expectedErrorCode) throws Exception {
-        assertThat(response.getBody()).isNotBlank();
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedErrorCode);
-    }
-
-    @TestConfiguration
-    static class CamelProbeConfig {
-        @Bean
-        SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
-            SenderCompletionProbe probe = new SenderCompletionProbe();
-            camelContext.getManagementStrategy().addEventNotifier(probe);
-            return probe;
+    @Override
+    public void notify(CamelEvent event) {
+      if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
+        Exchange exchange = completedEvent.getExchange();
+        if ("demo-sender".equals(exchange.getFromRouteId())) {
+          senderExchangeFailed.set(exchange.isFailed());
         }
+      }
     }
 
-    static class SenderCompletionProbe extends EventNotifierSupport {
-        private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
-
-        @Override
-        public void notify(CamelEvent event) {
-            if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
-                Exchange exchange = completedEvent.getExchange();
-                if ("demo-sender".equals(exchange.getFromRouteId())) {
-                    senderExchangeFailed.set(exchange.isFailed());
-                }
-            }
-        }
-
-        boolean getSenderExchangeFailed() {
-            return senderExchangeFailed.get();
-        }
-
-        void reset() {
-            senderExchangeFailed.set(true);
-        }
+    boolean getSenderExchangeFailed() {
+      return senderExchangeFailed.get();
     }
+
+    void reset() {
+      senderExchangeFailed.set(true);
+    }
+  }
 }

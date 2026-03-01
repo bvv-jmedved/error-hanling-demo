@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo.builder.process;
 
 import cz.bvv.errorhandlingdemo.builder.base.BaseProcessRouteBuilder;
+import cz.bvv.errorhandlingdemo.poc.FailureStep;
+import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
 import cz.bvv.errorhandlingdemo.policy.route.RouteConfigurationModule;
 import cz.bvv.errorhandlingdemo.policy.route.logging.Monitored;
-import cz.bvv.errorhandlingdemo.poc.FailureStepProcessorFactory;
-import cz.bvv.errorhandlingdemo.poc.FailureStep;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -17,23 +17,22 @@ import org.springframework.stereotype.Component;
 @Component
 @Monitored(service = "process-demo")
 public class DemoProcessRouteBuilder extends BaseProcessRouteBuilder {
-    private final FailureStepProcessorFactory failureStepProcessorFactory;
+  private final FailureStepProcessorFactory failureStepProcessorFactory;
 
-    public DemoProcessRouteBuilder(List<RouteConfigurationModule> modules,
+  public DemoProcessRouteBuilder(
+      List<RouteConfigurationModule> modules,
       FailureStepProcessorFactory failureStepProcessorFactory) {
-        super(modules);
-        this.failureStepProcessorFactory = failureStepProcessorFactory;
-    }
-
-    @Override
-    protected void configureRoutes() {
-
-        from("direct:demo-process")
-          .routeId("demo-process")
-          .process(failureStepProcessorFactory.forStep(FailureStep.PROCESS_TRANSFORM_REQUEST))
-          .to("direct:demo-receiver?exchangePattern=InOut")
-          .process(failureStepProcessorFactory.forStep(FailureStep.PROCESS_TRANSFORM_RESPONSE));
-
-    }
-
+    super(modules);
+    this.failureStepProcessorFactory = failureStepProcessorFactory;
   }
+
+  @Override
+  protected void configureRoutes() {
+
+    from("direct:demo-process")
+        .routeId("demo-process")
+        .process(failureStepProcessorFactory.forStep(FailureStep.PROCESS_TRANSFORM_REQUEST))
+        .to("direct:demo-receiver?exchangePattern=InOut")
+        .process(failureStepProcessorFactory.forStep(FailureStep.PROCESS_TRANSFORM_RESPONSE));
+  }
+}

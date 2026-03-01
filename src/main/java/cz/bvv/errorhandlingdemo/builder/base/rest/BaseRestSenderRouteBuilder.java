@@ -8,11 +8,12 @@ import java.util.List;
 /**
  * Base class for synchronous REST sender routes.
  *
- * <p>REST senders always include fail-contract policy support through {@code BaseSyncSenderRouteBuilder}.
+ * <p>REST senders always include fail-contract policy support through {@code
+ * BaseSyncSenderRouteBuilder}.
  */
 public abstract class BaseRestSenderRouteBuilder extends BaseSyncSenderRouteBuilder {
-    protected BaseRestSenderRouteBuilder(List<RouteConfigurationModule> modules,
-      FailContractRoutePolicy failureContractRoutePolicy) {
-        super(modules, failureContractRoutePolicy);
-    }
+  protected BaseRestSenderRouteBuilder(
+      List<RouteConfigurationModule> modules, FailContractRoutePolicy failureContractRoutePolicy) {
+    super(modules, failureContractRoutePolicy);
+  }
 }

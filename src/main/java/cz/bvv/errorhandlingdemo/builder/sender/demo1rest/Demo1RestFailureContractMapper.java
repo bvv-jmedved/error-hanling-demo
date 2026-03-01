@@ -1,7 +1,7 @@
 package cz.bvv.errorhandlingdemo.builder.sender.demo1rest;
 
-import cz.bvv.errorhandlingdemo.contract.failure.FailureContractMapper;
 import cz.bvv.errorhandlingdemo.builder.sender.demo1rest.model.Demo1RestError;
+import cz.bvv.errorhandlingdemo.contract.failure.FailureContractMapper;
 import cz.bvv.errorhandlingdemo.exception.IntegrationError;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.springframework.stereotype.Component;
@@ -9,25 +9,17 @@ import org.springframework.stereotype.Component;
 /**
  * Demo1RestFailureContractMapper is part of the Camel error-handling architecture demo.
  *
- * <p>The type is documented to serve as an implementation guide for teams that want
- * to apply the same separation of route DSL, policy composition, and failure contracts.
+ * <p>The type is documented to serve as an implementation guide for teams that want to apply the
+ * same separation of route DSL, policy composition, and failure contracts.
  */
 @Component
-public class Demo1RestFailureContractMapper implements
-  FailureContractMapper<Demo1RestError> {
-    @Override
-    public Demo1RestError map(IntegrationException integrationException) {
-        return new Demo1RestError(
-          integrationException.getErrors().stream()
-            .map(this::map)
-            .toList()
-        );
-    }
+public class Demo1RestFailureContractMapper implements FailureContractMapper<Demo1RestError> {
+  @Override
+  public Demo1RestError map(IntegrationException integrationException) {
+    return new Demo1RestError(integrationException.getErrors().stream().map(this::map).toList());
+  }
 
-    private Demo1RestError.Error map (IntegrationError integrationError) {
-        return new Demo1RestError.Error(
-          integrationError.code(),
-          integrationError.message()
-        );
-    }
+  private Demo1RestError.Error map(IntegrationError integrationError) {
+    return new Demo1RestError.Error(integrationError.code(), integrationError.message());
+  }
 }

@@ -9,7 +9,7 @@ import java.util.List;
  * <p>Receiver routes typically own retry and downstream failure interpretation logic.
  */
 public abstract class BaseReceiverRouteBuilder extends BaseRouteBuilder {
-    protected BaseReceiverRouteBuilder(List<RouteConfigurationModule> modules) {
-        super(modules);
-    }
+  protected BaseReceiverRouteBuilder(List<RouteConfigurationModule> modules) {
+    super(modules);
+  }
 }

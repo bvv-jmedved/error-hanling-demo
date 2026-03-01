@@ -7,6 +7,4 @@ import java.util.List;
  *
  * <p>It illustrates centralized SOAP fault generation in the contract layer.
  */
-public record DefaultSoapError(List<SoapErrorEntry> errors) {
-
-}
+public record DefaultSoapError(List<SoapErrorEntry> errors) {}

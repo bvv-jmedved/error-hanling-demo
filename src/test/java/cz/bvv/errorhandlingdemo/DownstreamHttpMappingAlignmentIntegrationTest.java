@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,79 +18,74 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * DownstreamHttpMappingAlignmentIntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 class DownstreamHttpMappingAlignmentIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Test
-    void shouldMapDownstream400ToClient400() throws Exception {
-        ResponseEntity<String> response = callWithDownstreamStatus(400);
+  @Test
+  void shouldMapDownstream400ToClient400() throws Exception {
+    ResponseEntity<String> response = callWithDownstreamStatus(400);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertErrorCode(response, "DOWNSTREAM_HTTP_400");
-    }
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertErrorCode(response, "DOWNSTREAM_HTTP_400");
+  }
 
-    @Test
-    void shouldMapDownstream404ToClient404() throws Exception {
-        ResponseEntity<String> response = callWithDownstreamStatus(404);
+  @Test
+  void shouldMapDownstream404ToClient404() throws Exception {
+    ResponseEntity<String> response = callWithDownstreamStatus(404);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertErrorCode(response, "DOWNSTREAM_HTTP_404");
-    }
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    assertErrorCode(response, "DOWNSTREAM_HTTP_404");
+  }
 
-    @Test
-    void shouldMapDownstream401ToClient502() throws Exception {
-        ResponseEntity<String> response = callWithDownstreamStatus(401);
+  @Test
+  void shouldMapDownstream401ToClient502() throws Exception {
+    ResponseEntity<String> response = callWithDownstreamStatus(401);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertErrorCode(response, "DOWNSTREAM_HTTP_401");
-    }
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertErrorCode(response, "DOWNSTREAM_HTTP_401");
+  }
 
-    @Test
-    void shouldMapDownstream500ToClient502() throws Exception {
-        ResponseEntity<String> response = callWithDownstreamStatus(500);
+  @Test
+  void shouldMapDownstream500ToClient502() throws Exception {
+    ResponseEntity<String> response = callWithDownstreamStatus(500);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertErrorCode(response, "DOWNSTREAM_HTTP_500");
-    }
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertErrorCode(response, "DOWNSTREAM_HTTP_500");
+  }
 
-    private ResponseEntity<String> callWithDownstreamStatus(int downstreamStatus) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", "technical-call");
-        headers.set("X_THROW_TYPE", "http");
-        headers.set("X_THROW_STATUS", String.valueOf(downstreamStatus));
+  private ResponseEntity<String> callWithDownstreamStatus(int downstreamStatus) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", String.valueOf(downstreamStatus));
 
-        return restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
-    }
+    return restTemplate.exchange(
+        "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+        HttpMethod.POST,
+        new HttpEntity<>("{}", headers),
+        String.class);
+  }
 
-    private void assertErrorCode(ResponseEntity<String> response, String expectedCode) throws Exception {
-        assertThat(response.getBody()).isNotBlank();
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedCode);
-    }
+  private void assertErrorCode(ResponseEntity<String> response, String expectedCode)
+      throws Exception {
+    assertThat(response.getBody()).isNotBlank();
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo(expectedCode);
+  }
 }

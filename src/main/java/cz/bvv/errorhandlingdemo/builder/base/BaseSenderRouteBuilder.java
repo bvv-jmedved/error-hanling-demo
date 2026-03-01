@@ -9,7 +9,7 @@ import java.util.List;
  * <p>Sender routes usually represent ingress points for a business process.
  */
 public abstract class BaseSenderRouteBuilder extends BaseRouteBuilder {
-    protected BaseSenderRouteBuilder(List<RouteConfigurationModule> modules) {
-        super(modules);
-    }
+  protected BaseSenderRouteBuilder(List<RouteConfigurationModule> modules) {
+    super(modules);
+  }
 }

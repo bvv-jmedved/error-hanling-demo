@@ -11,13 +11,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class DemoSoapResponse {
-    private String status;
+  private String status;
 
-    public DemoSoapResponse() {
-    }
+  public DemoSoapResponse() {}
 
-    public DemoSoapResponse(String status) {
-        this.status = status;
-    }
-
+  public DemoSoapResponse(String status) {
+    this.status = status;
+  }
 }

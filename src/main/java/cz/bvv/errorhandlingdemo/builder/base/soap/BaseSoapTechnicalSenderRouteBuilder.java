@@ -10,7 +10,7 @@ import java.util.List;
  * <p>This layer hosts transport endpoint specifics and forwards requests to business sender routes.
  */
 public abstract class BaseSoapTechnicalSenderRouteBuilder extends BaseTechnicalSenderRouteBuilder {
-    protected BaseSoapTechnicalSenderRouteBuilder(List<RouteConfigurationModule> modules) {
-        super(modules);
-    }
+  protected BaseSoapTechnicalSenderRouteBuilder(List<RouteConfigurationModule> modules) {
+    super(modules);
+  }
 }

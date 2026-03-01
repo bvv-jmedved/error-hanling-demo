@@ -11,8 +11,8 @@ import java.util.List;
  * <p>SOAP senders reuse the same fail-contract policy contract as REST senders.
  */
 public abstract class BaseSoapSenderRouteBuilder extends BaseSyncSenderRouteBuilder {
-    protected BaseSoapSenderRouteBuilder(List<RouteConfigurationModule> modules,
-      FailContractRoutePolicy failureContractRoutePolicy) {
-        super(modules, failureContractRoutePolicy);
-    }
+  protected BaseSoapSenderRouteBuilder(
+      List<RouteConfigurationModule> modules, FailContractRoutePolicy failureContractRoutePolicy) {
+    super(modules, failureContractRoutePolicy);
+  }
 }

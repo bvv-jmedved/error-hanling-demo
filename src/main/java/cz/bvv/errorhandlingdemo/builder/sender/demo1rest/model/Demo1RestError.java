@@ -7,11 +7,6 @@ import java.util.List;
  *
  * <p>This type keeps transport payload structure explicit and decoupled from route logic.
  */
-public record Demo1RestError(
-  List<Error> errors
-) {
-    public record Error (
-      String code,
-      String message
-    ) {}
+public record Demo1RestError(List<Error> errors) {
+  public record Error(String code, String message) {}
 }

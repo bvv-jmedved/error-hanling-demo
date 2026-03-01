@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -26,89 +26,85 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * BusinessErrorInsideHttp200IntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(BusinessErrorInsideHttp200IntegrationTest.CamelProbeConfig.class)
 class BusinessErrorInsideHttp200IntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private SenderCompletionProbe senderCompletionProbe;
+  @Autowired private SenderCompletionProbe senderCompletionProbe;
 
-    @Test
-    void shouldMapBusinessErrorFromDownstreamHttp200ToClient400() throws Exception {
-        senderCompletionProbe.reset();
+  @Test
+  void shouldMapBusinessErrorFromDownstreamHttp200ToClient400() throws Exception {
+    senderCompletionProbe.reset();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", "technical-call");
-        headers.set("X_THROW_TYPE", "http");
-        headers.set("X_THROW_STATUS", "200");
-        headers.set("X_THROW_BODY", "{\"errCode\":\"K2_123\",\"errMsg\":\"Business validation failed\"}");
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", "200");
+    headers.set(
+        "X_THROW_BODY", "{\"errCode\":\"K2_123\",\"errMsg\":\"Business validation failed\"}");
 
-        ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+            HttpMethod.POST,
+            new HttpEntity<>("{}", headers),
+            String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody()).isNotBlank();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    assertThat(response.getBody()).isNotBlank();
 
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("K2_123");
-        assertThat(jsonBody.path("errors").get(0).path("message").asText()).isEqualTo("Business validation failed");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("K2_123");
+    assertThat(jsonBody.path("errors").get(0).path("message").asText())
+        .isEqualTo("Business validation failed");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @TestConfiguration
+  static class CamelProbeConfig {
+    @Bean
+    SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
+      SenderCompletionProbe probe = new SenderCompletionProbe();
+      camelContext.getManagementStrategy().addEventNotifier(probe);
+      return probe;
+    }
+  }
+
+  static class SenderCompletionProbe extends EventNotifierSupport {
+    private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
+
+    @Override
+    public void notify(CamelEvent event) {
+      if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
+        Exchange exchange = completedEvent.getExchange();
+        if ("demo-sender".equals(exchange.getFromRouteId())) {
+          senderExchangeFailed.set(exchange.isFailed());
+        }
+      }
     }
 
-    @TestConfiguration
-    static class CamelProbeConfig {
-        @Bean
-        SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
-            SenderCompletionProbe probe = new SenderCompletionProbe();
-            camelContext.getManagementStrategy().addEventNotifier(probe);
-            return probe;
-        }
+    boolean getSenderExchangeFailed() {
+      return senderExchangeFailed.get();
     }
 
-    static class SenderCompletionProbe extends EventNotifierSupport {
-        private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
-
-        @Override
-        public void notify(CamelEvent event) {
-            if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
-                Exchange exchange = completedEvent.getExchange();
-                if ("demo-sender".equals(exchange.getFromRouteId())) {
-                    senderExchangeFailed.set(exchange.isFailed());
-                }
-            }
-        }
-
-        boolean getSenderExchangeFailed() {
-            return senderExchangeFailed.get();
-        }
-
-        void reset() {
-            senderExchangeFailed.set(true);
-        }
+    void reset() {
+      senderExchangeFailed.set(true);
     }
+  }
 }

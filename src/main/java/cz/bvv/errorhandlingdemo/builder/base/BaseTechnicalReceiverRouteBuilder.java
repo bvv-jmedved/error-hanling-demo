@@ -10,7 +10,7 @@ import java.util.List;
  * propagate exceptions to let outer error policies decide retries or termination behavior.
  */
 public abstract class BaseTechnicalReceiverRouteBuilder extends BaseRouteBuilder {
-    protected BaseTechnicalReceiverRouteBuilder(List<RouteConfigurationModule> modules) {
-        super(modules);
-    }
+  protected BaseTechnicalReceiverRouteBuilder(List<RouteConfigurationModule> modules) {
+    super(modules);
+  }
 }

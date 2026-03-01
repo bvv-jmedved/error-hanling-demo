@@ -9,7 +9,7 @@ import java.util.List;
  * <p>Process routes represent integration middleware steps between sender and receiver boundaries.
  */
 public abstract class BaseProcessRouteBuilder extends BaseRouteBuilder {
-    protected BaseProcessRouteBuilder(List<RouteConfigurationModule> modules) {
-        super(modules);
-    }
+  protected BaseProcessRouteBuilder(List<RouteConfigurationModule> modules) {
+    super(modules);
+  }
 }

@@ -13,41 +13,40 @@ import org.springframework.stereotype.Component;
 /**
  * DownstreamBusinessErrorProcessor is part of the Camel error-handling architecture demo.
  *
- * <p>The type is documented to serve as an implementation guide for teams that want
- * to apply the same separation of route DSL, policy composition, and failure contracts.
+ * <p>The type is documented to serve as an implementation guide for teams that want to apply the
+ * same separation of route DSL, policy composition, and failure contracts.
  */
 @Component
 public class DownstreamBusinessErrorProcessor implements Processor {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    public DownstreamBusinessErrorProcessor(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+  public DownstreamBusinessErrorProcessor(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
+
+  @Override
+  public void process(Exchange exchange) throws Exception {
+    String body = exchange.getMessage().getBody(String.class);
+    if (body == null || body.isBlank()) {
+      return;
     }
 
-    @Override
-    public void process(Exchange exchange) throws Exception {
-        String body = exchange.getMessage().getBody(String.class);
-        if (body == null || body.isBlank()) {
-            return;
-        }
-
-        JsonNode jsonBody = objectMapper.readTree(body);
-        if (!jsonBody.isObject()) {
-            return;
-        }
-
-        String errorCode = jsonBody.path("errCode").asText("");
-        if (errorCode.isBlank()) {
-            return;
-        }
-
-        String errorMessage = jsonBody.path("errMsg").asText("Business error");
-        throw new IntegrationException(
-          HttpStatus.BAD_REQUEST,
-          List.of(new IntegrationError(errorCode, errorMessage)),
-          errorMessage,
-          null
-        );
+    JsonNode jsonBody = objectMapper.readTree(body);
+    if (!jsonBody.isObject()) {
+      return;
     }
+
+    String errorCode = jsonBody.path("errCode").asText("");
+    if (errorCode.isBlank()) {
+      return;
+    }
+
+    String errorMessage = jsonBody.path("errMsg").asText("Business error");
+    throw new IntegrationException(
+        HttpStatus.BAD_REQUEST,
+        List.of(new IntegrationError(errorCode, errorMessage)),
+        errorMessage,
+        null);
+  }
 }

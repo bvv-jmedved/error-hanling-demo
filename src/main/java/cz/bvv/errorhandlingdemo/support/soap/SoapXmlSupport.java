@@ -12,74 +12,70 @@ import org.w3c.dom.Element;
 /**
  * Small SOAP XML utility used by SOAP failure-contract mappers.
  *
- * <p>This helper keeps DOM creation details outside policy classes so route/contract code
- * remains focused on integration semantics.
+ * <p>This helper keeps DOM creation details outside policy classes so route/contract code remains
+ * focused on integration semantics.
  */
 public final class SoapXmlSupport {
-    public static final String SOAP_NS = "http://schemas.xmlsoap.org/soap/envelope/";
+  public static final String SOAP_NS = "http://schemas.xmlsoap.org/soap/envelope/";
 
-    private SoapXmlSupport() {
-    }
+  private SoapXmlSupport() {}
 
-    /**
-     * Creates namespace-aware DOM document.
-     *
-     * @return empty namespace-aware DOM document
-     * @throws Exception when DOM factory cannot create a document builder
-     */
-    public static Document newDocument() throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        return factory.newDocumentBuilder().newDocument();
-    }
+  /**
+   * Creates namespace-aware DOM document.
+   *
+   * @return empty namespace-aware DOM document
+   * @throws Exception when DOM factory cannot create a document builder
+   */
+  public static Document newDocument() throws Exception {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    return factory.newDocumentBuilder().newDocument();
+  }
 
-    public static SoapFaultSkeleton newSoapFaultSkeleton(
-      String faultString,
-      String detailNamespace,
-      String detailRootQualifiedName) throws Exception {
-        Document document = newDocument();
-        Element envelope = document.createElementNS(SOAP_NS, "soap:Envelope");
-        Element body = document.createElementNS(SOAP_NS, "soap:Body");
-        Element fault = document.createElementNS(SOAP_NS, "soap:Fault");
-        Element faultCode = document.createElement("faultcode");
-        Element faultStringNode = document.createElement("faultstring");
-        Element detail = document.createElement("detail");
-        Element detailRoot = document.createElementNS(detailNamespace, detailRootQualifiedName);
+  public static SoapFaultSkeleton newSoapFaultSkeleton(
+      String faultString, String detailNamespace, String detailRootQualifiedName) throws Exception {
+    Document document = newDocument();
+    Element envelope = document.createElementNS(SOAP_NS, "soap:Envelope");
+    Element body = document.createElementNS(SOAP_NS, "soap:Body");
+    Element fault = document.createElementNS(SOAP_NS, "soap:Fault");
+    Element faultCode = document.createElement("faultcode");
+    Element faultStringNode = document.createElement("faultstring");
+    Element detail = document.createElement("detail");
+    Element detailRoot = document.createElementNS(detailNamespace, detailRootQualifiedName);
 
-        envelope.appendChild(body);
-        body.appendChild(fault);
-        fault.appendChild(faultCode);
-        fault.appendChild(faultStringNode);
-        fault.appendChild(detail);
-        detail.appendChild(detailRoot);
-        document.appendChild(envelope);
+    envelope.appendChild(body);
+    body.appendChild(fault);
+    fault.appendChild(faultCode);
+    fault.appendChild(faultStringNode);
+    fault.appendChild(detail);
+    detail.appendChild(detailRoot);
+    document.appendChild(envelope);
 
-        faultCode.setTextContent("soap:Server");
-        faultStringNode.setTextContent(faultString);
-        return new SoapFaultSkeleton(document, detailRoot);
-    }
+    faultCode.setTextContent("soap:Server");
+    faultStringNode.setTextContent(faultString);
+    return new SoapFaultSkeleton(document, detailRoot);
+  }
 
-    /**
-     * Serializes DOM document to XML string without XML declaration.
-     *
-     * @param document DOM document to serialize
-     * @return XML string representation
-     * @throws Exception when XML transformer fails
-     */
-    public static String toXmlString(Document document) throws Exception {
-        StringWriter writer = new StringWriter();
-        var transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.transform(new DOMSource(document), new StreamResult(writer));
-        return writer.toString();
-    }
+  /**
+   * Serializes DOM document to XML string without XML declaration.
+   *
+   * @param document DOM document to serialize
+   * @return XML string representation
+   * @throws Exception when XML transformer fails
+   */
+  public static String toXmlString(Document document) throws Exception {
+    StringWriter writer = new StringWriter();
+    var transformer = TransformerFactory.newInstance().newTransformer();
+    transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+    transformer.transform(new DOMSource(document), new StreamResult(writer));
+    return writer.toString();
+  }
 
-    /**
-     * Structured result returned by {@link #newSoapFaultSkeleton(String, String, String)}.
-     *
-     * @param document created SOAP document
-     * @param detailRoot root XML element where caller appends transport-specific fault entries
-     */
-    public record SoapFaultSkeleton(Document document, Element detailRoot) {
-    }
+  /**
+   * Structured result returned by {@link #newSoapFaultSkeleton(String, String, String)}.
+   *
+   * @param document created SOAP document
+   * @param detailRoot root XML element where caller appends transport-specific fault entries
+   */
+  public record SoapFaultSkeleton(Document document, Element detailRoot) {}
 }

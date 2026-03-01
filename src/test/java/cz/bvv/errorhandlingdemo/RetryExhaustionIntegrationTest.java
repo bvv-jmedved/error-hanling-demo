@@ -1,10 +1,10 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.camel.CamelContext;
@@ -28,104 +28,99 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * RetryExhaustionIntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(RetryExhaustionIntegrationTest.CamelProbeConfig.class)
 class RetryExhaustionIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+  @Autowired private ObjectMapper objectMapper;
 
-    @Autowired
-    private RetryProbe retryProbe;
+  @Autowired private RetryProbe retryProbe;
 
-    @Test
-    void shouldMapFailureContractAfterRetryExhaustion() throws Exception {
-        retryProbe.reset();
+  @Test
+  void shouldMapFailureContractAfterRetryExhaustion() throws Exception {
+    retryProbe.reset();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X_THROW_IN", "technical-call");
-        headers.set("X_THROW_TYPE", "http");
-        headers.set("X_THROW_STATUS", "500");
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("X_THROW_IN", "technical-call");
+    headers.set("X_THROW_TYPE", "http");
+    headers.set("X_THROW_STATUS", "500");
 
-        ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+            HttpMethod.POST,
+            new HttpEntity<>("{}", headers),
+            String.class);
 
-        assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(3);
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
-        assertThat(response.getBody()).isNotBlank();
+    assertThat(retryProbe.getTechnicalReceiverAttemptCount()).isEqualTo(3);
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_GATEWAY);
+    assertThat(response.getBody()).isNotBlank();
 
-        JsonNode jsonBody = objectMapper.readTree(response.getBody());
-        assertThat(jsonBody.path("errors").isArray()).isTrue();
-        assertThat(jsonBody.path("errors")).isNotEmpty();
-        assertThat(jsonBody.path("errors").get(0).path("code").asText()).isEqualTo("DOWNSTREAM_HTTP_500");
+    JsonNode jsonBody = objectMapper.readTree(response.getBody());
+    assertThat(jsonBody.path("errors").isArray()).isTrue();
+    assertThat(jsonBody.path("errors")).isNotEmpty();
+    assertThat(jsonBody.path("errors").get(0).path("code").asText())
+        .isEqualTo("DOWNSTREAM_HTTP_500");
 
-        assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(retryProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @TestConfiguration
+  static class CamelProbeConfig {
+
+    @Bean
+    RetryProbe retryProbe(CamelContext camelContext) {
+      RetryProbe probe = new RetryProbe();
+      camelContext.getManagementStrategy().addEventNotifier(probe);
+      return probe;
+    }
+  }
+
+  static class RetryProbe extends EventNotifierSupport {
+    private final AtomicInteger technicalReceiverAttemptCount = new AtomicInteger(0);
+    private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
+
+    @Override
+    public void notify(CamelEvent event) {
+      if (event instanceof CamelEvent.ExchangeSendingEvent sendingEvent) {
+        Endpoint endpoint = sendingEvent.getEndpoint();
+        if (endpoint != null && endpoint.getEndpointUri().contains("technical-receiver")) {
+          technicalReceiverAttemptCount.incrementAndGet();
+        }
+      }
+
+      if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
+        Exchange exchange = completedEvent.getExchange();
+        String fromRouteId = exchange.getFromRouteId();
+        if ("demo-sender".equals(fromRouteId)) {
+          senderExchangeFailed.set(exchange.isFailed());
+        }
+      }
     }
 
-    @TestConfiguration
-    static class CamelProbeConfig {
-
-        @Bean
-        RetryProbe retryProbe(CamelContext camelContext) {
-            RetryProbe probe = new RetryProbe();
-            camelContext.getManagementStrategy().addEventNotifier(probe);
-            return probe;
-        }
+    int getTechnicalReceiverAttemptCount() {
+      return technicalReceiverAttemptCount.get();
     }
 
-    static class RetryProbe extends EventNotifierSupport {
-        private final AtomicInteger technicalReceiverAttemptCount = new AtomicInteger(0);
-        private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
-
-        @Override
-        public void notify(CamelEvent event) {
-            if (event instanceof CamelEvent.ExchangeSendingEvent sendingEvent) {
-                Endpoint endpoint = sendingEvent.getEndpoint();
-                if (endpoint != null && endpoint.getEndpointUri().contains("technical-receiver")) {
-                    technicalReceiverAttemptCount.incrementAndGet();
-                }
-            }
-
-            if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
-                Exchange exchange = completedEvent.getExchange();
-                String fromRouteId = exchange.getFromRouteId();
-                if ("demo-sender".equals(fromRouteId)) {
-                    senderExchangeFailed.set(exchange.isFailed());
-                }
-            }
-        }
-
-        int getTechnicalReceiverAttemptCount() {
-            return technicalReceiverAttemptCount.get();
-        }
-
-        boolean getSenderExchangeFailed() {
-            return senderExchangeFailed.get();
-        }
-
-        void reset() {
-            technicalReceiverAttemptCount.set(0);
-            senderExchangeFailed.set(true);
-        }
+    boolean getSenderExchangeFailed() {
+      return senderExchangeFailed.get();
     }
+
+    void reset() {
+      technicalReceiverAttemptCount.set(0);
+      senderExchangeFailed.set(true);
+    }
+  }
 }

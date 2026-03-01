@@ -9,35 +9,34 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * FakeTokenManagerTest unit test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * the local component contract. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies the local component contract and documents expected architecture behavior.
  */
 class FakeTokenManagerTest {
 
-    private final FakeTokenManager fakeTokenManager = new FakeTokenManager();
+  private final FakeTokenManager fakeTokenManager = new FakeTokenManager();
 
-    @Test
-    void shouldSucceedWhenHeaderMissing() {
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+  @Test
+  void shouldSucceedWhenHeaderMissing() {
+    Exchange exchange = new DefaultExchange(new DefaultCamelContext());
 
-        assertThatCode(() -> fakeTokenManager.refreshToken(exchange)).doesNotThrowAnyException();
-    }
+    assertThatCode(() -> fakeTokenManager.refreshToken(exchange)).doesNotThrowAnyException();
+  }
 
-    @Test
-    void shouldThrowIntegrationExceptionWhenHeaderTrue() {
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader("X_TOKEN_REFRESH_FAIL", "true");
+  @Test
+  void shouldThrowIntegrationExceptionWhenHeaderTrue() {
+    Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+    exchange.getIn().setHeader("X_TOKEN_REFRESH_FAIL", "true");
 
-        assertThatThrownBy(() -> fakeTokenManager.refreshToken(exchange))
-          .isInstanceOfSatisfying(IntegrationException.class, exception -> {
+    assertThatThrownBy(() -> fakeTokenManager.refreshToken(exchange))
+        .isInstanceOfSatisfying(
+            IntegrationException.class,
+            exception -> {
               org.assertj.core.api.Assertions.assertThat(exception.getErrors()).hasSize(1);
               org.assertj.core.api.Assertions.assertThat(exception.getErrors().getFirst().code())
-                .isEqualTo("TOKEN_REFRESH_FAILED");
-          });
-    }
+                  .isEqualTo("TOKEN_REFRESH_FAILED");
+            });
+  }
 }

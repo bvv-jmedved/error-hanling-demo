@@ -11,6 +11,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class DemoSoapRequest {
-    private String payload;
-
+  private String payload;
 }

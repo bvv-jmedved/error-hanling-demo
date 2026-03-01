@@ -5,5 +5,4 @@ package cz.bvv.errorhandlingdemo.contract.soap.model;
  *
  * <p>It illustrates centralized SOAP fault generation in the contract layer.
  */
-public record SoapErrorEntry(String code, String message) {
-}
+public record SoapErrorEntry(String code, String message) {}

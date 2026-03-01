@@ -1,8 +1,8 @@
 package cz.bvv.errorhandlingdemo;
-import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cz.bvv.errorhandlingdemo.builder.technicalsender.DemoRestTechnicalSender;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -24,76 +24,71 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
-
 /**
  * HappyPathIntegrationTest integration test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * end-to-end route behavior across policy, retry, and failure-contract boundaries. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies end-to-end route behavior across policy, retry, and failure-contract boundaries and
+ * documents expected architecture behavior.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("poc")
 @Import(HappyPathIntegrationTest.CamelProbeConfig.class)
 class HappyPathIntegrationTest {
 
-    @LocalServerPort
-    private int port;
+  @LocalServerPort private int port;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+  @Autowired private TestRestTemplate restTemplate;
 
-    @Autowired
-    private SenderCompletionProbe senderCompletionProbe;
+  @Autowired private SenderCompletionProbe senderCompletionProbe;
 
-    @Test
-    void shouldReturnSuccessWhenNoFailureIsInjected() {
-        senderCompletionProbe.reset();
+  @Test
+  void shouldReturnSuccessWhenNoFailureIsInjected() {
+    senderCompletionProbe.reset();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-          "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
-          HttpMethod.POST,
-          new HttpEntity<>("{}", headers),
-          String.class
-        );
+    ResponseEntity<String> response =
+        restTemplate.exchange(
+            "http://localhost:" + port + DemoRestTechnicalSender.DEMO1_ENDPOINT,
+            HttpMethod.POST,
+            new HttpEntity<>("{}", headers),
+            String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo("{\"status\":\"ok\"}");
-        assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isEqualTo("{\"status\":\"ok\"}");
+    assertThat(senderCompletionProbe.getSenderExchangeFailed()).isFalse();
+  }
+
+  @TestConfiguration
+  static class CamelProbeConfig {
+    @Bean
+    SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
+      SenderCompletionProbe probe = new SenderCompletionProbe();
+      camelContext.getManagementStrategy().addEventNotifier(probe);
+      return probe;
+    }
+  }
+
+  static class SenderCompletionProbe extends EventNotifierSupport {
+    private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
+
+    @Override
+    public void notify(CamelEvent event) {
+      if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
+        Exchange exchange = completedEvent.getExchange();
+        if ("demo-sender".equals(exchange.getFromRouteId())) {
+          senderExchangeFailed.set(exchange.isFailed());
+        }
+      }
     }
 
-    @TestConfiguration
-    static class CamelProbeConfig {
-        @Bean
-        SenderCompletionProbe senderCompletionProbe(CamelContext camelContext) {
-            SenderCompletionProbe probe = new SenderCompletionProbe();
-            camelContext.getManagementStrategy().addEventNotifier(probe);
-            return probe;
-        }
+    boolean getSenderExchangeFailed() {
+      return senderExchangeFailed.get();
     }
 
-    static class SenderCompletionProbe extends EventNotifierSupport {
-        private final AtomicBoolean senderExchangeFailed = new AtomicBoolean(true);
-
-        @Override
-        public void notify(CamelEvent event) {
-            if (event instanceof CamelEvent.ExchangeCompletedEvent completedEvent) {
-                Exchange exchange = completedEvent.getExchange();
-                if ("demo-sender".equals(exchange.getFromRouteId())) {
-                    senderExchangeFailed.set(exchange.isFailed());
-                }
-            }
-        }
-
-        boolean getSenderExchangeFailed() {
-            return senderExchangeFailed.get();
-        }
-
-        void reset() {
-            senderExchangeFailed.set(true);
-        }
+    void reset() {
+      senderExchangeFailed.set(true);
     }
+  }
 }

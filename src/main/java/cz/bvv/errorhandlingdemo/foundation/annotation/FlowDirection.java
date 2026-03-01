@@ -14,18 +14,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface FlowDirection {
-    /**
-     * Code of the source system that initiated the business flow.
-     */
-    String source() default "";
+  /** Code of the source system that initiated the business flow. */
+  String source() default "";
 
-    /**
-     * Code of the target system that receives business output.
-     */
-    String target() default "";
+  /** Code of the target system that receives business output. */
+  String target() default "";
 
-    /**
-     * End-to-end business process code (for example {@code create-order}).
-     */
-    String process() default "";
+  /** End-to-end business process code (for example {@code create-order}). */
+  String process() default "";
 }

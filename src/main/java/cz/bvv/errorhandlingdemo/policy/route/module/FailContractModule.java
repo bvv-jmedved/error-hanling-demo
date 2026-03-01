@@ -10,24 +10,22 @@ import org.springframework.stereotype.Component;
 /**
  * Policy module participating in post-DSL route configuration.
  *
- * <p>Modules provide deterministic, capability-driven infrastructure composition
- * and are the main extension point for adding architecture-wide behavior.
+ * <p>Modules provide deterministic, capability-driven infrastructure composition and are the main
+ * extension point for adding architecture-wide behavior.
  */
 @Component
 @Order(10)
 public class FailContractModule implements RouteConfigurationModule {
 
-    @Override
-    public boolean supports(RouteBuilder builder) {
-        return builder instanceof FailContractRoute;
-    }
+  @Override
+  public boolean supports(RouteBuilder builder) {
+    return builder instanceof FailContractRoute;
+  }
 
-    @Override
-    public void afterRoutes(RouteBuilder builder) {
-        FailContractRoute failContractRoute = (FailContractRoute) builder;
-        FailContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();
-        builder.getRouteCollection()
-          .getRoutes()
-          .forEach(route -> route.routePolicy(policy));
-    }
+  @Override
+  public void afterRoutes(RouteBuilder builder) {
+    FailContractRoute failContractRoute = (FailContractRoute) builder;
+    FailContractRoutePolicy policy = failContractRoute.failureContractRoutePolicy();
+    builder.getRouteCollection().getRoutes().forEach(route -> route.routePolicy(policy));
+  }
 }

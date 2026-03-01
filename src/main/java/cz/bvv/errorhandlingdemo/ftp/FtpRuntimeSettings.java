@@ -12,22 +12,22 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class FtpRuntimeSettings {
-    private final int port;
+  private final int port;
 
-    public FtpRuntimeSettings(@Value("${demo.ftp.port:2121}") int configuredPort) {
-        this.port = configuredPort > 0 ? configuredPort : allocateEphemeralPort();
-    }
+  public FtpRuntimeSettings(@Value("${demo.ftp.port:2121}") int configuredPort) {
+    this.port = configuredPort > 0 ? configuredPort : allocateEphemeralPort();
+  }
 
-    public int port() {
-        return port;
-    }
+  public int port() {
+    return port;
+  }
 
-    private static int allocateEphemeralPort() {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            socket.setReuseAddress(true);
-            return socket.getLocalPort();
-        } catch (IOException ex) {
-            throw new IllegalStateException("Failed to allocate dynamic FTP port", ex);
-        }
+  private static int allocateEphemeralPort() {
+    try (ServerSocket socket = new ServerSocket(0)) {
+      socket.setReuseAddress(true);
+      return socket.getLocalPort();
+    } catch (IOException ex) {
+      throw new IllegalStateException("Failed to allocate dynamic FTP port", ex);
     }
+  }
 }

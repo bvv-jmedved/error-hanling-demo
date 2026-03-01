@@ -10,26 +10,24 @@ import org.springframework.stereotype.Component;
 /**
  * REST failure-contract component used by sender routes.
  *
- * <p>It demonstrates response shaping that keeps route DSL clean and architecture rules centralized.
+ * <p>It demonstrates response shaping that keeps route DSL clean and architecture rules
+ * centralized.
  */
 @Component
 @Scope("prototype")
 public class DefaultRestFailureContractRoutePolicy
-  extends RestFailureContractRoutePolicy<DefaultRestError> {
+    extends RestFailureContractRoutePolicy<DefaultRestError> {
 
-    public DefaultRestFailureContractRoutePolicy(
-      ObjectMapper objectMapper,
-      IntegrationExceptionMapper integrationExceptionMapper) {
-        super(objectMapper, integrationExceptionMapper);
-    }
+  public DefaultRestFailureContractRoutePolicy(
+      ObjectMapper objectMapper, IntegrationExceptionMapper integrationExceptionMapper) {
+    super(objectMapper, integrationExceptionMapper);
+  }
 
-    @Override
-    protected DefaultRestError createRestError(IntegrationException exception) {
-        return new DefaultRestError(
-          exception.getErrors().stream()
+  @Override
+  protected DefaultRestError createRestError(IntegrationException exception) {
+    return new DefaultRestError(
+        exception.getErrors().stream()
             .map(error -> new DefaultRestError.Error(error.code(), error.message()))
-            .toList()
-        );
-
-    }
+            .toList());
+  }
 }

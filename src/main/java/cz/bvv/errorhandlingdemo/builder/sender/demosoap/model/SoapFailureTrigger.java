@@ -5,10 +5,4 @@ package cz.bvv.errorhandlingdemo.builder.sender.demosoap.model;
  *
  * <p>This type keeps transport payload structure explicit and decoupled from route logic.
  */
-public record SoapFailureTrigger(
-  String step,
-  String type,
-  Integer status,
-  String body
-) {
-}
+public record SoapFailureTrigger(String step, String type, Integer status, String body) {}

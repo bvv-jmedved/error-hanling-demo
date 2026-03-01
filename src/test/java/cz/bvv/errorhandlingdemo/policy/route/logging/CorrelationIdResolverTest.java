@@ -9,40 +9,38 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.support.DefaultExchange;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * CorrelationIdResolverTest architecture test.
  *
- * <p>This class serves as executable documentation for the demo architecture by validating
- * route-policy orchestration and monitoring policy decisions. It helps readers understand how to implement and verify the same pattern in
- * their own Camel integration modules.
+ * <p>Verifies route-policy orchestration and monitoring policy decisions and documents expected
+ * architecture behavior.
  */
 class CorrelationIdResolverTest {
 
-    private final CorrelationIdResolver resolver = new CorrelationIdResolver();
+  private final CorrelationIdResolver resolver = new CorrelationIdResolver();
 
-    @Test
-    void shouldGenerateCorrelationIdWhenMissing() {
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+  @Test
+  void shouldGenerateCorrelationIdWhenMissing() {
+    Exchange exchange = new DefaultExchange(new DefaultCamelContext());
 
-        String correlationId = resolver.ensureCorrelationId(exchange);
+    String correlationId = resolver.ensureCorrelationId(exchange);
 
-        assertThat(correlationId).isNotBlank();
-        assertThat(exchange.getProperty(IntegrationExchangeProperties.CORRELATION_ID, String.class))
-          .isEqualTo(correlationId);
-        assertThat(exchange.getIn().getHeader(IntegrationExchangeHeaders.CORRELATION_ID, String.class))
-          .isEqualTo(correlationId);
-    }
+    assertThat(correlationId).isNotBlank();
+    assertThat(exchange.getProperty(IntegrationExchangeProperties.CORRELATION_ID, String.class))
+        .isEqualTo(correlationId);
+    assertThat(exchange.getIn().getHeader(IntegrationExchangeHeaders.CORRELATION_ID, String.class))
+        .isEqualTo(correlationId);
+  }
 
-    @Test
-    void shouldReuseHeaderCorrelationIdWhenPresent() {
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setHeader(IntegrationExchangeHeaders.CORRELATION_ID, "abc-123");
+  @Test
+  void shouldReuseHeaderCorrelationIdWhenPresent() {
+    Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+    exchange.getIn().setHeader(IntegrationExchangeHeaders.CORRELATION_ID, "abc-123");
 
-        String correlationId = resolver.ensureCorrelationId(exchange);
+    String correlationId = resolver.ensureCorrelationId(exchange);
 
-        assertThat(correlationId).isEqualTo("abc-123");
-        assertThat(exchange.getProperty(IntegrationExchangeProperties.CORRELATION_ID, String.class))
-          .isEqualTo("abc-123");
-    }
+    assertThat(correlationId).isEqualTo("abc-123");
+    assertThat(exchange.getProperty(IntegrationExchangeProperties.CORRELATION_ID, String.class))
+        .isEqualTo("abc-123");
+  }
 }

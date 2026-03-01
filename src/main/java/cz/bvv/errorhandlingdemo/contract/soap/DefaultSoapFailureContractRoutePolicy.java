@@ -16,25 +16,24 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class DefaultSoapFailureContractRoutePolicy
-  extends SoapFailureContractRoutePolicy<DefaultSoapError> {
+    extends SoapFailureContractRoutePolicy<DefaultSoapError> {
 
-    public DefaultSoapFailureContractRoutePolicy(
+  public DefaultSoapFailureContractRoutePolicy(
       SoapFaultMessageMapper soapFaultMessageMapper,
       IntegrationExceptionMapper integrationExceptionMapper) {
-        super(soapFaultMessageMapper, integrationExceptionMapper);
-    }
+    super(soapFaultMessageMapper, integrationExceptionMapper);
+  }
 
-    @Override
-    protected DefaultSoapError createSoapError(IntegrationException exception) {
-        return new DefaultSoapError(
-          exception.getErrors().stream()
+  @Override
+  protected DefaultSoapError createSoapError(IntegrationException exception) {
+    return new DefaultSoapError(
+        exception.getErrors().stream()
             .map(error -> new SoapErrorEntry(error.code(), error.message()))
-            .toList()
-        );
-    }
+            .toList());
+  }
 
-    @Override
-    protected List<SoapErrorEntry> getSoapErrors(DefaultSoapError errorDto) {
-        return errorDto.errors();
-    }
+  @Override
+  protected List<SoapErrorEntry> getSoapErrors(DefaultSoapError errorDto) {
+    return errorDto.errors();
+  }
 }

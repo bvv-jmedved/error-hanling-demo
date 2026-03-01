@@ -9,68 +9,63 @@ import org.springframework.util.StringUtils;
 /**
  * Failure-contract mapping component in the architecture demo.
  *
- * <p>Types in this package define how technical exceptions are transformed
- * into integration-facing error contracts outside route DSL code.
+ * <p>Types in this package define how technical exceptions are transformed into integration-facing
+ * error contracts outside route DSL code.
  */
 @Component
 public class DefaultIntegrationExceptionMapperImpl implements IntegrationExceptionMapper {
-    private static final String DOWNSTREAM_HTTP_ERROR_PREFIX = "DOWNSTREAM_HTTP_";
+  private static final String DOWNSTREAM_HTTP_ERROR_PREFIX = "DOWNSTREAM_HTTP_";
 
-    @Override
-    public IntegrationException map(Exception exception) {
-        return switch (exception) {
-            case null -> IntegrationException.unknownError();
-            case IntegrationException integrationException -> integrationException;
-            case HttpOperationFailedException operationException -> {
-                int downstreamStatus = operationException.getStatusCode();
-                String errorCode = DOWNSTREAM_HTTP_ERROR_PREFIX + downstreamStatus;
-                String message = extractMessage(operationException);
-                HttpStatus mappedStatus = mapDownstreamStatus(downstreamStatus);
-                yield new IntegrationException(
-                  mappedStatus,
-                  errorCode,
-                  message,
-                  operationException);
-            }
-            default -> new IntegrationException(
+  @Override
+  public IntegrationException map(Exception exception) {
+    return switch (exception) {
+      case null -> IntegrationException.unknownError();
+      case IntegrationException integrationException -> integrationException;
+      case HttpOperationFailedException operationException -> {
+        int downstreamStatus = operationException.getStatusCode();
+        String errorCode = DOWNSTREAM_HTTP_ERROR_PREFIX + downstreamStatus;
+        String message = extractMessage(operationException);
+        HttpStatus mappedStatus = mapDownstreamStatus(downstreamStatus);
+        yield new IntegrationException(mappedStatus, errorCode, message, operationException);
+      }
+      default ->
+          new IntegrationException(
               HttpStatus.INTERNAL_SERVER_ERROR,
               HttpStatus.INTERNAL_SERVER_ERROR.name(),
               exception.getMessage(),
-              exception
-            );
-        };
+              exception);
+    };
+  }
 
+  private static HttpStatus mapDownstreamStatus(int downstreamStatus) {
+    if (downstreamStatus == HttpStatus.UNAUTHORIZED.value() || downstreamStatus >= 500) {
+      return HttpStatus.BAD_GATEWAY;
+    }
+    if (downstreamStatus >= 400) {
+      return HttpStatus.valueOf(downstreamStatus);
+    }
+    return HttpStatus.BAD_GATEWAY;
+  }
+
+  private static String extractMessage(HttpOperationFailedException operationException) {
+    if (StringUtils.hasText(operationException.getStatusText())) {
+      return operationException.getStatusText();
     }
 
-    private static HttpStatus mapDownstreamStatus(int downstreamStatus) {
-        if (downstreamStatus == HttpStatus.UNAUTHORIZED.value() || downstreamStatus >= 500) {
-            return HttpStatus.BAD_GATEWAY;
-        }
-        if (downstreamStatus >= 400) {
-            return HttpStatus.valueOf(downstreamStatus);
-        }
-        return HttpStatus.BAD_GATEWAY;
+    String fallback = sanitize(operationException.getMessage());
+    if (StringUtils.hasText(fallback)) {
+      return fallback;
     }
 
-    private static String extractMessage(HttpOperationFailedException operationException) {
-        if (StringUtils.hasText(operationException.getStatusText())) {
-            return operationException.getStatusText();
-        }
+    return "Downstream HTTP call failed with status " + operationException.getStatusCode();
+  }
 
-        String fallback = sanitize(operationException.getMessage());
-        if (StringUtils.hasText(fallback)) {
-            return fallback;
-        }
-
-        return "Downstream HTTP call failed with status " + operationException.getStatusCode();
+  private static String sanitize(String message) {
+    if (!StringUtils.hasText(message)) {
+      return message;
     }
 
-    private static String sanitize(String message) {
-        if (!StringUtils.hasText(message)) {
-            return message;
-        }
-
-        String sanitized = message.replaceAll("(?i)\\s+with body:.*$", "").trim();
-        return sanitized.replaceAll("[\\r\\n\\t]+", " ");
-    }
+    String sanitized = message.replaceAll("(?i)\\s+with body:.*$", "").trim();
+    return sanitized.replaceAll("[\\r\\n\\t]+", " ");
+  }
 }
