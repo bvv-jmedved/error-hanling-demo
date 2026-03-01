@@ -3,7 +3,6 @@ package cz.bvv.errorhandlingdemo.builder.common;
 public final class IntegrationExchangeProperties {
     public static final String CORRELATION_ID = "integration.correlation.id";
     public static final String PROCESS_STATUS = "integration.process.status";
-    public static final String RECOVERY_ACTION = "integration.recovery.action";
     public static final String EXCEPTION_OVERRIDE = "integration.exception.override";
     public static final String FAILURE_CONTRACT_APPLIED = "integration.failure.contract.applied";
     public static final String FAILURE_HANDLED = "integration.failure.handled";

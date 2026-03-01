@@ -5,7 +5,6 @@ import cz.bvv.errorhandlingdemo.builder.common.TokenManager;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.CorrelationIdResolver;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.ExchangeLoggingStatus;
 import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryAction;
-import cz.bvv.errorhandlingdemo.builder.common.routepolicy.logging.RecoveryActionResolver;
 import cz.bvv.errorhandlingdemo.exception.IntegrationException;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
@@ -18,15 +17,12 @@ public class TokenRefreshRetryDecider {
 
     private final TokenManager tokenManager;
     private final CorrelationIdResolver correlationIdResolver;
-    private final RecoveryActionResolver recoveryActionResolver;
 
     public TokenRefreshRetryDecider(
       TokenManager tokenManager,
-      CorrelationIdResolver correlationIdResolver,
-      RecoveryActionResolver recoveryActionResolver) {
+      CorrelationIdResolver correlationIdResolver) {
         this.tokenManager = tokenManager;
         this.correlationIdResolver = correlationIdResolver;
-        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     @SuppressWarnings("unused")
@@ -52,7 +48,6 @@ public class TokenRefreshRetryDecider {
     }
 
     private void logIntermediate(Exchange exchange, ExchangeLoggingStatus status, RecoveryAction action) {
-        recoveryActionResolver.markAction(exchange, action);
         String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
         String routeId = exchange.getFromRouteId() == null ? "unknown" : exchange.getFromRouteId();
         LOG.info(
