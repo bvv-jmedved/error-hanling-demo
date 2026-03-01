@@ -9,17 +9,14 @@ public class LoggingRoutePolicyFactory {
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
     private final CorrelationIdResolver correlationIdResolver;
     private final ProcessStatusTracker processStatusTracker;
-    private final RecoveryActionResolver recoveryActionResolver;
 
     public LoggingRoutePolicyFactory(
       ExchangeOutcomeResolver exchangeOutcomeResolver,
       CorrelationIdResolver correlationIdResolver,
-      ProcessStatusTracker processStatusTracker,
-      RecoveryActionResolver recoveryActionResolver) {
+      ProcessStatusTracker processStatusTracker) {
         this.exchangeOutcomeResolver = exchangeOutcomeResolver;
         this.correlationIdResolver = correlationIdResolver;
         this.processStatusTracker = processStatusTracker;
-        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     public LoggingRoutePolicy create(RouteBuilder builder) {
@@ -35,8 +32,7 @@ public class LoggingRoutePolicyFactory {
               statusConfig,
               exchangeOutcomeResolver,
               correlationIdResolver,
-              processStatusTracker,
-              recoveryActionResolver
+              processStatusTracker
             );
         }
 
@@ -47,8 +43,7 @@ public class LoggingRoutePolicyFactory {
           statusConfig,
           exchangeOutcomeResolver,
           correlationIdResolver,
-          processStatusTracker,
-          recoveryActionResolver
+          processStatusTracker
         );
     }
 }

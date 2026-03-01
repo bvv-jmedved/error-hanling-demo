@@ -17,7 +17,6 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
     private final ExchangeOutcomeResolver exchangeOutcomeResolver;
     private final CorrelationIdResolver correlationIdResolver;
     private final ProcessStatusTracker processStatusTracker;
-    private final RecoveryActionResolver recoveryActionResolver;
 
     public LoggingRoutePolicy(
       String service,
@@ -25,58 +24,38 @@ public class LoggingRoutePolicy extends RoutePolicySupport {
       LoggingStatusConfig loggingStatus,
       ExchangeOutcomeResolver exchangeOutcomeResolver,
       CorrelationIdResolver correlationIdResolver,
-      ProcessStatusTracker processStatusTracker,
-      RecoveryActionResolver recoveryActionResolver) {
+      ProcessStatusTracker processStatusTracker) {
         this.service = service;
         this.critical = critical;
         this.loggingStatus = loggingStatus;
         this.exchangeOutcomeResolver = exchangeOutcomeResolver;
         this.correlationIdResolver = correlationIdResolver;
         this.processStatusTracker = processStatusTracker;
-        this.recoveryActionResolver = recoveryActionResolver;
     }
 
     @Override
     public void onExchangeBegin(Route route, Exchange exchange) {
-        logProcessStatusIfChanged(route, exchange, loggingStatus.onStart(), "BEGIN");
+        logProcessStatusIfChanged(route, exchange, loggingStatus.onStart());
     }
 
     @Override
     public void onExchangeDone(Route route, Exchange exchange) {
         ExchangeLoggingStatus status =
           exchangeOutcomeResolver.isFailure(exchange) ? loggingStatus.onFailure() : loggingStatus.onComplete();
-        logProcessStatusIfChanged(route, exchange, status, "DONE");
+        logProcessStatusIfChanged(route, exchange, status);
     }
 
-    private void logProcessStatusIfChanged(
-      Route route,
-      Exchange exchange,
-      ExchangeLoggingStatus status,
-      String phase) {
+    private void logProcessStatusIfChanged(Route route, Exchange exchange, ExchangeLoggingStatus status) {
         if (!processStatusTracker.updateIfChanged(exchange, status)) {
             return;
         }
 
         String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
-        RecoveryAction recoveryAction = recoveryActionResolver.currentAction(exchange);
-        boolean terminal = isTerminal(status);
         LOG.info(
-          "event=process_status phase={} final={} status={} recoveryAction={} routeId={} service={} critical={} exchangeId={} correlationId={}",
-          phase,
-          terminal,
+          "event=process_status status={} routeId={} correlationId={}",
           status,
-          recoveryAction,
           route.getRouteId(),
-          service,
-          critical,
-          exchange.getExchangeId(),
           correlationId
         );
-    }
-
-    private static boolean isTerminal(ExchangeLoggingStatus status) {
-        return status == ExchangeLoggingStatus.COMPLETED
-          || status == ExchangeLoggingStatus.FAILED
-          || status == ExchangeLoggingStatus.ENQUEUED;
     }
 }

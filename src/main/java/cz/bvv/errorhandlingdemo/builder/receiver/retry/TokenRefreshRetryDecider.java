@@ -56,13 +56,10 @@ public class TokenRefreshRetryDecider {
         String correlationId = correlationIdResolver.ensureCorrelationId(exchange);
         String routeId = exchange.getFromRouteId() == null ? "unknown" : exchange.getFromRouteId();
         LOG.info(
-          "event=process_detail phase=RETRY final=false detailState={} recoveryAction={} routeId={} service={} critical={} exchangeId={} correlationId={}",
+          "event=process_detail detailState={} recoveryAction={} routeId={} correlationId={}",
           status,
           action,
           routeId,
-          "receiver-token-refresh",
-          false,
-          exchange.getExchangeId(),
           correlationId
         );
     }
